@@ -62,8 +62,8 @@ export async function PUT(
 
     if (contentType?.includes('multipart/form-data')) {
       // Handle file uploads for updates
-      const { primaryPhoto, secondaryImages, videos, formData } = 
-        await handleMultipleFileFields(request, 'uploads/products');
+      const formData = await request.formData();
+      const uploadResults = await handleMultipleFileFields(formData);
 
       // Extract form data
       updateData = {
@@ -79,16 +79,16 @@ export async function PUT(
       };
 
       // Update file URLs if new files were uploaded
-      if (primaryPhoto) {
-        updateData.primaryPhoto = primaryPhoto.url;
+      if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
+        updateData.primaryPhoto = uploadResults.primaryPhoto[0].url;
       }
 
-      if (secondaryImages.length > 0) {
-        updateData.secondaryImages = secondaryImages.map(img => img.url);
+      if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
+        updateData.secondaryImages = uploadResults.secondaryImages.map(img => img.url);
       }
 
-      if (videos.length > 0) {
-        updateData.videoUrls = videos.map(video => video.url);
+      if (uploadResults.videos && uploadResults.videos.length > 0) {
+        updateData.videoUrls = uploadResults.videos.map(video => video.url);
       }
     } else {
       // Handle JSON updates (no file uploads)

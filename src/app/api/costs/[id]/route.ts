@@ -128,7 +128,7 @@ export async function PUT(
     const newAttachments = [];
     for (const file of files) {
       try {
-        const uploadResult = await handleSingleFileUpload(file, 'costs');
+        const uploadResult = await handleSingleFileUpload(file, 'uploads/costs');
         newAttachments.push({
           name: file.name,
           url: uploadResult.url,

@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     // Handle file uploads
-    const { primaryPhoto, secondaryImages, videos, formData } = 
-      await handleMultipleFileFields(request, 'uploads/products');
+    const formData = await request.formData();
+    const uploadResults = await handleMultipleFileFields(formData);
 
     // Extract form data
     const productData: ProductFormData = {
@@ -109,16 +109,16 @@ export async function POST(request: NextRequest) {
     };
 
     // Add file URLs to product data
-    if (primaryPhoto) {
-      productData.primaryPhoto = primaryPhoto.url;
+    if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
+      productData.primaryPhoto = uploadResults.primaryPhoto[0].url;
     }
 
-    if (secondaryImages.length > 0) {
-      productData.secondaryImages = secondaryImages.map(img => img.url);
+    if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
+      productData.secondaryImages = uploadResults.secondaryImages.map(img => img.url);
     }
 
-    if (videos.length > 0) {
-      productData.videoUrls = videos.map(video => video.url);
+    if (uploadResults.videos && uploadResults.videos.length > 0) {
+      productData.videoUrls = uploadResults.videos.map(video => video.url);
     }
 
     const product = new Product(productData);
