@@ -11,10 +11,10 @@ export async function GET(request: NextRequest) {
           `${process.env.BLOB_READ_WRITE_TOKEN.substring(0, 20)}...` : 
           'NOT SET'
       },
-      MONGODB_URI: {
-        exists: !!process.env.MONGODB_URI,
-        preview: process.env.MONGODB_URI ? 
-          `mongodb+srv://...@${process.env.MONGODB_URI.split('@')[1]?.split('/')[0] || 'unknown'}` : 
+      DB_URI: {
+        exists: !!process.env.DB_URI,
+        preview: process.env.DB_URI ? 
+          `mongodb://...@${process.env.DB_URI.split('@')[1]?.split('/')[0] || 'unknown'}` : 
           'NOT SET'
       },
       NEXTAUTH_SECRET: {
@@ -46,9 +46,9 @@ export async function GET(request: NextRequest) {
         blobToken: !envStatus.BLOB_READ_WRITE_TOKEN.exists ? 
           'MISSING: Add BLOB_READ_WRITE_TOKEN in Vercel dashboard → Settings → Environment Variables' :
           'OK: Blob token is set',
-        mongodb: !envStatus.MONGODB_URI.exists ? 
-          'MISSING: Add MONGODB_URI in Vercel dashboard' :
-          'OK: MongoDB URI is set',
+        mongodb: !envStatus.DB_URI.exists ? 
+          'MISSING: Add DB_URI in Vercel dashboard' :
+          'OK: DB URI is set',
         auth: !envStatus.NEXTAUTH_SECRET.exists ?
           'MISSING: Add NEXTAUTH_SECRET in Vercel dashboard' :
           'OK: NextAuth secret is set'
