@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Cost from '@/models/cost';
+import { CostCategory, User } from '@/models';
 import { handleSingleFileUpload } from '@/lib/upload';
 import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 

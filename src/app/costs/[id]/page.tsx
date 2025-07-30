@@ -16,8 +16,8 @@ import {
   TrashIcon,
   DocumentIcon,
   XMarkIcon,
-  EyeOpenIcon,
-  DownloadIcon
+  EyeIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -455,7 +455,7 @@ export default function ViewCostPage() {
                               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
                               title="Preview"
                             >
-                              <EyeOpenIcon className="h-4 w-4" />
+                              <EyeIcon className="h-4 w-4" />
                             </button>
                             <button
                               type="button"
@@ -463,7 +463,7 @@ export default function ViewCostPage() {
                               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
                               title="Download"
                             >
-                              <DownloadIcon className="h-4 w-4" />
+                              <ArrowDownTrayIcon className="h-4 w-4" />
                             </button>
                           </div>
                         </div>

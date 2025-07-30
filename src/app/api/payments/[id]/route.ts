@@ -121,8 +121,10 @@ export async function PUT(
             console.log(`🗑️ Deleting ${deletedAttachments.length} removed payment attachment files`);
             for (const deletedAtt of deletedAttachments) {
               try {
-                await deleteFromVercelBlob(deletedAtt.url);
-                console.log(`✅ Deleted payment file: ${deletedAtt.name}`);
+                if (deletedAtt.url) {
+                  await deleteFromVercelBlob(deletedAtt.url);
+                  console.log(`✅ Deleted payment file: ${deletedAtt.name}`);
+                }
               } catch (deleteError) {
                 console.error(`❌ Failed to delete payment file: ${deletedAtt.name}`, deleteError);
                 // Continue with other deletions
