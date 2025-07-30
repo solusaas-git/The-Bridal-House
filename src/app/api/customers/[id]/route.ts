@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '@/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 import { Customer } from '@/models';
 import { handleSingleFileUpload, UPLOAD_FOLDERS } from '@/lib/upload';
 

@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile, stat } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
+import { list } from '@vercel/blob';
+
+// Cache blob list for 5 minutes to improve performance
+let cachedBlobs: { blobs: any[], timestamp: number } | null = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedBlobs() {
+  const now = Date.now();
+  
+  if (!cachedBlobs || (now - cachedBlobs.timestamp) > CACHE_DURATION) {
+    console.log('🔄 Refreshing blob cache...');
+    const { blobs } = await list();
+    cachedBlobs = { blobs, timestamp: now };
+  }
+  
+  return cachedBlobs.blobs;
+}
 
 export async function GET(
   request: NextRequest,
@@ -23,80 +37,36 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }
 
-    // Construct absolute path to uploads directory in the nextjs-app folder
-    const uploadsDir = path.join(process.cwd(), 'uploads');
-    const absoluteFilePath = path.join(uploadsDir, requestedPath);
+    console.log(`🔍 Looking for file: ${requestedPath} in Vercel Blob`);
 
-    // Check if file exists
-    if (!existsSync(absoluteFilePath)) {
+    // Get cached blob list
+    const blobs = await getCachedBlobs();
+    
+    // Find the file that matches the requested path
+    const matchingBlob = blobs.find(blob => {
+      // Check if the pathname matches the requested path
+      return blob.pathname === requestedPath || 
+             blob.pathname === `uploads/${requestedPath}` ||
+             blob.pathname.endsWith(`/${requestedPath}`) ||
+             blob.pathname.includes(requestedPath);
+    });
+
+    if (!matchingBlob) {
+      console.log(`❌ File not found in Vercel Blob: ${requestedPath}`);
+      console.log(`Available files:`, blobs.map(b => b.pathname).slice(0, 10));
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
-    // Get file stats
-    const fileStats = await stat(absoluteFilePath);
-    
-    if (!fileStats.isFile()) {
-      return NextResponse.json({ error: 'Not a file' }, { status: 400 });
-    }
+    console.log(`✅ Found file in Vercel Blob: ${matchingBlob.pathname} -> redirecting to ${matchingBlob.url}`);
 
-    // Read the file
-    const fileBuffer = await readFile(absoluteFilePath);
-    
-    // Get file extension to determine content type
-    const ext = path.extname(absoluteFilePath).toLowerCase();
-    let contentType = 'application/octet-stream';
-    
-    // Set appropriate content type based on file extension
-    switch (ext) {
-      case '.jpg':
-      case '.jpeg':
-        contentType = 'image/jpeg';
-        break;
-      case '.png':
-        contentType = 'image/png';
-        break;
-      case '.gif':
-        contentType = 'image/gif';
-        break;
-      case '.webp':
-        contentType = 'image/webp';
-        break;
-      case '.pdf':
-        contentType = 'application/pdf';
-        break;
-      case '.txt':
-        contentType = 'text/plain';
-        break;
-      case '.doc':
-        contentType = 'application/msword';
-        break;
-      case '.docx':
-        contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        break;
-      default:
-        contentType = 'application/octet-stream';
-    }
-
-    // Return the file with appropriate headers
-    const responseHeaders: Record<string, string> = {
-      'Content-Type': contentType,
-      'Content-Length': fileStats.size.toString(),
-      'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
-    };
-
-    // Add additional headers for PDF files to ensure proper iframe display
-    if (ext === '.pdf') {
-      responseHeaders['Content-Disposition'] = 'inline';
-      responseHeaders['X-Content-Type-Options'] = 'nosniff';
-    }
-
-    return new NextResponse(fileBuffer, {
-      status: 200,
-      headers: responseHeaders,
-    });
+    // Redirect to the Vercel Blob URL instead of proxying
+    return NextResponse.redirect(matchingBlob.url);
 
   } catch (error) {
-    console.error('Error serving file:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error serving file from Vercel Blob:', error);
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 } 
