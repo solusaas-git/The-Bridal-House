@@ -452,6 +452,10 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     const url = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
     
+    console.log('🖼️ Preview URL:', url);
+    console.log('🖼️ File type:', fileType);
+    console.log('🖼️ Original file.link:', file.link);
+    
     setPreviewFile({ file, url, type: fileType });
   };
 
@@ -488,8 +492,12 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
               width={800}
               height={600}
               className="max-w-full h-auto object-contain"
-              onError={() => {
-                console.error('Failed to load image:', url);
+              onError={(e) => {
+                console.error('❌ Failed to load image:', url);
+                console.error('❌ Image error event:', e);
+              }}
+              onLoad={() => {
+                console.log('✅ Image loaded successfully:', url);
               }}
             />
           </div>
