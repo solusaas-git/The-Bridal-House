@@ -73,7 +73,12 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
       // For edit actions, get only the changed fields
       let changes;
       if (actionType === 'edit' && originalData && newData) {
+        console.log('🔍 ApprovalHandler debug - Before getChangedFields:');
+        console.log('originalData:', originalData);
+        console.log('newData:', newData);
+        
         changes = await getChangedFields(originalData, newData);
+        console.log('🔍 Detected changes:', changes);
         
         // Handle file uploads for approval requests
         if (changes.attachments && Array.isArray(changes.attachments)) {
@@ -125,6 +130,8 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
         newData: changes,
         reason: `Request to ${actionType} ${resourceType}: ${resourceName}`
       };
+      
+      console.log('🚀 About to send approval request:', approvalRequest);
       
       await createApprovalRequest(approvalRequest);
       

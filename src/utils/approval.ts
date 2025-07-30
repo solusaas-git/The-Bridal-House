@@ -26,6 +26,9 @@ export const createApprovalRequest = async (requestData: ApprovalRequest) => {
     return response.data.approval;
   } catch (error: any) {
     console.error('Error creating approval request:', error);
+    console.error('Error response data:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    console.error('Request data that was sent:', requestData);
     toast.error(error.response?.data?.error || 'Failed to submit approval request');
     throw error;
   }
