@@ -106,7 +106,7 @@ export async function PUT(
       
       // Combine existing attachments with new ones
       updateData.attachments = [...filteredExistingAttachments, ...newAttachments];
-      console.log(`📎 Final attachments count: ${updateData.attachments.length}`);
+      console.log(`📎 Final attachments count: ${(updateData.attachments as any[]).length}`);
       
     } else {
       // Handle JSON data
