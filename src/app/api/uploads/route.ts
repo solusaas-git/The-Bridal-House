@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
+import { uploadToVercelBlob } from '@/lib/vercel-blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,39 +10,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const originalName = file.name;
-    const extension = path.extname(originalName);
-    const fileName = `${timestamp}-${originalName}`;
+    // Determine upload directory based on request or default to general uploads
+    const uploadDir = formData.get('uploadDir') as string || 'uploads/general';
     
-    // Create file path
-    const filePath = path.join(uploadsDir, fileName);
+    console.log(`📤 Uploading file via uploads API: ${file.name} to ${uploadDir}`);
     
-    // Convert file to buffer and write to disk
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    await writeFile(filePath, buffer);
-    
-    // Return the file path relative to uploads directory
-    const relativePath = fileName;
+    // Upload to Vercel Blob storage
+    const result = await uploadToVercelBlob(file, uploadDir);
     
     return NextResponse.json({
       success: true,
-      filePath: relativePath,
-      originalName: originalName,
-      size: file.size
+      url: result.url,
+      pathname: result.pathname,
+      originalName: file.name,
+      size: file.size,
+      contentType: result.contentType
     });
 
   } catch (error) {
     console.error('Error uploading file:', error);
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to upload file',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 } 
