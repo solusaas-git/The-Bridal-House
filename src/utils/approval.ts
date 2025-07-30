@@ -254,7 +254,8 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
   }
   
   // Handle payment-specific field mapping
-  if (originalData && newData && (originalData.paymentDate || originalData.amount)) {
+  if (originalData && newData && (originalData.paymentDate || (originalData.amount && (originalData.paymentMethod || originalData.paymentType || originalData.client)))) {
+    console.log('🎯 Detected: PAYMENT data type');
     // This is a payment comparison
     const originalPayment = originalData;
     const newPayment = newData;
