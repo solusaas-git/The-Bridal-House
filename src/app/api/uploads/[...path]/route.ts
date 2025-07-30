@@ -29,35 +29,44 @@ export async function GET(
       return NextResponse.json({ error: 'File path required' }, { status: 400 });
     }
 
-    // Construct the file path - join the path segments
-    const requestedPath = filePath.join('/');
+    // Construct the file path - join the path segments and decode URL encoding
+    const requestedPath = decodeURIComponent(filePath.join('/'));
     
     // Security: prevent directory traversal
     if (requestedPath.includes('..')) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }
 
-    console.log(`🔍 Looking for file: ${requestedPath} in Vercel Blob`);
+    console.log(`🔍 Looking for file: "${requestedPath}" in Vercel Blob`);
 
     // Get cached blob list
     const blobs = await getCachedBlobs();
     
     // Find the file that matches the requested path
     const matchingBlob = blobs.find(blob => {
-      // Check if the pathname matches the requested path
-      return blob.pathname === requestedPath || 
-             blob.pathname === `uploads/${requestedPath}` ||
-             blob.pathname.endsWith(`/${requestedPath}`) ||
-             blob.pathname.includes(requestedPath);
+      // Check if the pathname matches the requested path (try multiple variations)
+      const blobPath = blob.pathname;
+      
+      return blobPath === requestedPath || 
+             blobPath === `uploads/${requestedPath}` ||
+             blobPath.endsWith(`/${requestedPath}`) ||
+             blobPath.includes(requestedPath) ||
+             // Also try with the original URL-encoded version
+             blobPath === filePath.join('/') ||
+             blobPath === `uploads/${filePath.join('/')}`;
     });
 
     if (!matchingBlob) {
-      console.log(`❌ File not found in Vercel Blob: ${requestedPath}`);
-      console.log(`Available files:`, blobs.map(b => b.pathname).slice(0, 10));
+      console.log(`❌ File not found in Vercel Blob: "${requestedPath}"`);
+      console.log(`🔍 Searched variations:`);
+      console.log(`  - "${requestedPath}"`);
+      console.log(`  - "uploads/${requestedPath}"`);
+      console.log(`  - Original: "${filePath.join('/')}"`);
+      console.log(`📁 Available files (first 20):`, blobs.map(b => b.pathname).slice(0, 20));
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
-    console.log(`✅ Found file in Vercel Blob: ${matchingBlob.pathname} -> redirecting to ${matchingBlob.url}`);
+    console.log(`✅ Found file in Vercel Blob: "${matchingBlob.pathname}" -> redirecting to ${matchingBlob.url}`);
 
     // Redirect to the Vercel Blob URL instead of proxying
     return NextResponse.redirect(matchingBlob.url);
