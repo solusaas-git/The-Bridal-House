@@ -29,8 +29,8 @@ interface Approval {
     name: string;
     email: string;
   };
-  actionType: 'edit' | 'delete';
-  resourceType: 'customer' | 'item' | 'payment' | 'reservation';
+  actionType: 'edit' | 'delete' | 'create';
+  resourceType: 'customer' | 'item' | 'payment' | 'reservation' | 'cost';
   resourceId: string;
   originalData: any;
   newData?: any;
@@ -103,12 +103,14 @@ export default function ApprovalsPage() {
     const actionMap = {
       edit: 'Edit',
       delete: 'Delete',
+      create: 'Create',
     };
     const resourceMap = {
       customer: 'Customer',
       item: 'Product',
       payment: 'Payment',
       reservation: 'Reservation',
+      cost: 'Cost',
     };
     return `${actionMap[actionType as keyof typeof actionMap]} ${resourceMap[resourceType as keyof typeof resourceMap]}`;
   };
@@ -136,6 +138,11 @@ export default function ApprovalsPage() {
             label: 'Reservation', 
             color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
           };
+        case 'cost': 
+          return { 
+            label: 'Cost', 
+            color: 'bg-red-500/20 text-red-400 border-red-500/30' 
+          };
         default: 
           return { 
             label: 'Unknown', 
@@ -161,6 +168,11 @@ export default function ApprovalsPage() {
       case 'reservation':
         const reservationId = originalData?.reservationNumber || originalData?._id || 'Unknown';
         resourceName = `#${reservationId}`;
+        break;
+      case 'cost':
+        const costAmount = originalData?.amount ? `$${originalData.amount}` : '';
+        const costCategory = originalData?.category?.name || 'Unknown Category';
+        resourceName = `${costAmount} - ${costCategory}`;
         break;
       default:
         resourceName = 'Unknown Resource';

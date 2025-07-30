@@ -10,8 +10,8 @@ interface Approval {
     name: string;
     email: string;
   };
-  actionType: 'edit' | 'delete';
-  resourceType: 'customer' | 'item' | 'payment' | 'reservation';
+  actionType: 'edit' | 'delete' | 'create';
+  resourceType: 'customer' | 'item' | 'payment' | 'reservation' | 'cost';
   resourceId: string;
   originalData: any;
   newData?: any;
