@@ -49,7 +49,7 @@ const FileUpload = ({ onFilesAdded }: FileUploadProps) => {
       onDragLeave={handleDragOut}
       onDragOver={handleDrag}
       onDrop={handleDrop}
-      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+      className={`border-2 border-dashed rounded-lg p-4 sm:p-8 text-center transition-colors ${
         isDragging 
           ? 'border-white/40 bg-white/10' 
           : 'border-white/20 hover:border-white/40'
@@ -65,10 +65,10 @@ const FileUpload = ({ onFilesAdded }: FileUploadProps) => {
       />
       <label 
         htmlFor="fileInput"
-        className="cursor-pointer flex flex-col items-center space-y-2"
+        className="cursor-pointer flex flex-col items-center space-y-2 sm:space-y-3"
       >
-        <UploadIcon className="h-8 w-8 text-white/60" />
-        <div className="text-sm text-gray-300">
+        <UploadIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white/60" />
+        <div className="text-xs sm:text-sm text-gray-300">
           <span className="font-medium text-white">Click to upload</span> or drag and drop
         </div>
         <p className="text-xs text-gray-400">

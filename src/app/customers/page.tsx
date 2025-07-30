@@ -197,14 +197,14 @@ const CustomersPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Customers</h1>
-            <p className="text-gray-300">Manage your customer database</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Customers</h1>
+            <p className="text-sm sm:text-base text-gray-300">Manage your customer database</p>
           </div>
           <button
             onClick={() => router.push('/customers/add')}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
             Add Customer
@@ -212,28 +212,28 @@ const CustomersPage = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <div className="flex items-center justify-between gap-4">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 w-full sm:max-w-md">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search customers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
             </div>
 
             {/* Column Visibility Toggle */}
-            <div className="relative dropdown-container">
+            <div className="relative dropdown-container w-full sm:w-auto">
               <button
                 onClick={handleDropdownToggle}
-                className="flex items-center gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+                className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
               >
                 <GearIcon className="h-4 w-4" />
-                Columns
+                <span className="text-sm">Columns</span>
               </button>
             </div>
           </div>
@@ -440,87 +440,87 @@ const CustomersPage = () => {
         {/* Table */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading customers...</p>
+            <div className="p-4 sm:p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-300 text-sm sm:text-base">Loading customers...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-full">
                 <thead className="bg-white/5 border-b border-white/10">
                   <tr className="border-b border-white/20">
                     {columnVisibility.id && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         #
                       </th>
                     )}
                     {columnVisibility.firstName && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         First Name
                       </th>
                     )}
                     {columnVisibility.lastName && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Last Name
                       </th>
                     )}
                     {columnVisibility.address && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Address
                       </th>
                     )}
                     {columnVisibility.idNumber && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         CIN/Passport
                       </th>
                     )}
                     {columnVisibility.phone && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Phone
                       </th>
                     )}
                     {columnVisibility.weddingDate && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Wedding Date
                       </th>
                     )}
                     {columnVisibility.weddingTime && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Wedding Time
                       </th>
                     )}
                     {columnVisibility.weddingLocation && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Wedding Location
                       </th>
                     )}
                     {columnVisibility.weddingCity && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Wedding City
                       </th>
                     )}
                     {columnVisibility.type && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Type
                       </th>
                     )}
                     {columnVisibility.createdAt && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Created At
                       </th>
                     )}
                     {columnVisibility.updatedAt && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Updated At
                       </th>
                     )}
                     {columnVisibility.createdBy && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Created By
                       </th>
                     )}
                     {columnVisibility.actions && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Actions
                       </th>
                     )}
@@ -534,32 +534,32 @@ const CustomersPage = () => {
                       onClick={() => handleRowClick(customer._id)}
                     >
                       {columnVisibility.id && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {(currentPage - 1) * itemsPerPage + index + 1}
                         </td>
                       )}
                       {columnVisibility.firstName && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {customer.firstName}
                         </td>
                       )}
                       {columnVisibility.lastName && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.lastName}
                         </td>
                       )}
                       {columnVisibility.address && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.address || '-'}
                         </td>
                       )}
                       {columnVisibility.idNumber && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.idNumber || '-'}
                         </td>
                       )}
                       {columnVisibility.phone && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.phone ? (
                             <PhoneInput 
                               value={customer.phone} 
@@ -571,47 +571,47 @@ const CustomersPage = () => {
                         </td>
                       )}
                       {columnVisibility.weddingDate && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : '-'}
                         </td>
                       )}
                       {columnVisibility.weddingTime && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.weddingTime || '-'}
                         </td>
                       )}
                       {columnVisibility.weddingLocation && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.weddingLocation || '-'}
                         </td>
                       )}
                       {columnVisibility.weddingCity && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.weddingCity || '-'}
                         </td>
                       )}
                       {columnVisibility.type && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {customer.type || '-'}
                         </td>
                       )}
                       {columnVisibility.createdAt && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {new Date(customer.createdAt).toLocaleDateString()}
                         </td>
                       )}
                       {columnVisibility.updatedAt && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {new Date(customer.updatedAt).toLocaleDateString()}
                         </td>
                       )}
                       {columnVisibility.createdBy && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {typeof customer.createdBy === 'string' ? customer.createdBy : (customer.createdBy?.name || '-')}
                         </td>
                       )}
                       {columnVisibility.actions && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
                             <button
                               type="button"
@@ -666,10 +666,10 @@ const CustomersPage = () => {
               </table>
 
               {customers?.length === 0 && !loading && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">No customers found</p>
+                <div className="text-center py-8 sm:py-12">
+                  <p className="text-gray-400 text-sm sm:text-base">No customers found</p>
                   {searchTerm && (
-                    <p className="text-gray-500 text-sm mt-2">
+                    <p className="text-gray-500 text-xs sm:text-sm mt-2">
                       Try adjusting your search criteria
                     </p>
                   )}

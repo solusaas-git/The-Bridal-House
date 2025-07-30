@@ -694,79 +694,79 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-lg border border-white/20 w-full max-w-6xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-gray-900 rounded-lg border border-white/20 w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-xl font-semibold text-white">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+          <h2 className="text-lg sm:text-xl font-semibold text-white">
             Approval Request Details
           </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <div className="space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-140px)]">
+          <div className="space-y-4 sm:space-y-6">
             {/* Request Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="text-sm text-gray-400">Request Type</label>
-                  <div className="text-white font-medium">
+                  <label className="text-xs sm:text-sm text-gray-400">Request Type</label>
+                  <div className="text-white font-medium text-sm sm:text-base">
                     {getActionDescription(approval.actionType, approval.resourceType)}
                   </div>
                 </div>
                 
                 <div>
-                  <label className="text-sm text-gray-400">Requested By</label>
-                  <div className="flex items-center gap-2 text-white">
-                    <User className="h-4 w-4" />
+                  <label className="text-xs sm:text-sm text-gray-400">Requested By</label>
+                  <div className="flex items-center gap-2 text-white text-sm sm:text-base">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
                     {approval.requestedBy?.name || 'Unknown User'}
-                    <span className="text-gray-400">({approval.requestedBy?.email})</span>
+                    <span className="text-gray-400 text-xs sm:text-sm">({approval.requestedBy?.email})</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-400">Request Date</label>
-                  <div className="flex items-center gap-2 text-white">
-                    <Calendar className="h-4 w-4" />
+                  <label className="text-xs sm:text-sm text-gray-400">Request Date</label>
+                  <div className="flex items-center gap-2 text-white text-sm sm:text-base">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                     {new Date(approval.createdAt).toLocaleString()}
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-400">Status</label>
+                  <label className="text-xs sm:text-sm text-gray-400">Status</label>
                   <div>{getStatusBadge(approval.status)}</div>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {approval.reviewedBy && (
                   <>
                     <div>
-                      <label className="text-sm text-gray-400">Reviewed By</label>
-                      <div className="text-white">
+                      <label className="text-xs sm:text-sm text-gray-400">Reviewed By</label>
+                      <div className="text-white text-sm sm:text-base">
                         {approval.reviewedBy.name}
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-sm text-gray-400">Review Date</label>
-                      <div className="flex items-center gap-2 text-white">
-                        <Clock className="h-4 w-4" />
+                      <label className="text-xs sm:text-sm text-gray-400">Review Date</label>
+                      <div className="flex items-center gap-2 text-white text-sm sm:text-base">
+                        <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                         {new Date(approval.reviewedAt!).toLocaleString()}
                       </div>
                     </div>
 
                     {approval.reviewComment && (
                       <div>
-                        <label className="text-sm text-gray-400">Review Comment</label>
-                        <div className="text-white bg-white/5 border border-white/10 rounded p-3">
+                        <label className="text-xs sm:text-sm text-gray-400">Review Comment</label>
+                        <div className="text-white bg-white/5 border border-white/10 rounded p-2 sm:p-3 text-sm">
                           {approval.reviewComment}
                         </div>
                       </div>
@@ -777,21 +777,21 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
             </div>
 
             {/* Resource Info */}
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-medium text-white mb-2">
+                  <h3 className="text-base sm:text-lg font-medium text-white mb-2">
                     Related Resource
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-xs sm:text-sm text-gray-400">
                     {getResourceDisplayName(approval.resourceType, approval.originalData)}
                   </p>
                 </div>
                 <button
                   onClick={handleViewResource}
-                  className="flex items-center gap-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-3 py-2 rounded-lg transition-colors"
+                  className="flex items-center justify-center sm:justify-start gap-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-3 py-2 rounded-lg transition-colors text-sm w-full sm:w-auto"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="text-sm">
                     {approval.resourceType === 'customer' ? 'View Customer' : `View ${approval.resourceType}`}
                   </span>
@@ -804,21 +804,21 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
             {/* Review Form */}
             {showReviewForm && approval.status === 'pending' && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-white mb-4">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
                   {reviewAction === 'approve' ? 'Approve' : 'Reject'} Request
                 </h3>
                 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">
+                    <label className="block text-xs sm:text-sm text-gray-400 mb-2">
                       Comment (optional)
                     </label>
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder="Add a comment about your decision..."
-                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30"
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
                       rows={3}
                       maxLength={500}
                     />
@@ -827,11 +827,11 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                     </div>
                   </div>
                   
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <button
                       onClick={() => handleReviewSubmit(reviewAction)}
                       disabled={reviewingId === approval._id}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 ${
+                      className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 text-sm ${
                         reviewAction === 'approve'
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-red-600 hover:bg-red-700 text-white'
@@ -842,7 +842,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                     </button>
                     <button
                       onClick={() => setShowReviewForm(false)}
-                      className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors"
+                      className="px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors text-sm"
                     >
                       Cancel
                     </button>
@@ -855,19 +855,19 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
         {/* Footer */}
         {approval.status === 'pending' && !showReviewForm && (
-          <div className="flex justify-end gap-3 p-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10">
             <button
               onClick={() => startReview('reject')}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors"
+              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3 sm:h-4 sm:w-4" />
               Reject
             </button>
             <button
               onClick={() => startReview('approve')}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors"
+              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
-              <Check className="h-4 w-4" />
+              <Check className="h-3 w-3 sm:h-4 sm:w-4" />
               Approve
             </button>
           </div>

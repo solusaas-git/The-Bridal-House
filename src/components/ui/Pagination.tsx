@@ -51,20 +51,20 @@ const Pagination: React.FC<PaginationProps> = ({
   }
 
   return (
-    <div className={`flex items-center justify-between ${className}`}>
+    <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${className}`}>
       {/* Results info and page size selector */}
-      <div className="flex items-center gap-4">
-        <div className="text-sm text-gray-400">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+        <div className="text-xs sm:text-sm text-gray-400">
           Showing {startIndex + 1} to {endIndex} of {totalCount} results
         </div>
         
         {showPageSizeSelector && onPageSizeChange && (
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-300">Show:</label>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <label className="text-xs sm:text-sm text-gray-300">Show:</label>
             <select
               value={pageSize}
               onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-              className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm flex-1 sm:flex-none"
             >
               {pageSizeOptions.map((option) => (
                 <option key={option} value={option}>
@@ -77,23 +77,23 @@ const Pagination: React.FC<PaginationProps> = ({
       </div>
 
       {/* Navigation buttons - always visible but disabled when not needed */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 w-full sm:w-auto">
         <button
           onClick={handlePrevious}
           disabled={currentPage === 1}
-          className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm flex-1 sm:flex-none"
         >
           Previous
         </button>
         
-        <span className="px-4 py-2 text-white">
+        <span className="px-2 sm:px-4 py-1 sm:py-2 text-white text-xs sm:text-sm text-center">
           Page {currentPage} of {totalPages}
         </span>
         
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages || totalPages === 0}
-          className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm flex-1 sm:flex-none"
         >
           Next
         </button>

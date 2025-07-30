@@ -252,19 +252,19 @@ export default function ApprovalsPage() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-semibold text-white">Approvals</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-xl sm:text-3xl font-semibold text-white">Approvals</h1>
           <button
             onClick={loadApprovals}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg text-white text-sm font-medium transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg text-white text-sm font-medium transition-colors w-full sm:w-auto"
           >
             {loading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -273,15 +273,15 @@ export default function ApprovalsPage() {
                 placeholder="Search approvals..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm sm:text-base"
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full lg:w-auto">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+              className="px-3 sm:px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30 text-sm flex-1 lg:flex-none"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -294,28 +294,28 @@ export default function ApprovalsPage() {
         {/* Table */}
         <div className="bg-white/10 backdrop-blur-lg rounded-lg border border-white/20 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-full">
               <thead>
                 <tr className="border-b border-white/20">
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Request
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Requested By
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Action
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Resource
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Date
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Status
                   </th>
-                  <th className="text-right text-xs font-medium text-gray-300 uppercase tracking-wider px-6 py-3">
+                  <th className="text-right text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Actions
                   </th>
                 </tr>
@@ -323,12 +323,12 @@ export default function ApprovalsPage() {
               <tbody className="divide-y divide-white/10">
                 {currentItems?.map((approval) => (
                   <tr key={approval._id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-white">
                         {getActionDescription(approval.actionType, approval.resourceType)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-gray-400" />
                         <div className="text-sm text-white">
@@ -336,13 +336,13 @@ export default function ApprovalsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       {getActionBadge(approval.actionType)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       {getResourceDisplayName(approval.resourceType, approval.originalData)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
                         <div className="text-sm text-white">
@@ -350,10 +350,10 @@ export default function ApprovalsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(approval.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleViewDetails(approval)}
@@ -391,16 +391,16 @@ export default function ApprovalsPage() {
           </div>
 
           {currentItems?.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-400">No approval requests found.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-gray-400 text-sm sm:text-base">No approval requests found.</p>
             </div>
           )}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-400">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="text-xs sm:text-sm text-gray-400">
               Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredApprovals?.length || 0)} of {filteredApprovals?.length || 0} results
             </div>
             <div className="flex gap-2">

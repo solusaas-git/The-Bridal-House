@@ -1091,22 +1091,22 @@ export default function AddReservationPage() {
 
   return (
     <Layout>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-white">New Reservation</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-3xl font-bold text-white">New Reservation</h1>
             <Link
               href="/reservations"
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors self-start sm:self-auto"
             >
-              <Cross2Icon className="w-6 h-6 text-gray-400" />
+              <Cross2Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
             </Link>
           </div>
 
           {/* Step Indicator */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
               {steps?.map((stepItem, index) => (
                 <div
                   key={stepItem.number}
@@ -1116,7 +1116,7 @@ export default function AddReservationPage() {
                 >
                   <div className="relative z-10 flex flex-col items-center">
                     <div
-                      className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium mb-2 transition-colors ${
+                      className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium mb-2 transition-colors ${
                         step >= stepItem.number
                           ? 'bg-blue-500 text-white'
                           : 'bg-white/10 text-gray-400'
@@ -1125,7 +1125,7 @@ export default function AddReservationPage() {
                       {stepItem.number}
                     </div>
                     <span
-                      className={`text-sm font-medium transition-colors ${
+                      className={`text-xs sm:text-sm font-medium transition-colors text-center ${
                         step >= stepItem.number ? 'text-white' : 'text-gray-400'
                       }`}
                     >
@@ -1134,7 +1134,7 @@ export default function AddReservationPage() {
                   </div>
                   {index !== steps.length - 1 && (
                     <div
-                      className={`absolute top-5 left-[calc(50%+24px)] w-[calc(100%-48px)] h-[2px] ${
+                      className={`absolute top-4 sm:top-5 left-[calc(50%+20px)] sm:left-[calc(50%+24px)] w-[calc(100%-40px)] sm:w-[calc(100%-48px)] h-[2px] ${
                         step > stepItem.number ? 'bg-blue-500' : 'bg-white/10'
                       }`}
                     />
@@ -1145,14 +1145,14 @@ export default function AddReservationPage() {
           </div>
 
           {/* Form Content */}
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-8">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 sm:p-8">
             {renderCurrentStep()}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-6 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
               <button
                 onClick={() => setStep(Math.max(1, step - 1))}
-                className={`px-6 py-3 rounded-lg text-white text-sm font-medium transition-colors ${
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-white text-sm font-medium transition-colors w-full sm:w-auto ${
                   step === 1 ? 'invisible' : 'bg-white/10 hover:bg-white/20'
                 }`}
               >
@@ -1163,7 +1163,7 @@ export default function AddReservationPage() {
                 <button
                   onClick={handleSubmit}
                   disabled={!validateStep(step) || loading}
-                  className={`px-6 py-3 rounded-lg text-white text-sm font-medium transition-colors ${
+                  className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-white text-sm font-medium transition-colors w-full sm:w-auto ${
                     validateStep(step) && !loading
                       ? 'bg-blue-500 hover:bg-blue-600'
                       : 'bg-blue-500/50 cursor-not-allowed'
@@ -1175,7 +1175,7 @@ export default function AddReservationPage() {
                 <button
                   onClick={() => setStep(step + 1)}
                   disabled={!validateStep(step)}
-                  className={`px-6 py-3 rounded-lg text-white text-sm font-medium transition-colors ${
+                  className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-white text-sm font-medium transition-colors w-full sm:w-auto ${
                     validateStep(step)
                       ? 'bg-blue-500 hover:bg-blue-600'
                       : 'bg-blue-500/50 cursor-not-allowed'

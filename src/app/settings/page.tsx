@@ -66,18 +66,18 @@ const Settings = () => {
 
   return (
     <Layout>
-      <div className="space-y-8">
-        <h1 className="text-3xl font-semibold text-white">Settings</h1>
+      <div className="space-y-6 sm:space-y-8">
+        <h1 className="text-xl sm:text-3xl font-semibold text-white">Settings</h1>
 
         {/* Tabs */}
-        <div className="flex space-x-4 border-b border-white/10">
+        <div className="flex flex-wrap gap-2 sm:gap-4 border-b border-white/10 pb-2 sm:pb-4">
           {canAccessCategories && (
             <button
               onClick={() => setActiveTab('categories')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors rounded-lg sm:rounded-none ${
                 activeTab === 'categories'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white bg-white/10 sm:bg-transparent border-b-2 border-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Categories
@@ -86,10 +86,10 @@ const Settings = () => {
           {canAccessCostCategories && (
             <button
               onClick={() => setActiveTab('cost-categories')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors rounded-lg sm:rounded-none ${
                 activeTab === 'cost-categories'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white bg-white/10 sm:bg-transparent border-b-2 border-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Cost Categories
@@ -98,10 +98,10 @@ const Settings = () => {
           {canAccessUsers && (
             <button
               onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors rounded-lg sm:rounded-none ${
                 activeTab === 'users'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white bg-white/10 sm:bg-transparent border-b-2 border-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Users
@@ -110,10 +110,10 @@ const Settings = () => {
           {canAccessCurrency && (
             <button
               onClick={() => setActiveTab('currency')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors rounded-lg sm:rounded-none ${
                 activeTab === 'currency'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white bg-white/10 sm:bg-transparent border-b-2 border-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Currency
@@ -122,10 +122,10 @@ const Settings = () => {
           {canAccessRoles && (
             <button
               onClick={() => setActiveTab('roles')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors rounded-lg sm:rounded-none ${
                 activeTab === 'roles'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white bg-white/10 sm:bg-transparent border-b-2 border-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Roles
@@ -134,7 +134,7 @@ const Settings = () => {
         </div>
 
         {/* Content */}
-        <div>{renderContent()}</div>
+        <div className="mt-4 sm:mt-0">{renderContent()}</div>
       </div>
     </Layout>
   );

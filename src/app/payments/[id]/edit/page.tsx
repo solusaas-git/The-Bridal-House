@@ -668,15 +668,17 @@ const EditPaymentPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={handleBack}
-            className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Payment
-          </button>
-          <h1 className="text-2xl font-bold text-white">Edit Payment</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={handleBack}
+              className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
+            >
+              <ArrowLeftIcon className="h-4 w-4 mr-2" />
+              Back to Payment
+            </button>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Payment</h1>
+          </div>
         </div>
 
         {/* Loading State */}
@@ -689,20 +691,20 @@ const EditPaymentPage = () => {
 
         {/* Form */}
         {!loading && payment && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-            <div className="space-y-6">
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Customer and Reservation */}
               <div className="space-y-6">
                 {/* Customer Selection */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Customer</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">Customer</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={customerSearch}
                       onChange={(e) => handleCustomerSearch(e.target.value)}
                       placeholder="Search customers by name, phone, or email..."
-                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     
                     {showCustomerDropdown && filteredCustomers.length > 0 && (
@@ -743,7 +745,7 @@ const EditPaymentPage = () => {
 
                 {/* Reservation Selection */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Reservation</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">Reservation</label>
                   {selectedCustomer ? (
                     <div className="space-y-2">
                       {customerReservations.length > 0 ? (
@@ -898,20 +900,20 @@ const EditPaymentPage = () => {
 
               {/* Notes */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Notes</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Notes</label>
                 <textarea
                   name="note"
                   value={formData.note}
                   onChange={handleChange}
                   rows={3}
                   placeholder="Additional notes about this payment"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
                 />
               </div>
 
               {/* Attachments */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Attachments</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Attachments</label>
                 <AttachmentsSection
                   existingFiles={existingFiles}
                   newFiles={newFiles}
@@ -922,11 +924,11 @@ const EditPaymentPage = () => {
               </div>
 
               {/* Form Actions */}
-              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-white/20">
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/20">
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition-colors"
+                  className="px-4 sm:px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
                 >
                   Cancel
                 </button>
@@ -963,7 +965,7 @@ const EditPaymentPage = () => {
                   <button
                     type="button"
                     disabled={submitting}
-                    className="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
                   >
                     {submitting ? (
                       <>

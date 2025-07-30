@@ -320,25 +320,27 @@ export default function AddCostPage() {
     <Layout>
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Costs
-          </button>
-          <h1 className="text-2xl font-bold text-white">Add New Cost</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
+            >
+              <ArrowLeftIcon className="h-4 w-4 mr-2" />
+              Back to Costs
+            </button>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Add New Cost</h1>
+          </div>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Date */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">
+                <label className="text-xs sm:text-sm font-medium text-gray-200">
                   Date <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
@@ -349,14 +351,14 @@ export default function AddCostPage() {
                     value={formData.date}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   />
                 </div>
               </div>
 
               {/* Category */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">
+                <label className="text-xs sm:text-sm font-medium text-gray-200">
                   Category <span className="text-red-400">*</span>
                 </label>
                 <select
@@ -364,7 +366,7 @@ export default function AddCostPage() {
                   value={formData.category}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="" className="bg-gray-800">Select a category</option>
                   {costCategories.map((category) => (
@@ -377,7 +379,7 @@ export default function AddCostPage() {
 
               {/* Amount */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">
+                <label className="text-xs sm:text-sm font-medium text-gray-200">
                   Amount <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
@@ -391,7 +393,7 @@ export default function AddCostPage() {
                     step="0.01"
                     min="0"
                     required
-                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   />
                 </div>
               </div>
@@ -399,10 +401,10 @@ export default function AddCostPage() {
 
             {/* Related Item Section */}
             <div className="space-y-4">
-              <label className="text-sm font-medium text-gray-200">Related Item (Optional)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">Related Item (Optional)</label>
               
               {/* Item Type Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ 
@@ -666,11 +668,11 @@ export default function AddCostPage() {
             )}
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end gap-4 pt-6 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-2 text-gray-300 hover:text-white transition-colors"
+                className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white transition-colors text-sm w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -689,7 +691,7 @@ export default function AddCostPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+                  className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
                 >
                   {loading ? (
                     <>

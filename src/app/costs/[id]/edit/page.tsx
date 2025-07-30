@@ -367,27 +367,29 @@ export default function EditCostPage() {
     <Layout>
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="h-5 w-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Edit Cost</h1>
-            <p className="text-gray-300">Update cost information</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => router.back()}
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Cost</h1>
+              <p className="text-sm sm:text-base text-gray-300">Update cost information</p>
+            </div>
           </div>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6 sm:space-y-8">
               {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Date */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                     Date *
                   </label>
                   <div className="relative">
@@ -398,14 +400,14 @@ export default function EditCostPage() {
                       value={formData.date}
                       onChange={handleInputChange}
                       required
-                      className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                     Category *
                   </label>
                   <select
@@ -413,7 +415,7 @@ export default function EditCostPage() {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
                     <option value="">Select a category</option>
                     {costCategories.map((category) => (
@@ -426,7 +428,7 @@ export default function EditCostPage() {
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                     Amount *
                   </label>
                   <div className="relative">
@@ -440,7 +442,7 @@ export default function EditCostPage() {
                       step="0.01"
                       min="0"
                       required
-                      className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                   </div>
                 </div>
@@ -793,11 +795,11 @@ export default function EditCostPage() {
               </div>
 
               {/* Form Actions */}
-              <div className="flex items-center justify-end gap-4 pt-6 border-t border-white/10">
+              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => router.back()}
-                  className="px-6 py-2 text-gray-300 hover:text-white transition-colors"
+                  className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white transition-colors text-sm w-full sm:w-auto"
                 >
                   Cancel
                 </button>
@@ -814,7 +816,7 @@ export default function EditCostPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+                    className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
                   >
                     {saving ? (
                       <>

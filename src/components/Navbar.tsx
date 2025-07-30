@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -15,13 +15,17 @@ import {
   Shirt,
   Settings as SettingsIcon,
   CheckCircle,
-  LogOut,
   Receipt,
 } from 'lucide-react';
 import { canViewMenu } from '@/utils/permissions';
 import { useApprovalsCount } from '@/hooks/useApprovalsCount';
 
-const Navbar = () => {
+interface NavbarProps {
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
+}
+
+const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const pathname = usePathname();
@@ -40,19 +44,12 @@ const Navbar = () => {
     return 'Dashboard';
   });
 
-  const handleLogout = async () => {
-    try {
-      await axios.post('/api/auth/logout', {}, { withCredentials: true });
-      localStorage.removeItem('isAuthenticated');
-      dispatch(clearAuth());
-      toast.success('Logged out successfully');
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      localStorage.removeItem('isAuthenticated');
-      dispatch(clearAuth());
-      router.push('/login');
-    }
+
+
+  const handleNavigation = (tabName: string, path: string) => {
+    setActiveTab(tabName);
+    router.push(path);
+    setIsMobileMenuOpen(false); // Close mobile menu after navigation
   };
 
   const tabs = React.useMemo(() => {
@@ -71,60 +68,54 @@ const Navbar = () => {
   }, [currentUser]);
 
   return (
-    <div className="fixed inset-y-0 left-0 w-56 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-white/10">
-      <div className="flex flex-col h-full">
-        {/* Logo */}
-        <div className="flex items-center justify-center px-4 py-3 border-b border-white/10">
-          <img
-            src="/TBH white.png"
-            alt="TBH Logo"
-            className="h-12 w-auto"
-          />
-        </div>
+    <>
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-4">
-          {tabs?.map((tab) => {
-            const IconComponent = tab.icon;
-            const isApprovals = tab.name === 'Approvals';
-            
-            return (
-              <button
-                key={tab.name}
-                onClick={() => {
-                  setActiveTab(tab.name);
-                  router.push(tab.path);
-                }}
-                className={`group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  activeTab === tab.name
-                    ? 'bg-white/20 text-white'
-                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                <IconComponent className="mr-3 h-4 w-4" />
-                <span className="flex-1 text-left">{tab.name}</span>
-                {isApprovals && pendingCount > 0 && (
-                  <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
-                    {pendingCount > 99 ? '99+' : pendingCount}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Logout Button */}
-        <div className="p-4 border-t border-white/10">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md cursor-pointer transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </button>
+      {/* Sidebar */}
+      <div className={`
+        fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-white/10
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        w-64 lg:w-56
+        top-0 lg:top-0
+      `}>
+        <div className="flex flex-col h-full">
+          {/* Navigation */}
+          <nav className="flex-1 space-y-1 p-4 pt-20 lg:pt-4 overflow-y-auto">
+            {tabs?.map((tab) => {
+              const IconComponent = tab.icon;
+              const isApprovals = tab.name === 'Approvals';
+              
+              return (
+                <button
+                  key={tab.name}
+                  onClick={() => handleNavigation(tab.name, tab.path)}
+                  className={`group flex w-full items-center rounded-lg px-3 py-3 lg:py-2 text-sm font-medium transition-colors ${
+                    activeTab === tab.name
+                      ? 'bg-white/20 text-white'
+                      : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <IconComponent className="mr-3 h-4 w-4 flex-shrink-0" />
+                  <span className="flex-1 text-left">{tab.name}</span>
+                  {isApprovals && pendingCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
+                      {pendingCount > 99 ? '99+' : pendingCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

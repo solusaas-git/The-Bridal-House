@@ -541,30 +541,32 @@ const AddPaymentPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={handleBack}
-            className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Payments
-          </button>
-          <h1 className="text-2xl font-bold text-white">Add New Payment</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={handleBack}
+              className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
+            >
+              <ArrowLeftIcon className="h-4 w-4 mr-2" />
+              Back to Payments
+            </button>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Add New Payment</h1>
+          </div>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Customer Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Customer*</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">Customer*</label>
               <div className="relative">
                 <input
                   type="text"
                   value={customerSearch}
                   onChange={(e) => handleCustomerSearch(e.target.value)}
                   placeholder="Search customers by name, phone, or email..."
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   required
                 />
                 
@@ -606,7 +608,7 @@ const AddPaymentPage = () => {
 
             {/* Reservation Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Reservation*</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">Reservation*</label>
               {selectedCustomer ? (
                 <div className="space-y-2">
                   {customerReservations.length > 0 ? (
@@ -711,13 +713,13 @@ const AddPaymentPage = () => {
 
             {/* Payment Method */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Payment Method*</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">Payment Method*</label>
               <select
                 name="paymentMethod"
                 value={formData.paymentMethod}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="Cash" className="bg-gray-800">Cash</option>
                 <option value="Bank Transfer" className="bg-gray-800">Bank Transfer</option>
@@ -727,15 +729,15 @@ const AddPaymentPage = () => {
             </div>
 
             {/* Payment Type and Reference */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Payment Type*</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Payment Type*</label>
                 <select
                   name="paymentType"
                   value={formData.paymentType}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="Advance" className="bg-gray-800">Advance</option>
                   <option value="Security" className="bg-gray-800">Security</option>
@@ -745,28 +747,28 @@ const AddPaymentPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Reference</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Reference</label>
                 <input
                   type="text"
                   name="reference"
                   value={formData.reference}
                   onChange={handleChange}
                   placeholder="Payment reference or transaction ID"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
             </div>
 
             {/* Notes */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Notes</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">Notes</label>
               <textarea
                 name="note"
                 value={formData.note}
                 onChange={handleChange}
                 rows={3}
                 placeholder="Additional payment notes..."
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
 
@@ -779,18 +781,18 @@ const AddPaymentPage = () => {
             />
 
             {/* Actions */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors text-sm w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
               >
                 {loading ? 'Creating...' : 'Create Payment'}
               </button>

@@ -281,23 +281,23 @@ export default function ProductViewPage() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => router.back()}
               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             >
-              <ArrowLeftIcon className="h-5 w-5" />
+              <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{product.name}</h1>
-              <p className="text-gray-300">Product Details</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">{product.name}</h1>
+              <p className="text-sm sm:text-base text-gray-300">Product Details</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
             <button
               onClick={() => router.push(`/products/${productId}/edit`)}
-              className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors text-sm w-full sm:w-auto"
             >
               <Pencil1Icon className="h-4 w-4" />
               Edit

@@ -365,38 +365,38 @@ export default function EditProductPage() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => router.back()}
               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             >
-              <ArrowLeftIcon className="h-5 w-5" />
+              <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">Edit Product</h1>
-              <p className="text-gray-300">Update product information</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Product</h1>
+              <p className="text-sm sm:text-base text-gray-300">Update product information</p>
             </div>
           </div>
           <button
             onClick={() => router.push(`/products/${productId}`)}
-            className="px-4 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
           >
             Cancel
           </button>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
           <form ref={formRef} onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-          }} className="space-y-6">
+          }} className="space-y-4 sm:space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Product Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Product Name *
                 </label>
                 <input
@@ -405,17 +405,17 @@ export default function EditProductPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.name ? 'border-red-500' : 'border-white/20'
                   }`}
                   placeholder="Enter product name"
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.name}</p>}
               </div>
 
               {/* Category */}
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="category" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Category *
                 </label>
                 <select
@@ -423,7 +423,7 @@ export default function EditProductPage() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.category ? 'border-red-500' : 'border-white/20'
                   }`}
                 >
@@ -434,12 +434,12 @@ export default function EditProductPage() {
                     </option>
                   ))}
                 </select>
-                {errors.category && <p className="mt-1 text-sm text-red-400">{errors.category}</p>}
+                {errors.category && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.category}</p>}
               </div>
 
               {/* Sub Category */}
               <div>
-                <label htmlFor="subCategory" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="subCategory" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Sub Category
                 </label>
                 <select
@@ -447,7 +447,7 @@ export default function EditProductPage() {
                   name="subCategory"
                   value={formData.subCategory}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   disabled={!formData.category || availableSubCategories.length === 0}
                 >
                   <option value="">Select a sub category</option>
@@ -461,7 +461,7 @@ export default function EditProductPage() {
 
               {/* Status */}
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="status" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Status
                 </label>
                 <select
@@ -469,7 +469,7 @@ export default function EditProductPage() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="Draft" className="bg-gray-800">Draft</option>
                   <option value="Published" className="bg-gray-800">Published</option>
@@ -478,10 +478,10 @@ export default function EditProductPage() {
             </div>
 
             {/* Pricing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Rental Cost */}
               <div>
-                <label htmlFor="rentalCost" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="rentalCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Rental Cost * ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -492,17 +492,17 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.rentalCost ? 'border-red-500' : 'border-white/20'
                   }`}
                   placeholder="0.00"
                 />
-                {errors.rentalCost && <p className="mt-1 text-sm text-red-400">{errors.rentalCost}</p>}
+                {errors.rentalCost && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.rentalCost}</p>}
               </div>
 
               {/* Buy Cost */}
               <div>
-                <label htmlFor="buyCost" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="buyCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Buy Cost ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -513,14 +513,14 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0.00"
                 />
               </div>
 
               {/* Sell Price */}
               <div>
-                <label htmlFor="sellPrice" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="sellPrice" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Sell Price ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -531,17 +531,17 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0.00"
                 />
               </div>
             </div>
 
             {/* Additional Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Size */}
               <div>
-                <label htmlFor="size" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="size" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Size
                 </label>
                 <input
@@ -551,14 +551,14 @@ export default function EditProductPage() {
                   value={formData.size}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="Size"
                 />
               </div>
 
               {/* Quantity */}
               <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="quantity" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Quantity
                 </label>
                 <input
@@ -568,7 +568,7 @@ export default function EditProductPage() {
                   value={formData.quantity}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0"
                 />
               </div>
@@ -576,15 +576,15 @@ export default function EditProductPage() {
 
             {/* Primary Photo */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                 Primary Photo
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-400">
+                  <label className="flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-3 sm:pt-5 pb-4 sm:pb-6">
+                      <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                      <p className="mb-2 text-xs sm:text-sm text-gray-400">
                         <span className="font-semibold">Click to upload</span> new primary photo
                       </p>
                       <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
@@ -720,11 +720,11 @@ export default function EditProductPage() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex items-center justify-end gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6">
               <button
                 type="button"
                 onClick={() => router.push(`/products/${productId}`)}
-                className="px-6 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors"
+                className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -788,7 +788,7 @@ export default function EditProductPage() {
                 <button
                   type="button"
                   disabled={submitting}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center gap-2"
+                  className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
                 >
                   {submitting && (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

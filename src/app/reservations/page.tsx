@@ -389,14 +389,14 @@ export default function ReservationsPage() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Reservations</h1>
-            <p className="text-gray-300">Manage your reservation bookings</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Reservations</h1>
+            <p className="text-sm sm:text-base text-gray-300">Manage your reservation bookings</p>
           </div>
           <Link
             href="/reservations/add"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
             Add Reservation
@@ -404,76 +404,82 @@ export default function ReservationsPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <div className="flex items-center gap-4 flex-wrap">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
             {/* Search */}
-            <div className="relative flex-1 min-w-64">
+            <div className="relative flex-1 w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search reservations, clients, or products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
             </div>
 
-            {/* Date Column Selector */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Filter by:</label>
-              <select
-                value={dateFilters.dateColumn}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
-                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="pickupDate">Pickup Date</option>
-                <option value="returnDate">Return Date</option>
-                <option value="weddingDate">Wedding Date</option>
-                <option value="availabilityDate">Availability Date</option>
-                <option value="createdAt">Created Date</option>
-              </select>
-            </div>
+            {/* Date Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+              {/* Date Column Selector */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Filter by:</label>
+                <select
+                  value={dateFilters.dateColumn}
+                  onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
+                  className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+                >
+                  <option value="pickupDate">Pickup Date</option>
+                  <option value="returnDate">Return Date</option>
+                  <option value="weddingDate">Wedding Date</option>
+                  <option value="availabilityDate">Availability Date</option>
+                  <option value="createdAt">Created Date</option>
+                </select>
+              </div>
 
-            {/* Start Date */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
-              <input
-                type="date"
-                value={dateFilters.startDate}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+              {/* Date Range */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                {/* Start Date */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
+                  <input
+                    type="date"
+                    value={dateFilters.startDate}
+                    onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+                  />
+                </div>
 
-            {/* End Date */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
-              <input
-                type="date"
-                value={dateFilters.endDate}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+                {/* End Date */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
+                  <input
+                    type="date"
+                    value={dateFilters.endDate}
+                    onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+                  />
+                </div>
+              </div>
 
-            {/* Clear Filters */}
-            {(dateFilters.startDate || dateFilters.endDate) && (
-              <button
-                onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
-                className="px-3 py-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap"
-              >
-                Clear Dates
-              </button>
-            )}
+              {/* Clear Filters */}
+              {(dateFilters.startDate || dateFilters.endDate) && (
+                <button
+                  onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
+                  className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap w-full sm:w-auto"
+                >
+                  Clear Dates
+                </button>
+              )}
+            </div>
 
             {/* Column Visibility Toggle */}
-            <div className="relative dropdown-container ml-auto">
+            <div className="relative dropdown-container w-full sm:w-auto">
               <button
                 onClick={handleDropdownToggle}
-                className="flex items-center gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+                className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
               >
                 <GearIcon className="h-4 w-4" />
-                Columns
+                <span className="text-sm">Columns</span>
               </button>
             </div>
           </div>
@@ -669,23 +675,25 @@ export default function ReservationsPage() {
 
         {/* Active Filters Indicator */}
         {(dateFilters.startDate || dateFilters.endDate) && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium text-blue-300">Active filters:</span>
-              {(dateFilters.startDate || dateFilters.endDate) && (
-                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-sm">
-                  {dateFilters.dateColumn.charAt(0).toUpperCase() + dateFilters.dateColumn.slice(1)}: {
-                    dateFilters.startDate && dateFilters.endDate 
-                      ? `${dateFilters.startDate} to ${dateFilters.endDate}`
-                      : dateFilters.startDate 
-                        ? `from ${dateFilters.startDate}`
-                        : `until ${dateFilters.endDate}`
-                  }
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <span className="text-xs sm:text-sm font-medium text-blue-300">Active filters:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {(dateFilters.startDate || dateFilters.endDate) && (
+                  <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
+                    {dateFilters.dateColumn.charAt(0).toUpperCase() + dateFilters.dateColumn.slice(1)}: {
+                      dateFilters.startDate && dateFilters.endDate 
+                        ? `${dateFilters.startDate} to ${dateFilters.endDate}`
+                        : dateFilters.startDate 
+                          ? `from ${dateFilters.startDate}`
+                          : `until ${dateFilters.endDate}`
+                    }
+                  </span>
+                )}
+                <span className="text-xs text-blue-400">
+                  Showing {totalCount} result{totalCount !== 1 ? 's' : ''}
                 </span>
-              )}
-              <span className="text-xs text-blue-400 ml-2">
-                Showing {totalCount} result{totalCount !== 1 ? 's' : ''}
-              </span>
+              </div>
             </div>
           </div>
         )}
@@ -693,82 +701,82 @@ export default function ReservationsPage() {
         {/* Table */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading reservations...</p>
+            <div className="p-4 sm:p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-300 text-sm sm:text-base">Loading reservations...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-full">
                 <thead className="bg-white/5 border-b border-white/10">
                   <tr>
                     {columnVisibility.id && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         ID
                       </th>
                     )}
                     {columnVisibility.createdAt && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Created
                       </th>
                     )}
                                          {columnVisibility.clientName && (
-                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                          Client
                        </th>
                      )}
                      {columnVisibility.weddingDate && (
-                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                          Wedding Date
                        </th>
                      )}
                      {columnVisibility.items && (
-                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                          Items
                        </th>
                      )}
                     {columnVisibility.pickupDate && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Pickup Date
                       </th>
                     )}
                     {columnVisibility.returnDate && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Return Date
                       </th>
                     )}
                     {columnVisibility.availabilityDate && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Availability Date
                       </th>
                     )}
                     {columnVisibility.total && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Total
                       </th>
                     )}
                     {columnVisibility.type && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Type
                       </th>
                     )}
                     {columnVisibility.status && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Status
                       </th>
                     )}
                     {columnVisibility.paymentStatus && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Payment
                       </th>
                     )}
                     {columnVisibility.createdBy && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Created By
                       </th>
                     )}
                     {columnVisibility.actions && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Actions
                       </th>
                     )}
@@ -782,17 +790,17 @@ export default function ReservationsPage() {
                       onClick={() => handleRowClick(reservation._id)}
                     >
                       {columnVisibility.id && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {reservation._id?.slice(-6) || 'N/A'}
                         </td>
                       )}
                       {columnVisibility.createdAt && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {formatDate(reservation.createdAt)}
                         </td>
                       )}
                                              {columnVisibility.clientName && (
-                         <td className="px-6 py-4 whitespace-nowrap">
+                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                            {reservation.client ? (
                              <div>
                                <div className="text-sm font-medium text-white">
@@ -806,61 +814,61 @@ export default function ReservationsPage() {
                          </td>
                        )}
                        {columnVisibility.weddingDate && (
-                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                            {reservation.client?.weddingDate ? formatDate(reservation.client.weddingDate) : 'N/A'}
                          </td>
                        )}
                        {columnVisibility.items && (
-                         <td className="px-6 py-4 text-sm text-gray-300">
+                         <td className="px-3 sm:px-6 py-4 text-sm text-gray-300">
                            {formatItemsList(reservation.items)}
                          </td>
                        )}
                       {columnVisibility.pickupDate && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {formatDate(reservation.pickupDate)}
                         </td>
                       )}
                       {columnVisibility.returnDate && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {formatDate(reservation.returnDate)}
                         </td>
                       )}
                       {columnVisibility.availabilityDate && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {formatDate(reservation.availabilityDate)}
                         </td>
                       )}
                       {columnVisibility.total && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {formatCurrency(reservation.total || reservation.totalAmount || 0, currencySettings)}
                         </td>
                       )}
                       {columnVisibility.type && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {reservation.type}
                         </td>
                       )}
                       {columnVisibility.status && (
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(reservation.status)}`}>
                             {reservation.status}
                           </span>
                         </td>
                       )}
                       {columnVisibility.paymentStatus && (
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getPaymentStatusBadgeColor(reservation.paymentStatus || 'Pending')}`}>
                             {reservation.paymentStatus || 'Pending'}
                           </span>
                         </td>
                       )}
                       {columnVisibility.createdBy && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {reservation.createdBy?.name || 'N/A'}
                         </td>
                       )}
                       {columnVisibility.actions && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-3">
                             <Link
                               href={`/reservations/${reservation._id}`}
@@ -909,10 +917,10 @@ export default function ReservationsPage() {
               </table>
 
               {reservations?.length === 0 && !loading && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">No reservations found</p>
+                <div className="text-center py-8 sm:py-12">
+                  <p className="text-gray-400 text-sm sm:text-base">No reservations found</p>
                   {searchTerm && (
-                    <p className="text-gray-500 text-sm mt-2">
+                    <p className="text-gray-500 text-xs sm:text-sm mt-2">
                       Try adjusting your search criteria
                     </p>
                   )}

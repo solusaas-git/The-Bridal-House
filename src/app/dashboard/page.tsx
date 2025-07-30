@@ -356,10 +356,10 @@ const DashboardContent = () => {
     const renderRow = () => (
       <div
         key={currentRow.map((w) => w.id).join('-')}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
       >
         {currentRow.map((widget) => (
-          <div key={widget.id} className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+          <div key={widget.id} className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
             {renderWidget(widget)}
           </div>
         ))}
@@ -380,7 +380,7 @@ const DashboardContent = () => {
         }
         renderedWidgets.push(
           <div key={`full-${widget.id}`} className="w-full">
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
               {renderWidget(widget)}
             </div>
           </div>
@@ -424,16 +424,16 @@ const DashboardContent = () => {
       {/* Header with Widget Manager */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-gray-300">Welcome back! Here&apos;s what&apos;s happening today.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-300">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           {/* Stats Date Range Filter */}
-          <div className="relative">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <div className="relative w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-300" />
-                <span className="text-sm text-gray-300">Stats Period:</span>
+                <span className="text-xs sm:text-sm text-gray-300">Stats Period:</span>
                 <div className="relative">
                   <select
                     value={activeStatsRange}
@@ -449,7 +449,7 @@ const DashboardContent = () => {
                         }
                       }
                     }}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[120px]"
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[100px] sm:min-w-[120px]"
                   >
                     {PREDEFINED_RANGE_OPTIONS.map((range) => (
                       <option key={range} value={range} className="bg-gray-800 text-white">
@@ -462,12 +462,12 @@ const DashboardContent = () => {
               
               {/* Custom Date Range Inputs */}
               {showCustomDatePicker && (
-                <div className="flex items-center gap-2 lg:ml-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:ml-2">
                   <input
                     type="date"
                     value={customStartDate}
                     onChange={(e) => setCustomStartDate(e.target.value)}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                     max={customEndDate || undefined}
                     title="Start Date"
                   />
@@ -476,7 +476,7 @@ const DashboardContent = () => {
                     type="date"
                     value={customEndDate}
                     onChange={(e) => setCustomEndDate(e.target.value)}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min={customStartDate || undefined}
                     title="End Date"
                   />

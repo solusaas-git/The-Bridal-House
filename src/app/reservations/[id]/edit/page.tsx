@@ -1136,27 +1136,27 @@ export default function EditReservationPage() {
 
   return (
     <Layout>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-white">Edit Reservation</h1>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-xl sm:text-3xl font-bold text-white">Edit Reservation</h1>
             <Link
               href={`/reservations/${reservationId}`}
-              className="text-white/70 hover:text-white transition-colors"
+              className="text-white/70 hover:text-white transition-colors self-start sm:self-auto"
             >
-              <Cross2Icon className="w-6 h-6" />
+              <Cross2Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </Link>
           </div>
         </div>
 
         {/* Step Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-0">
             {steps.map((stepItem, index) => (
               <div key={stepItem.number} className="flex items-center">
                 <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                     step >= stepItem.number
                       ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
                       : 'bg-white/10 text-white/70 border border-white/20'
@@ -1164,11 +1164,11 @@ export default function EditReservationPage() {
                 >
                   {stepItem.number}
                 </div>
-                <div className="ml-2 text-sm font-medium text-white">
+                <div className="ml-2 text-xs sm:text-sm font-medium text-white">
                   {stepItem.title}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="mx-4 w-8 h-px bg-white/30" />
+                  <div className="mx-2 sm:mx-4 w-4 sm:w-8 h-px bg-white/30" />
                 )}
               </div>
             ))}
@@ -1176,16 +1176,16 @@ export default function EditReservationPage() {
         </div>
 
         {/* Form Content */}
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-6">
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6">
         {renderStepContent()}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-white/20">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/20">
             <button
               type="button"
               onClick={() => step > 1 && setStep(step - 1)}
               disabled={step === 1}
-              className="px-4 py-2 text-sm font-medium text-white bg-white/10 border border-white/20 rounded-lg shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors backdrop-blur-sm"
+              className="px-4 py-2 text-sm font-medium text-white bg-white/10 border border-white/20 rounded-lg shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors backdrop-blur-sm w-full sm:w-auto"
             >
               Previous
             </button>
@@ -1195,7 +1195,7 @@ export default function EditReservationPage() {
                 type="button"
                 onClick={() => setStep(step + 1)}
                 disabled={step === 1 && !selectedClient}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
               >
                 Next
               </button>
@@ -1239,7 +1239,7 @@ export default function EditReservationPage() {
                 <button
                   type="button"
                   disabled={loading}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center gap-2"
+                  className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
                 >
                   {loading && (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

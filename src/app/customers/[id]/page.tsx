@@ -78,23 +78,23 @@ const CustomerHeader = ({ title, onBack, onEdit, showEditButton = true }: {
   onEdit: () => void;
   showEditButton?: boolean;
 }) => (
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-4">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex items-center gap-3 sm:gap-4">
       <button
         onClick={onBack}
         className="p-2 hover:bg-white/10 rounded-lg transition-colors"
       >
-        <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
+        <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
       </button>
       <div>
-        <h1 className="text-2xl font-bold text-white">{title}</h1>
-        <p className="text-gray-300">View and manage customer information</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-white">{title}</h1>
+        <p className="text-sm sm:text-base text-gray-300">View and manage customer information</p>
       </div>
     </div>
     {showEditButton && (
       <button
         onClick={onEdit}
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors text-sm w-full sm:w-auto"
       >
         Edit Customer
       </button>
@@ -134,7 +134,7 @@ const CustomerTabs = ({ activeTab, onTabChange }: {
 
   return (
     <div className="border-b border-white/20">
-      <div className="flex space-x-8 px-6">
+      <div className="flex flex-wrap gap-2 sm:gap-8 px-4 sm:px-6">
         {tabs.map((tab) => (
           <TabButton
             key={tab.id}
@@ -151,53 +151,53 @@ const CustomerTabs = ({ activeTab, onTabChange }: {
 
 // CustomerDetails Component
 const CustomerDetails = ({ customer }: { customer: Customer }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div className="space-y-4">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+    <div className="space-y-3 sm:space-y-4">
       <div>
-        <label className="text-sm font-medium text-gray-400">Full Name</label>
-        <p className="text-white">{customer.firstName} {customer.lastName}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Full Name</label>
+        <p className="text-white text-sm sm:text-base">{customer.firstName} {customer.lastName}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Email</label>
-        <p className="text-white">{customer.email || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Email</label>
+        <p className="text-white text-sm sm:text-base">{customer.email || 'N/A'}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Phone</label>
-        <p className="text-white">{customer.phone}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Phone</label>
+        <p className="text-white text-sm sm:text-base">{customer.phone}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">WhatsApp</label>
-        <p className="text-white">{customer.whatsapp || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">WhatsApp</label>
+        <p className="text-white text-sm sm:text-base">{customer.whatsapp || 'N/A'}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Type</label>
-        <p className="text-white">{customer.type}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Type</label>
+        <p className="text-white text-sm sm:text-base">{customer.type}</p>
       </div>
     </div>
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <div>
-        <label className="text-sm font-medium text-gray-400">Address</label>
-        <p className="text-white">{customer.address}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Address</label>
+        <p className="text-white text-sm sm:text-base">{customer.address}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">CIN/Passport ID</label>
-        <p className="text-white">{customer.idNumber}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">CIN/Passport ID</label>
+        <p className="text-white text-sm sm:text-base">{customer.idNumber}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Wedding Date</label>
-        <p className="text-white">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Date</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : 'N/A'}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Wedding Time</label>
-        <p className="text-white">{customer.weddingTime || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Time</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingTime || 'N/A'}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Wedding Location</label>
-        <p className="text-white">{customer.weddingLocation || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Location</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingLocation || 'N/A'}</p>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-400">Wedding City</label>
-        <p className="text-white">{customer.weddingCity}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding City</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingCity}</p>
       </div>
     </div>
   </div>

@@ -276,14 +276,14 @@ export default function ProductsPage() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Products</h1>
-            <p className="text-gray-300">Manage your product inventory</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Products</h1>
+            <p className="text-sm sm:text-base text-gray-300">Manage your product inventory</p>
           </div>
           <Link
             href="/products/add"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
             Add Product
@@ -291,106 +291,109 @@ export default function ProductsPage() {
         </div>
 
         {/* Filters and Controls */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <div className="flex items-center gap-4 flex-wrap">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
             {/* Search */}
-            <div className="relative flex-1 min-w-64">
+            <div className="relative flex-1 w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
             </div>
 
-            {/* Category Filter */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
-              <select
-                value={filters.category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Categories</option>
-                {categories.map((category: any) => (
-                  <option key={category._id} value={category._id} className="bg-gray-800">
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subcategory Filter - Only show when category is selected */}
-            {filters.category !== 'all' && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Subcategory:</label>
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+              {/* Category Filter */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
                 <select
-                  value={filters.subCategory}
-                  onChange={(e) => setFilters(prev => ({ ...prev, subCategory: e.target.value }))}
-                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={filters.category}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
                 >
-                  <option value="all">All Subcategories</option>
-                  {subCategories.map((subcat) => (
-                    <option key={subcat._id} value={subcat._id}>
-                      {subcat.name}
+                  <option value="all">All Categories</option>
+                  {categories.map((category: any) => (
+                    <option key={category._id} value={category._id} className="bg-gray-800">
+                      {category.name}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-white/5 rounded-md p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <GridIcon className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <RowsIcon className="h-4 w-4" />
-              </button>
-            </div>
+              {/* Subcategory Filter - Only show when category is selected */}
+              {filters.category !== 'all' && (
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Subcategory:</label>
+                  <select
+                    value={filters.subCategory}
+                    onChange={(e) => setFilters(prev => ({ ...prev, subCategory: e.target.value }))}
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+                  >
+                    <option value="all">All Subcategories</option>
+                    {subCategories.map((subcat) => (
+                      <option key={subcat._id} value={subcat._id}>
+                        {subcat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-            {/* Items Per Page */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Per page:</label>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1); // Reset to first page when changing page size
-                }}
-                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="12" className="bg-gray-800">12</option>
-                <option value="24" className="bg-gray-800">24</option>
-                <option value="48" className="bg-gray-800">48</option>
-                <option value="96" className="bg-gray-800">96</option>
-              </select>
-            </div>
-
-            {/* Column Visibility Toggle (only for table view) */}
-            {viewMode === 'table' && (
-              <div className="relative">
+              {/* View Mode Toggle */}
+              <div className="flex items-center gap-1 bg-white/5 rounded-md p-1 w-full sm:w-auto">
                 <button
-                  onClick={handleDropdownToggle}
-                  className="flex items-center gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded transition-colors flex-1 sm:flex-none ${
+                    viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
                 >
-                  <GearIcon className="h-4 w-4" />
-                  Columns
+                  <GridIcon className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded transition-colors flex-1 sm:flex-none ${
+                    viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <RowsIcon className="h-4 w-4" />
                 </button>
               </div>
-            )}
+
+              {/* Items Per Page */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Per page:</label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1); // Reset to first page when changing page size
+                  }}
+                  className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+                >
+                  <option value="12" className="bg-gray-800">12</option>
+                  <option value="24" className="bg-gray-800">24</option>
+                  <option value="48" className="bg-gray-800">48</option>
+                  <option value="96" className="bg-gray-800">96</option>
+                </select>
+              </div>
+
+              {/* Column Visibility Toggle (only for table view) */}
+              {viewMode === 'table' && (
+                <div className="relative w-full sm:w-auto">
+                  <button
+                    onClick={handleDropdownToggle}
+                    className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
+                  >
+                    <GearIcon className="h-4 w-4" />
+                    <span className="text-sm">Columns</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -407,7 +410,7 @@ export default function ProductsPage() {
                 <p className="text-gray-400">No products found</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredItems.map((item: any) => (
                   <div key={item._id} className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden hover:bg-white/10 transition-colors">
                     {/* Product Image */}
@@ -530,72 +533,72 @@ export default function ProductsPage() {
           // Table View
           <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
             {loading ? (
-              <div className="p-8 text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-300">Loading products...</p>
+              <div className="p-4 sm:p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <p className="text-gray-300 text-sm sm:text-base">Loading products...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-full">
                   <thead className="bg-white/5 border-b border-white/10">
                     <tr>
                       {columnVisibility.id && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           ID
                         </th>
                       )}
                       {columnVisibility.name && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Name
                         </th>
                       )}
                       {columnVisibility.category && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Category
                         </th>
                       )}
                       {columnVisibility.subCategory && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Sub Category
                         </th>
                       )}
                       {columnVisibility.rentalCost && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Rental Cost/Day
                         </th>
                       )}
                       {columnVisibility.buyCost && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Buy Cost
                         </th>
                       )}
                       {columnVisibility.sellPrice && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Sell Price
                         </th>
                       )}
                       {columnVisibility.size && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Size
                         </th>
                       )}
                       {columnVisibility.quantity && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           In Stock
                         </th>
                       )}
                       {columnVisibility.status && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Status
                         </th>
                       )}
                       {columnVisibility.createdAt && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Created
                         </th>
                       )}
                       {columnVisibility.actions && (
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                           Actions
                         </th>
                       )}
@@ -605,12 +608,12 @@ export default function ProductsPage() {
                     {filteredItems.map((item: any) => (
                       <tr key={item._id} className="hover:bg-white/5">
                         {columnVisibility.id && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item._id.slice(-6)}
                           </td>
                         )}
                         {columnVisibility.name && (
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               {item.primaryPhoto && (
                                 <img
@@ -629,42 +632,42 @@ export default function ProductsPage() {
                           </td>
                         )}
                         {columnVisibility.category && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.category?.name || 'N/A'}
                           </td>
                         )}
                         {columnVisibility.subCategory && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.subCategory || 'N/A'}
                           </td>
                         )}
                         {columnVisibility.rentalCost && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {formatCurrency(item.rentalCost, currencySettings)}
                           </td>
                         )}
                         {columnVisibility.buyCost && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.buyCost ? formatCurrency(item.buyCost, currencySettings) : 'N/A'}
                           </td>
                         )}
                         {columnVisibility.sellPrice && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.sellPrice ? formatCurrency(item.sellPrice, currencySettings) : 'N/A'}
                           </td>
                         )}
                         {columnVisibility.size && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.size || 'N/A'}
                           </td>
                         )}
                         {columnVisibility.quantity && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {item.quantity}
                           </td>
                         )}
                         {columnVisibility.status && (
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                               item.status === 'Published'
                                 ? 'bg-green-500/20 text-green-400'
@@ -675,12 +678,12 @@ export default function ProductsPage() {
                           </td>
                         )}
                         {columnVisibility.createdAt && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                             {formatDate(item.createdAt)}
                           </td>
                         )}
                         {columnVisibility.actions && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => router.push(`/products/${item._id}`)}

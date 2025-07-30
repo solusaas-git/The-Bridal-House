@@ -251,39 +251,39 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center h-10 px-3 rounded-l-md border border-r-0 border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/30"
+            className="flex items-center h-10 sm:h-11 px-2 sm:px-3 rounded-l-md border border-r-0 border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 text-xs sm:text-sm"
           >
             {isManualMode ? (
               <input
                 type="text"
                 value={manualPrefix}
                 onChange={handleManualPrefixChange}
-                className="w-12 bg-transparent text-sm text-white border-none outline-none"
+                className="w-10 sm:w-12 bg-transparent text-xs sm:text-sm text-white border-none outline-none"
                 placeholder="+"
               />
             ) : (
               <>
-                <span className="mr-2">{selectedCountry.flag}</span>
-                <span className="text-sm">{selectedCountry.prefix}</span>
+                <span className="mr-1 sm:mr-2 text-sm sm:text-base">{selectedCountry.flag}</span>
+                <span className="text-xs sm:text-sm">{selectedCountry.prefix}</span>
               </>
             )}
-            {!isManualMode && <ChevronDownIcon className="h-4 w-4 ml-1" />}
+            {!isManualMode && <ChevronDownIcon className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />}
           </button>
 
           {/* Dropdown */}
           {isDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1 w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
+            <div className="absolute top-full left-0 mt-1 w-56 sm:w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
               {COUNTRIES.map((country) => (
                 <button
                   key={country.code}
                   type="button"
                   onClick={() => handleCountryChange(country)}
-                  className="w-full flex items-center px-4 py-3 text-left hover:bg-white/10 transition-colors text-white"
+                  className="w-full flex items-center px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-white/10 transition-colors text-white"
                 >
-                  <span className="mr-3">{country.flag}</span>
+                  <span className="mr-2 sm:mr-3 text-sm sm:text-base">{country.flag}</span>
                   <div className="flex-1">
-                    <div className="font-medium">{country.name}</div>
-                    <div className="text-sm text-gray-400">{country.prefix}</div>
+                    <div className="font-medium text-xs sm:text-sm">{country.name}</div>
+                    <div className="text-xs sm:text-sm text-gray-400">{country.prefix}</div>
                   </div>
                 </button>
               ))}
@@ -293,12 +293,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                 <button
                   type="button"
                   onClick={handleManualMode}
-                  className="w-full flex items-center px-4 py-3 text-left hover:bg-white/10 transition-colors text-white"
+                  className="w-full flex items-center px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-white/10 transition-colors text-white"
                 >
-                  <PlusIcon className="h-4 w-4 mr-3" />
+                  <PlusIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 sm:mr-3" />
                   <div className="flex-1">
-                    <div className="font-medium">Other Country</div>
-                    <div className="text-sm text-gray-400">Enter custom prefix</div>
+                    <div className="font-medium text-xs sm:text-sm">Other Country</div>
+                    <div className="text-xs sm:text-sm text-gray-400">Enter custom prefix</div>
                   </div>
                 </button>
               </div>
@@ -313,7 +313,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           onChange={handlePhoneChange}
           placeholder={isManualMode ? "Enter phone number" : selectedCountry.placeholder}
           required={required}
-          className="flex-1 h-10 rounded-r-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 h-10 sm:h-11 rounded-r-md border border-white/20 bg-white/10 px-3 py-2 text-xs sm:text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...props}
         />
       </div>

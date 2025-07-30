@@ -7,6 +7,7 @@ import { RootState } from '@/store/store';
 import { setCurrentUser } from '@/store/reducers/authSlice';
 import axios from 'axios';
 import Navbar from '@/components/Navbar';
+import TopBar from '@/components/TopBar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function Layout({ children }: LayoutProps) {
   const dispatch = useDispatch();
   const { isAuthenticated, currentUser } = useSelector((state: RootState) => state.auth);
   const [loading, setLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -67,9 +69,10 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <Navbar />
-      <main className="ml-56">
-        <div className="py-4 px-4 max-w-7xl mx-auto">
+      <TopBar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+      <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+      <main className="pt-16 lg:pt-0 lg:ml-56 transition-all duration-300">
+        <div className="py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {children}
         </div>
       </main>

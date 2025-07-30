@@ -79,7 +79,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative px-4 sm:px-6 lg:px-8"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80')`,
       }}
@@ -87,25 +87,26 @@ export default function LoginPage() {
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
 
-      <div className="w-full max-w-md mx-auto p-8 relative z-10">
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/20">
+      {/* Responsive container */}
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto relative z-10">
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl border border-white/20">
           <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold tracking-tighter text-white">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tighter text-white">
               The Bridal House
             </h1>
-            <p className="text-gray-200">
+            <p className="text-sm sm:text-base text-gray-200">
               Please enter your details to sign in
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-200">Email</label>
               <input
                 type="email"
                 name="email"
                 placeholder="Enter your email"
-                className="flex h-10 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 sm:h-11 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -122,7 +123,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter your password"
-                  className="flex h-10 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 sm:h-11 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -131,7 +132,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
                 >
                   {showPassword ? (
                     <EyeClosedIcon className="h-4 w-4" />
@@ -142,17 +143,17 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   className="rounded border-gray-400 bg-white/10 text-blue-600"
                 />
-                <span className="text-sm text-gray-200">Remember me</span>
+                <span className="text-xs sm:text-sm text-gray-200">Remember me</span>
               </label>
               <a
                 href="#forgot-password"
-                className="text-sm text-blue-300 hover:text-blue-200"
+                className="text-xs sm:text-sm text-blue-300 hover:text-blue-200"
               >
                 Forgot password?
               </a>
@@ -161,12 +162,12 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium bg-white/20 hover:bg-white/30 text-white backdrop-blur-lg border border-white/20 h-10 px-4 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium bg-white/20 hover:bg-white/30 text-white backdrop-blur-lg border border-white/20 h-10 sm:h-11 px-4 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Signing in...
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  <span className="text-xs sm:text-sm">Signing in...</span>
                 </div>
               ) : (
                 "Sign in"

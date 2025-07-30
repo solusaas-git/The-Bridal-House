@@ -173,29 +173,29 @@ export default function AddProductPage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Add Product</h1>
-            <p className="text-gray-300">Create a new product in your inventory</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Add Product</h1>
+            <p className="text-sm sm:text-base text-gray-300">Create a new product in your inventory</p>
           </div>
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors"
+            className="px-4 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
           >
             Cancel
           </button>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Product Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Product Name *
                 </label>
                 <input
@@ -204,17 +204,17 @@ export default function AddProductPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.name ? 'border-red-500' : 'border-white/20'
                   }`}
                   placeholder="Enter product name"
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.name}</p>}
               </div>
 
               {/* Category */}
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="category" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Category *
                 </label>
                 <select
@@ -222,7 +222,7 @@ export default function AddProductPage() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.category ? 'border-red-500' : 'border-white/20'
                   }`}
                 >
@@ -233,12 +233,12 @@ export default function AddProductPage() {
                     </option>
                   ))}
                 </select>
-                {errors.category && <p className="mt-1 text-sm text-red-400">{errors.category}</p>}
+                {errors.category && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.category}</p>}
               </div>
 
               {/* Sub Category */}
               <div>
-                <label htmlFor="subCategory" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="subCategory" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Sub Category
                 </label>
                 <select
@@ -246,7 +246,7 @@ export default function AddProductPage() {
                   name="subCategory"
                   value={formData.subCategory}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   disabled={!formData.category || availableSubCategories.length === 0}
                 >
                   <option value="">Select a sub category</option>
@@ -260,7 +260,7 @@ export default function AddProductPage() {
 
               {/* Status */}
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="status" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Status
                 </label>
                 <select
@@ -268,7 +268,7 @@ export default function AddProductPage() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="Draft" className="bg-gray-800">Draft</option>
                   <option value="Published" className="bg-gray-800">Published</option>
@@ -277,10 +277,10 @@ export default function AddProductPage() {
             </div>
 
             {/* Pricing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Rental Cost */}
               <div>
-                <label htmlFor="rentalCost" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="rentalCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Rental Cost * ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -291,17 +291,17 @@ export default function AddProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.rentalCost ? 'border-red-500' : 'border-white/20'
                   }`}
                   placeholder="0.00"
                 />
-                {errors.rentalCost && <p className="mt-1 text-sm text-red-400">{errors.rentalCost}</p>}
+                {errors.rentalCost && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.rentalCost}</p>}
               </div>
 
               {/* Buy Cost */}
               <div>
-                <label htmlFor="buyCost" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="buyCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Buy Cost ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -312,14 +312,14 @@ export default function AddProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0.00"
                 />
               </div>
 
               {/* Sell Price */}
               <div>
-                <label htmlFor="sellPrice" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="sellPrice" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Sell Price ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
@@ -330,17 +330,17 @@ export default function AddProductPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0.00"
                 />
               </div>
             </div>
 
             {/* Additional Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Size */}
               <div>
-                <label htmlFor="size" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="size" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Size
                 </label>
                 <input
@@ -350,14 +350,14 @@ export default function AddProductPage() {
                   value={formData.size}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="Size"
                 />
               </div>
 
               {/* Quantity */}
               <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="quantity" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                   Quantity
                 </label>
                 <input
@@ -367,7 +367,7 @@ export default function AddProductPage() {
                   value={formData.quantity}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="0"
                 />
               </div>
@@ -375,17 +375,17 @@ export default function AddProductPage() {
 
             {/* Primary Photo */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                 Primary Photo *
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
-                  <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-white/5 transition-colors ${
+                  <label className={`flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-white/5 transition-colors ${
                     errors.primaryPhoto ? 'border-red-500' : 'border-white/20 hover:border-white/40'
                   }`}>
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-400">
+                    <div className="flex flex-col items-center justify-center pt-3 sm:pt-5 pb-4 sm:pb-6">
+                      <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                      <p className="mb-2 text-xs sm:text-sm text-gray-400">
                         <span className="font-semibold">Click to upload</span> primary photo
                       </p>
                       <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
@@ -399,10 +399,10 @@ export default function AddProductPage() {
                     />
                   </label>
                 </div>
-                {errors.primaryPhoto && <p className="text-sm text-red-400">{errors.primaryPhoto}</p>}
+                {errors.primaryPhoto && <p className="text-xs sm:text-sm text-red-400">{errors.primaryPhoto}</p>}
                 
                 {primaryPhotoPreview && (
-                  <div className="relative w-32 h-32">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32">
                     <img
                       src={primaryPhotoPreview}
                       alt="Primary preview"
@@ -425,15 +425,15 @@ export default function AddProductPage() {
 
             {/* Secondary Photos */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                 Secondary Photos
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-400">
+                  <label className="flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-3 sm:pt-5 pb-4 sm:pb-6">
+                      <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                      <p className="mb-2 text-xs sm:text-sm text-gray-400">
                         <span className="font-semibold">Click to upload</span> additional photos
                       </p>
                       <p className="text-xs text-gray-500">PNG, JPG up to 10MB each</p>
@@ -450,13 +450,13 @@ export default function AddProductPage() {
                 </div>
                 
                 {secondaryPhotosPreviews.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
                     {secondaryPhotosPreviews.map((preview, index) => (
                       <div key={index} className="relative">
                         <img
                           src={preview}
                           alt={`Secondary preview ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg"
+                          className="w-full h-16 sm:h-20 object-cover rounded-lg"
                         />
                         <button
                           type="button"
@@ -474,15 +474,15 @@ export default function AddProductPage() {
 
             {/* Videos */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
                 Videos
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <VideoIcon className="w-8 h-8 mb-2 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-400">
+                  <label className="flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-3 sm:pt-5 pb-4 sm:pb-6">
+                      <VideoIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                      <p className="mb-2 text-xs sm:text-sm text-gray-400">
                         <span className="font-semibold">Click to upload</span> videos
                       </p>
                       <p className="text-xs text-gray-500">MP4, MOV up to 50MB each</p>
@@ -499,12 +499,12 @@ export default function AddProductPage() {
                 </div>
                 
                 {videoPreviews.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {videoPreviews.map((preview, index) => (
                       <div key={index} className="relative">
                         <video
                           src={preview}
-                          className="w-full h-32 object-cover rounded-lg"
+                          className="w-full h-24 sm:h-32 object-cover rounded-lg"
                           controls
                         />
                         <button
@@ -522,18 +522,18 @@ export default function AddProductPage() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex items-center justify-end gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-4 sm:pt-6">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors"
+                className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center gap-2"
+                className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
               >
                 {loading && (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

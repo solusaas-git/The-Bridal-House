@@ -257,31 +257,31 @@ const EditCustomerPage = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={handleBack}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
+            <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Edit Customer</h1>
-            <p className="text-gray-300">Update customer information</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Customer</h1>
+            <p className="text-sm sm:text-base text-gray-300">Update customer information</p>
           </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {/* Left Column */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">First Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">First Name *</label>
                 <input
                   type="text"
                   name="firstName"
@@ -293,7 +293,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Last Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Last Name *</label>
                 <input
                   type="text"
                   name="lastName"
@@ -305,7 +305,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Address *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Address *</label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -317,7 +317,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">CIN/PASSPORT ID *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">CIN/PASSPORT ID *</label>
                 <input
                   type="text"
                   name="idNumber"
@@ -329,7 +329,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Email</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -341,9 +341,9 @@ const EditCustomerPage = () => {
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Phone *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Phone *</label>
                 <PhoneInput
                   name="phone"
                   value={formData.phone}
@@ -353,7 +353,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">WhatsApp</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">WhatsApp</label>
                 <PhoneInput
                   name="whatsapp"
                   value={formData.whatsapp}
@@ -361,9 +361,9 @@ const EditCustomerPage = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Wedding Date</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Date</label>
                   <input
                     type="date"
                     name="weddingDate"
@@ -374,7 +374,7 @@ const EditCustomerPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Wedding Time</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Time</label>
                   <input
                     type="time"
                     name="weddingTime"
@@ -386,7 +386,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Wedding Location</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Location</label>
                 <input
                   type="text"
                   name="weddingLocation"
@@ -397,7 +397,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Wedding City *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding City *</label>
                 <input
                   type="text"
                   name="weddingCity"
@@ -409,7 +409,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Type *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">Type *</label>
                 <select
                   name="type"
                   value={formData.type}
@@ -434,11 +434,11 @@ const EditCustomerPage = () => {
           />
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-4 pt-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-white/10">
             <button
               type="button"
               onClick={handleBack}
-              className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+              className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors text-sm w-full sm:w-auto"
             >
               Cancel
             </button>
@@ -462,7 +462,7 @@ const EditCustomerPage = () => {
               <button
                 type="button"
                 disabled={saving}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>

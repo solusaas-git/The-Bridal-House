@@ -261,14 +261,14 @@ const PaymentsPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Payments</h1>
-            <p className="text-gray-300">Manage customer payments and transactions</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Payments</h1>
+            <p className="text-sm sm:text-base text-gray-300">Manage customer payments and transactions</p>
           </div>
           <button
             onClick={() => router.push('/payments/add')}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
             Add Payment
@@ -276,63 +276,65 @@ const PaymentsPage = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
           {/* Search and Controls Row */}
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search payments..."
                 value={searchTerm}
                 onChange={(e) => dispatch(setSearchTerm(e.target.value))}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
               {/* Date Filter - Compact Style */}
-              <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm text-gray-300">Date:</span>
-                <select
-                  value={hasActiveFilter ? 'Custom' : 'All Time'}
-                  onChange={(e) => {
-                    if (e.target.value === 'Custom') {
-                      setShowDateFilter(true);
-                      if (!dateFrom && !dateTo) {
-                        handleQuickDateRange(30); // Default to last 30 days
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs sm:text-sm text-gray-300">Date:</span>
+                  <select
+                    value={hasActiveFilter ? 'Custom' : 'All Time'}
+                    onChange={(e) => {
+                      if (e.target.value === 'Custom') {
+                        setShowDateFilter(true);
+                        if (!dateFrom && !dateTo) {
+                          handleQuickDateRange(30); // Default to last 30 days
+                        }
+                      } else if (e.target.value === 'All Time') {
+                        handleDateFilterClear();
+                      } else {
+                        // Handle predefined ranges
+                        const days = parseInt(e.target.value);
+                        handleQuickDateRange(days);
                       }
-                    } else if (e.target.value === 'All Time') {
-                      handleDateFilterClear();
-                    } else {
-                      // Handle predefined ranges
-                      const days = parseInt(e.target.value);
-                      handleQuickDateRange(days);
-                    }
-                  }}
-                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[120px]"
-                >
-                  <option value="All Time" className="bg-gray-800 text-white">All Time</option>
-                  <option value="7" className="bg-gray-800 text-white">Last 7 days</option>
-                  <option value="30" className="bg-gray-800 text-white">Last 30 days</option>
-                  <option value="90" className="bg-gray-800 text-white">Last 90 days</option>
-                  <option value="365" className="bg-gray-800 text-white">Last year</option>
-                  <option value="Custom" className="bg-gray-800 text-white">Custom</option>
-                </select>
+                    }}
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[100px] sm:min-w-[120px]"
+                  >
+                    <option value="All Time" className="bg-gray-800 text-white">All Time</option>
+                    <option value="7" className="bg-gray-800 text-white">Last 7 days</option>
+                    <option value="30" className="bg-gray-800 text-white">Last 30 days</option>
+                    <option value="90" className="bg-gray-800 text-white">Last 90 days</option>
+                    <option value="365" className="bg-gray-800 text-white">Last year</option>
+                    <option value="Custom" className="bg-gray-800 text-white">Custom</option>
+                  </select>
+                </div>
                 
                 {/* Custom Date Range Inputs */}
                 {showDateFilter && hasActiveFilter && (
-                  <>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <input
                       type="date"
                       value={dateFrom}
                       onChange={(e) => setDateFrom(e.target.value)}
-                      className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                       max={dateTo || undefined}
                       title="Start Date"
                     />
@@ -341,11 +343,11 @@ const PaymentsPage = () => {
                       type="date"
                       value={dateTo}
                       onChange={(e) => setDateTo(e.target.value)}
-                      className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                       min={dateFrom || undefined}
                       title="End Date"
                     />
-                  </>
+                  </div>
                 )}
                 
                 {/* Active Filter Indicator */}
@@ -357,13 +359,13 @@ const PaymentsPage = () => {
               </div>
 
               {/* Column Toggle */}
-              <div className="relative dropdown-container">
+              <div className="relative dropdown-container w-full sm:w-auto">
                 <button
                   onClick={handleDropdownToggle}
-                  className="flex items-center gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+                  className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
                 >
                   <GearIcon className="h-4 w-4" />
-                  Columns
+                  <span className="text-sm">Columns</span>
                 </button>
               </div>
             </div>
@@ -435,72 +437,72 @@ const PaymentsPage = () => {
         {/* Table */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading payments...</p>
+            <div className="p-4 sm:p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-300 text-sm sm:text-base">Loading payments...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-full">
                 <thead className="bg-white/5 border-b border-white/10">
                   <tr className="border-b border-white/20">
                     {columnVisibility.id && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Id
                       </th>
                     )}
                     {columnVisibility.customer && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Customer
                       </th>
                     )}
                     {columnVisibility.reservation && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Reservation
                       </th>
                     )}
                     {columnVisibility.amount && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Amount
                       </th>
                     )}
                     {columnVisibility.paymentDate && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Payment Date
                       </th>
                     )}
                     {columnVisibility.paymentMethod && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Payment Method
                       </th>
                     )}
                     {columnVisibility.paymentType && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Payment Type
                       </th>
                     )}
                     {columnVisibility.reference && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Reference
                       </th>
                     )}
                     {columnVisibility.note && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Note
                       </th>
                     )}
                     {columnVisibility.attachments && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Attachments
                       </th>
                     )}
                     {columnVisibility.createdBy && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Created By
                       </th>
                     )}
                     {columnVisibility.actions && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Actions
                       </th>
                     )}
@@ -514,62 +516,62 @@ const PaymentsPage = () => {
                       onClick={() => handleRowClick(payment._id)}
                     >
                       {columnVisibility.id && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {startIndex + index + 1}
                         </td>
                       )}
                       {columnVisibility.customer && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : 'N/A'}
                         </td>
                       )}
                       {columnVisibility.reservation && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.reservation ? `#${payment.reservation.reservationNumber}` : '-'}
                         </td>
                       )}
                       {columnVisibility.amount && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.amount ? formatCurrency(payment.amount, currencySettings) : '-'}
                         </td>
                       )}
                       {columnVisibility.paymentDate && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy') : '-'}
                         </td>
                       )}
                       {columnVisibility.paymentMethod && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white capitalize">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white capitalize">
                           {payment.paymentMethod || '-'}
                         </td>
                       )}
                       {columnVisibility.paymentType && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white capitalize">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white capitalize">
                           {payment.paymentType || '-'}
                         </td>
                       )}
                       {columnVisibility.reference && (
-                        <td className="px-6 py-4 text-sm text-white max-w-xs truncate">
+                        <td className="px-3 sm:px-6 py-4 text-sm text-white max-w-xs truncate">
                           {payment.reference || '-'}
                         </td>
                       )}
                       {columnVisibility.note && (
-                        <td className="px-6 py-4 text-sm text-white max-w-xs truncate">
+                        <td className="px-3 sm:px-6 py-4 text-sm text-white max-w-xs truncate">
                           {payment.note || '-'}
                         </td>
                       )}
                       {columnVisibility.attachments && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.attachments?.length || 0}
                         </td>
                       )}
                       {columnVisibility.createdBy && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.createdBy?.name || '-'}
                         </td>
                       )}
                       {columnVisibility.actions && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
                             <button
                               type="button"
@@ -624,10 +626,10 @@ const PaymentsPage = () => {
               </table>
 
               {payments?.length === 0 && !loading && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">No payments found</p>
+                <div className="text-center py-8 sm:py-12">
+                  <p className="text-gray-400 text-sm sm:text-base">No payments found</p>
                   {searchTerm && (
-                    <p className="text-gray-500 text-sm mt-2">
+                    <p className="text-gray-500 text-xs sm:text-sm mt-2">
                       Try adjusting your search criteria
                     </p>
                   )}
@@ -655,4 +657,4 @@ const PaymentsPage = () => {
   );
 };
 
-export default PaymentsPage; 
+export default PaymentsPage;

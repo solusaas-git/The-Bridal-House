@@ -295,8 +295,8 @@ export default function ViewReservationPage() {
             {/* 1. Client Info */}
             {reservation.client && (
               <div className="bg-white/5 p-4 rounded-lg">
-                <h4 className="text-lg font-medium text-white mb-4">Client Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h4 className="text-base sm:text-lg font-medium text-white mb-4">Client Information</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {/* Column 1: Basic Info */}
                   <div className="space-y-4">
                     <div>
@@ -421,9 +421,9 @@ export default function ViewReservationPage() {
       case 'items':
         return (
           <div className="space-y-4">
-            <h4 className="text-lg font-medium text-white">Reserved Items</h4>
+            <h4 className="text-base sm:text-lg font-medium text-white">Reserved Items</h4>
             {reservation.items && reservation.items.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {reservation.items.map((item) => {
                   const imageUrl = item.primaryPhoto ? `/api/uploads/${item.primaryPhoto}` : null;
                   return (
@@ -488,11 +488,11 @@ export default function ViewReservationPage() {
       case 'payments':
         return (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h4 className="text-lg font-medium text-white">Associated Payments</h4>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h4 className="text-base sm:text-lg font-medium text-white">Associated Payments</h4>
               <button
                 onClick={handleAddPayment}
-                className="inline-flex items-center px-3 py-2 border border-blue-500/30 text-sm leading-4 font-medium rounded-md text-blue-400 bg-blue-500/20 hover:bg-blue-500/30"
+                className="inline-flex items-center justify-center px-3 py-2 border border-blue-500/30 text-sm leading-4 font-medium rounded-md text-blue-400 bg-blue-500/20 hover:bg-blue-500/30 w-full sm:w-auto"
               >
                 <PlusIcon className="w-4 h-4 mr-1" />
                 Add Payment
@@ -601,30 +601,30 @@ export default function ViewReservationPage() {
 
   return (
     <Layout>
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">Reservation Details</h1>
-            <p className="text-gray-400">
+            <h1 className="text-xl sm:text-3xl font-bold text-white">Reservation Details</h1>
+            <p className="text-sm sm:text-base text-gray-400">
               {reservation.client ? 
                 `${reservation.client.firstName} ${reservation.client.lastName}` : 
                 'No client assigned'
               }
             </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Link
               href={`/reservations/${reservation._id}/edit`}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             >
               <Pencil1Icon className="w-4 h-4 mr-2" />
               Edit
             </Link>
             <Link
               href="/reservations"
-              className="inline-flex items-center px-4 py-2 border border-white/20 text-sm font-medium rounded-md text-gray-300 bg-white/10 hover:bg-white/20"
+              className="inline-flex items-center justify-center px-4 py-2 border border-white/20 text-sm font-medium rounded-md text-gray-300 bg-white/10 hover:bg-white/20 w-full sm:w-auto"
             >
               Back to List
             </Link>
@@ -635,20 +635,20 @@ export default function ViewReservationPage() {
       {/* Tabs */}
       <div className="mb-6">
         <div className="border-b border-white/20">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="-mb-px flex flex-wrap gap-4 sm:gap-8">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex items-center space-x-2 ${
+                  className={`py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-400'
                       : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500'
                   }`}
                 >
-                  <IconComponent className="w-4 h-4" />
+                  <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -658,7 +658,7 @@ export default function ViewReservationPage() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-lg p-6">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-lg p-4 sm:p-6">
         {renderTabContent()}
       </div>
 
