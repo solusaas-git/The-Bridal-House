@@ -415,14 +415,29 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
         }
       } else if (field === 'relatedReservation' || field === 'relatedProduct') {
         // Compare by ID if objects, otherwise direct comparison
-        const originalRelatedId = originalValue?._id || originalValue;
-        const newRelatedId = newValue?._id || newValue;
-        if (originalRelatedId !== newRelatedId) {
+        // Treat empty strings as null for these optional fields
+        const originalRelatedId = originalValue?._id || originalValue || null;
+        const newRelatedId = newValue?._id || newValue || null;
+        
+        // Normalize empty strings to null for comparison
+        const normalizedOriginal = originalRelatedId === '' ? null : originalRelatedId;
+        const normalizedNew = newRelatedId === '' ? null : newRelatedId;
+        
+        if (normalizedOriginal !== normalizedNew) {
+          changes[field] = newValue;
+        }
+      } else if (field === 'date') {
+        // Handle date comparison - original is ISO string, new is date string
+        const originalDate = originalValue ? new Date(originalValue).toISOString().split('T')[0] : '';
+        const newDate = newValue || '';
+        if (originalDate !== newDate) {
           changes[field] = newValue;
         }
       } else {
-        // Handle string and other types
-        if (originalValue !== newValue) {
+        // Handle string and other types, treating empty strings and null as equivalent
+        const normalizedOriginal = originalValue === null ? '' : originalValue;
+        const normalizedNew = newValue === null ? '' : newValue;
+        if (normalizedOriginal !== normalizedNew) {
           changes[field] = newValue;
         }
       }
@@ -617,12 +632,14 @@ export const formatApprovalDescription = (actionType: string, resourceType: stri
   const actionMap = {
     edit: 'Edit',
     delete: 'Delete',
+    create: 'Create',
   };
   const resourceMap = {
     customer: 'Customer',
     item: 'Product',
     payment: 'Payment',
     reservation: 'Reservation',
+    cost: 'Cost',
   };
   
   return `${actionMap[actionType as keyof typeof actionMap]} ${resourceMap[resourceType as keyof typeof resourceMap]}: ${resourceName}`;
