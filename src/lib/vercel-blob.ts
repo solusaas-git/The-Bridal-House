@@ -28,6 +28,12 @@ export async function uploadToVercelBlob(
   filename?: string
 ): Promise<UploadResult> {
   try {
+    // Check if BLOB_READ_WRITE_TOKEN is available
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('❌ BLOB_READ_WRITE_TOKEN environment variable is not set');
+      throw new Error('BLOB_READ_WRITE_TOKEN environment variable is missing. Please add it in Vercel dashboard → Settings → Environment Variables');
+    }
+
     // Generate filename if not provided (same pattern as existing system)
     const finalFilename = filename || `${Date.now()}-${file.name}`;
     
@@ -35,6 +41,8 @@ export async function uploadToVercelBlob(
     const pathname = `${folder}/${finalFilename}`;
     
     console.log(`📤 Uploading to Vercel Blob: ${pathname}`);
+    console.log(`📁 File size: ${file.size} bytes`);
+    console.log(`🏷️  File type: ${file.type}`);
     
     // Upload to Vercel Blob
     const blob = await put(pathname, file, {
@@ -53,6 +61,20 @@ export async function uploadToVercelBlob(
     
   } catch (error) {
     console.error('❌ Vercel Blob upload error:', error);
+    
+    // Provide specific error messages for common issues
+    if (error instanceof Error) {
+      if (error.message.includes('BLOB_READ_WRITE_TOKEN')) {
+        throw new Error('Missing Vercel Blob token. Please check environment variables.');
+      }
+      if (error.message.includes('fetch')) {
+        throw new Error('Network error during upload. Please try again.');
+      }
+      if (error.message.includes('size')) {
+        throw new Error('File too large for upload. Please choose a smaller file.');
+      }
+    }
+    
     throw new Error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
