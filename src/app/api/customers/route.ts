@@ -127,9 +127,8 @@ export async function POST(request: NextRequest) {
             const uploadResult = await handleSingleFileUpload(file, UPLOAD_FOLDERS.CUSTOMERS_IMAGES);
             attachments.push({
               name: file.name,
-              url: uploadResult.url,
-              size: file.size,
-              type: file.type
+              link: uploadResult.url,  // Changed from 'url' to 'link' to match customer model
+              size: file.size
             });
           } catch (uploadError) {
             console.error('Error uploading customer file:', uploadError);
