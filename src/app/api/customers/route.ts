@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
 import { Customer } from '@/models';
+import { handleSingleFileUpload, UPLOAD_FOLDERS } from '@/lib/upload';
 
 interface CustomerQuery {
   page?: string;
@@ -105,15 +106,40 @@ export async function POST(request: NextRequest) {
     let customerData: Record<string, unknown>;
 
     if (contentType?.includes('multipart/form-data')) {
-      // Handle form data (for future file upload implementation)
+      // Handle form data with file uploads
       const formData = await request.formData();
       customerData = {};
       
+      // Process regular form fields
       formData.forEach((value, key) => {
         if (key !== 'newFiles') {
           customerData[key] = value;
         }
       });
+
+      // Handle file uploads
+      const files = formData.getAll('newFiles') as File[];
+      if (files && files.length > 0) {
+        const attachments = [];
+        for (const file of files) {
+          try {
+            console.log(`📤 Uploading customer file: ${file.name}`);
+            const uploadResult = await handleSingleFileUpload(file, UPLOAD_FOLDERS.CUSTOMERS_IMAGES);
+            attachments.push({
+              name: file.name,
+              url: uploadResult.url,
+              size: file.size,
+              type: file.type
+            });
+          } catch (uploadError) {
+            console.error('Error uploading customer file:', uploadError);
+            // Continue with other files
+          }
+        }
+        if (attachments.length > 0) {
+          customerData.attachments = attachments;
+        }
+      }
     } else {
       // Handle JSON data
       customerData = await request.json();

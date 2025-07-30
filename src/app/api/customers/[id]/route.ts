@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
 import { Customer } from '@/models';
+import { handleSingleFileUpload, UPLOAD_FOLDERS } from '@/lib/upload';
 
 // GET /api/customers/[id] - Get a customer by ID
 export async function GET(
@@ -51,15 +52,44 @@ export async function PUT(
     let updateData: Record<string, unknown>;
 
     if (contentType?.includes('multipart/form-data')) {
-      // Handle form data (for future file upload implementation)
+      // Handle form data with file uploads
       const formData = await request.formData();
       updateData = {};
       
+      // Process regular form fields
       formData.forEach((value, key) => {
         if (key !== 'newFiles') {
           updateData[key] = value;
         }
       });
+
+      // Handle new file uploads
+      const files = formData.getAll('newFiles') as File[];
+      if (files && files.length > 0) {
+        const newAttachments = [];
+        for (const file of files) {
+          try {
+            console.log(`📤 Uploading customer file: ${file.name}`);
+            const uploadResult = await handleSingleFileUpload(file, UPLOAD_FOLDERS.CUSTOMERS_IMAGES);
+            newAttachments.push({
+              name: file.name,
+              url: uploadResult.url,
+              size: file.size,
+              type: file.type
+            });
+          } catch (uploadError) {
+            console.error('Error uploading customer file:', uploadError);
+            // Continue with other files
+          }
+        }
+        
+        // Merge with existing attachments if any
+        if (newAttachments.length > 0) {
+          const existingCustomer = await Customer.findById(id);
+          const existingAttachments = existingCustomer?.attachments || [];
+          updateData.attachments = [...existingAttachments, ...newAttachments];
+        }
+      }
     } else {
       // Handle JSON data
       updateData = await request.json();

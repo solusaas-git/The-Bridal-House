@@ -759,9 +759,9 @@ const AddPaymentModal = ({
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('folder', 'payment');
+        formData.append('uploadDir', 'uploads/payment');
 
-        const response = await fetch('/api/uploads/upload', {
+        const response = await fetch('/api/uploads', {
           method: 'POST',
           body: formData,
         });
