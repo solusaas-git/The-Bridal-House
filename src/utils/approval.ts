@@ -349,6 +349,106 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
     return changes;
   }
   
+  // Handle cost-specific field mapping
+  if (originalData && newData && (
+    originalData.category || 
+    originalData.amount !== undefined || 
+    newData.category || 
+    newData.amount !== undefined ||
+    (originalData.date && originalData.createdBy) // costs have date and createdBy
+  )) {
+    // This is a cost comparison
+    const originalCost = originalData;
+    const newCost = newData;
+    
+    console.log('🔍 Cost comparison debug:');
+    console.log('Original cost:', originalCost);
+    console.log('New cost:', newCost);
+    
+    // Compare basic fields
+    const fieldsToCompare = ['date', 'category', 'amount', 'notes', 'relatedReservation', 'relatedProduct'];
+    
+    for (const field of fieldsToCompare) {
+      const originalValue = originalCost[field];
+      const newValue = newCost[field];
+      
+      // Skip if the field is not present in newData (not being changed)
+      if (!(field in newCost)) {
+        continue;
+      }
+      
+      // Handle special cases
+      if (field === 'amount') {
+        const originalAmount = parseFloat(originalValue) || 0;
+        const newAmount = parseFloat(newValue) || 0;
+        if (originalAmount !== newAmount) {
+          changes[field] = newAmount;
+        }
+      } else if (field === 'category') {
+        // Compare by ID if objects, otherwise direct comparison
+        const originalCategoryId = originalValue?._id || originalValue;
+        const newCategoryId = newValue?._id || newValue;
+        if (originalCategoryId !== newCategoryId) {
+          changes[field] = newValue;
+        }
+      } else if (field === 'relatedReservation' || field === 'relatedProduct') {
+        // Compare by ID if objects, otherwise direct comparison
+        const originalRelatedId = originalValue?._id || originalValue;
+        const newRelatedId = newValue?._id || newValue;
+        if (originalRelatedId !== newRelatedId) {
+          changes[field] = newValue;
+        }
+      } else {
+        // Handle string and other types
+        if (originalValue !== newValue) {
+          changes[field] = newValue;
+        }
+      }
+    }
+    
+    // Compare attachments (if they exist)
+    if (originalCost.attachments || newCost.attachments || newCost.newFiles) {
+      const originalAttachments = originalCost.attachments || [];
+      const newAttachments = newCost.attachments || [];
+      const newFiles = newCost.newFiles || [];
+      
+      // Check if there are actual changes
+      const hasNewFiles = newFiles.length > 0;
+      const hasDeletedFiles = newCost.deletedAttachments && newCost.deletedAttachments.length > 0;
+      
+      // Compare attachments by name and url
+      const originalAttachmentKeys = originalAttachments.map((att: any) => ({
+        name: att.name,
+        url: att.url || att.link
+      }));
+      const newAttachmentKeys = newAttachments.map((att: any) => ({
+        name: att.name,
+        url: att.url || att.link
+      }));
+      const hasModifiedAttachments = JSON.stringify(originalAttachmentKeys) !== JSON.stringify(newAttachmentKeys);
+      
+      if (hasNewFiles || hasDeletedFiles || hasModifiedAttachments) {
+        if (newAttachments.length > 0 || hasNewFiles) {
+          const finalAttachments = [...newAttachments];
+          
+          // Add new files to the attachments
+          if (newFiles.length > 0) {
+            finalAttachments.push(...newFiles);
+          }
+          
+          changes.attachments = finalAttachments;
+        }
+        
+        // Add specific information about what changed
+        if (hasDeletedFiles) {
+          changes.deletedAttachments = newCost.deletedAttachments;
+        }
+      }
+    }
+    
+    return changes;
+  }
+  
   // Handle product-specific field mapping
   if (originalData && newData && (originalData.name || originalData.category)) {
     // This is a product comparison

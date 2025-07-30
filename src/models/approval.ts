@@ -2,8 +2,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IApproval extends Document {
   requestedBy: mongoose.Types.ObjectId;
-  actionType: 'edit' | 'delete';
-  resourceType: 'customer' | 'item' | 'payment' | 'reservation';
+  actionType: 'edit' | 'delete' | 'create';
+  resourceType: 'customer' | 'item' | 'payment' | 'reservation' | 'cost';
   resourceId: mongoose.Types.ObjectId;
   originalData: any;
   newData?: any;
@@ -25,17 +25,19 @@ const ApprovalSchema = new Schema<IApproval>(
     },
     actionType: {
       type: String,
-      enum: ['edit', 'delete'],
+      enum: ['edit', 'delete', 'create'],
       required: true,
     },
     resourceType: {
       type: String,
-      enum: ['customer', 'item', 'payment', 'reservation'],
+      enum: ['customer', 'item', 'payment', 'reservation', 'cost'],
       required: true,
     },
     resourceId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: function(this: IApproval) {
+        return this.actionType !== 'create';
+      },
     },
     originalData: {
       type: Schema.Types.Mixed,

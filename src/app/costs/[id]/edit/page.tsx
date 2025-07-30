@@ -99,6 +99,17 @@ export default function EditCostPage() {
     return `/api/uploads/${imagePath}`;
   };
 
+  // Compute newData for approval system
+  const newData = {
+    ...formData,
+    existingAttachments,
+    newFiles: attachments,
+    deletedAttachments: originalData && originalData.attachments ? 
+      (originalData.attachments as any[]).filter(originalAtt => 
+        !existingAttachments.some(existingAtt => existingAtt.url === originalAtt.url)
+      ) : []
+  };
+
   useEffect(() => {
     fetchCostCategories();
     fetchCost();
@@ -342,13 +353,6 @@ export default function EditCostPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Prepare new data for approval handler
-  const newData = {
-    ...formData,
-    attachments: existingAttachments,
-    newFiles: attachments.map(att => att.file),
-  };
-
   if (loading) {
     return (
       <Layout>
@@ -378,17 +382,7 @@ export default function EditCostPage() {
 
         {/* Form */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <ApprovalHandler
-            actionType="edit"
-            resourceType="cost"
-            resourceId={costId}
-            resourceName={`Cost - ${formData.amount ? `$${formData.amount}` : 'Edit'}`}
-            originalData={originalData}
-            newData={newData}
-            onDirectAction={handleDirectSubmit}
-            onSuccess={() => router.push(`/costs/${costId}`)}
-          >
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
               {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Date */}
@@ -807,23 +801,33 @@ export default function EditCostPage() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+                <ApprovalHandler
+                  actionType="edit"
+                  resourceType="cost"
+                  resourceId={costId}
+                  resourceName={`Cost - ${formData.amount ? `$${formData.amount}` : 'Edit'}`}
+                  originalData={originalData}
+                  newData={newData}
+                  onDirectAction={handleDirectSubmit}
+                  onSuccess={() => router.push(`/costs/${costId}`)}
                 >
-                  {saving ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Changes'
-                  )}
-                </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    {saving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </button>
+                </ApprovalHandler>
               </div>
             </form>
-          </ApprovalHandler>
         </div>
 
         {/* Image Preview Modal */}

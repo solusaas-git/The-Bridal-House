@@ -333,19 +333,7 @@ export default function AddCostPage() {
 
         {/* Form */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-          <ApprovalHandler
-            actionType="create"
-            resourceType="cost"
-            resourceName="New Cost"
-            originalData={{}}
-            newData={formData}
-            onDirectAction={handleDirectSubmit}
-            onSuccess={() => {
-              toast.success('Cost added successfully');
-              router.push('/costs');
-            }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Date */}
@@ -686,23 +674,35 @@ export default function AddCostPage() {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+              <ApprovalHandler
+                actionType="create"
+                resourceType="cost"
+                resourceName="New Cost"
+                originalData={{}}
+                newData={formData}
+                onDirectAction={handleDirectSubmit}
+                onSuccess={() => {
+                  toast.success('Cost added successfully');
+                  router.push('/costs');
+                }}
               >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Adding...
-                  </>
-                ) : (
-                  'Add Cost'
-                )}
-              </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white rounded-lg transition-colors flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Adding...
+                    </>
+                  ) : (
+                    'Add Cost'
+                  )}
+                </button>
+              </ApprovalHandler>
             </div>
           </form>
-        </ApprovalHandler>
         </div>
       </div>
     </Layout>

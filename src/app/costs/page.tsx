@@ -45,9 +45,9 @@ export default function CostsPage() {
   const [endDate, setEndDate] = useState(filters.endDate);
 
   // Permission checks
-  const userCanCreate = canCreate(currentUser, 'cost');
-  const userCanEdit = canEdit(currentUser, 'cost');
-  const userCanDelete = canDelete(currentUser, 'cost');
+  const userCanCreate = canCreate(currentUser, 'costs');
+  const userCanEdit = canEdit(currentUser, 'costs');
+  const userCanDelete = canDelete(currentUser, 'costs');
 
   useEffect(() => {
     fetchCosts();

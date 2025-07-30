@@ -101,8 +101,13 @@ export const needsApproval = (user: User | null, action: 'edit' | 'delete' | 'cr
     return false;
   }
 
-  // Employees need approval for all edit/delete actions
+  // Employees need approval for edit/delete actions, but can create directly
   if (user.role?.toLowerCase() === 'employee') {
+    // Employees can create costs without approval
+    if (action === 'create' && resourceType === 'cost') {
+      return false;
+    }
+    // All other actions need approval
     return true;
   }
 

@@ -95,8 +95,8 @@ export default function ViewCostPage() {
   };
 
   // Permission checks
-  const userCanEdit = canEdit(currentUser, 'cost');
-  const userCanDelete = canDelete(currentUser, 'cost');
+  const userCanEdit = canEdit(currentUser, 'costs');
+  const userCanDelete = canDelete(currentUser, 'costs');
 
   useEffect(() => {
     if (costId) {
@@ -512,23 +512,73 @@ export default function ViewCostPage() {
         {/* Image Preview Modal */}
         {imagePreview.show && (
           <div 
-            className="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 z-[9999]"
+            className="fixed top-0 left-0 w-screen h-screen bg-black/90 backdrop-blur-lg flex items-center justify-center p-4"
             onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
+            style={{ 
+              zIndex: 999999,
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh'
+            }}
           >
-            <div className="relative max-w-[95vw] max-h-[95vh] w-auto h-auto flex items-center justify-center">
-              <img
-                src={imagePreview.src}
-                alt={imagePreview.alt}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <button
-                onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-                className="absolute -top-12 right-0 p-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors text-xl font-bold backdrop-blur-sm border border-white/20"
-                title="Close"
-              >
-                ✕
-              </button>
+            <div 
+              className="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-2xl flex flex-col"
+              style={{
+                width: '90vw',
+                height: '90vh',
+                maxWidth: '90vw',
+                maxHeight: '90vh'
+              }}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <div className="flex-1 text-center">
+                  <h3 className="text-white font-medium text-sm truncate px-4">{imagePreview.alt}</h3>
+                </div>
+                <button
+                  onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
+                  title="Close"
+                >
+                  <XMarkIcon className="h-5 w-5 text-gray-400 group-hover:text-white" />
+                </button>
+              </div>
+
+              {/* Image Container */}
+              <div className="relative bg-black/20 rounded-xl overflow-hidden border border-white/10 flex-1 flex items-center justify-center min-h-0">
+                <img
+                  src={imagePreview.src}
+                  alt={imagePreview.alt}
+                  className="max-w-full max-h-full w-auto h-auto object-contain"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <PaperClipIcon className="h-4 w-4" />
+                  <span>Attachment Preview</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownload({ url: imagePreview.src, name: imagePreview.alt })}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
+                  >
+                    <ArrowDownTrayIcon className="h-4 w-4" />
+                    Download
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
