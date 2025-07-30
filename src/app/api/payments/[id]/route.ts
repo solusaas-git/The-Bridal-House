@@ -122,9 +122,9 @@ export async function PUT(
       }
 
       const paymentAttachments = attachments.map((file: UploadedFile) => ({
-        name: file.originalname,
+        name: file.name,
         size: file.size,
-        url: file.path.replace(/^uploads/, ''),
+        url: file.url,
       }));
 
       // Combine date and time if both are provided

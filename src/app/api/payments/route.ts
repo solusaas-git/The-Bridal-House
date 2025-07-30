@@ -175,9 +175,9 @@ export async function POST(request: NextRequest) {
       }
 
       const paymentAttachments = attachments.map((file: UploadedFile) => ({
-        name: file.originalname,
+        name: file.name,
         size: file.size,
-        url: file.path.replace(/^uploads/, ''),
+        url: file.url,
       }));
 
       const newPayment = new Payment({
