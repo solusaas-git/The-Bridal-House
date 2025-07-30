@@ -1,0 +1,71 @@
+import mongoose, { Document, Model, Schema } from 'mongoose';
+
+export interface IPaymentAttachment {
+  name?: string;
+  size?: number;
+  url?: string;
+}
+
+export interface IPayment extends Document {
+  client: mongoose.Types.ObjectId;
+  reservation: mongoose.Types.ObjectId;
+  paymentDate?: Date;
+  amount?: number;
+  paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
+  paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  reference?: string;
+  note?: string;
+  attachments: IPaymentAttachment[];
+  createdBy: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const PaymentSchema = new Schema<IPayment>(
+  {
+    client: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
+    reservation: { type: Schema.Types.ObjectId, ref: 'Reservation', required: true },
+    paymentDate: { type: Date },
+    amount: { type: Number },
+    paymentMethod: {
+      type: String,
+      enum: ['Cash', 'Bank Transfer', 'Credit Card', 'Check'],
+    },
+    paymentType: {
+      type: String,
+      enum: ['Advance', 'Security', 'Final', 'Other'],
+    },
+    reference: {
+      type: String,
+    },
+    note: {
+      type: String,
+    },
+    attachments: [
+      {
+        name: {
+          type: String,
+        },
+        size: {
+          type: Number,
+        },
+        url: {
+          type: String,
+        },
+      },
+    ],
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  },
+  { timestamps: true }
+);
+
+// Prevent re-compilation during development
+let Payment: Model<IPayment>;
+
+try {
+  Payment = mongoose.model<IPayment>('Payment');
+} catch {
+  Payment = mongoose.model<IPayment>('Payment', PaymentSchema);
+}
+
+export default Payment; 

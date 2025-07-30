@@ -1,0 +1,478 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import AttachmentsSection from '@/components/shared/AttachmentsSection';
+import PhoneInput from '@/components/ui/PhoneInput';
+import Layout from '@/components/Layout';
+import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+
+interface Customer {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone: string;
+  address: string;
+  idNumber: string;
+  weddingDate?: string;
+  weddingTime?: string;
+  weddingLocation?: string;
+  weddingCity: string;
+  whatsapp?: string;
+  type: 'Client' | 'Prospect';
+  attachments?: Array<{
+    name: string;
+    size: number;
+    link: string;
+  }>;
+}
+
+const EditCustomerPage = () => {
+  const router = useRouter();
+  const params = useParams();
+  const customerId = params.id as string;
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [originalData, setOriginalData] = useState<Customer | null>(null);
+  const [formData, setFormData] = useState<Customer>({
+    _id: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    idNumber: '',
+    phone: '',
+    weddingDate: '',
+    weddingTime: '00:00',
+    weddingLocation: '',
+    weddingCity: '',
+    type: 'Client',
+    email: '',
+    whatsapp: '',
+    attachments: [],
+  });
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`/api/customers/${customerId}`);
+        
+        if (response.data.success) {
+          const customer = response.data.customer;
+          const customerData = {
+            _id: customer._id,
+            firstName: customer.firstName || '',
+            lastName: customer.lastName || '',
+            address: customer.address || '',
+            idNumber: customer.idNumber || '',
+            phone: customer.phone || '',
+            weddingDate: customer.weddingDate ? customer.weddingDate.split('T')[0] : '',
+            weddingTime: customer.weddingTime || '00:00',
+            weddingLocation: customer.weddingLocation || '',
+            weddingCity: customer.weddingCity || '',
+            type: customer.type || 'Client',
+            email: customer.email || '',
+            whatsapp: customer.whatsapp || '',
+            attachments: customer.attachments || [],
+          };
+          setOriginalData(customerData);
+          setFormData(customerData);
+        } else {
+          toast.error('Customer not found');
+          router.push('/customers');
+        }
+      } catch (error) {
+        console.error('Error fetching customer:', error);
+        toast.error('Failed to load customer');
+        router.push('/customers');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (customerId) {
+      fetchCustomer();
+    }
+  }, [customerId, router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePhoneChange = (event: { target: { name: string; value: string } }) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFilesAdded = (files: File[]) => {
+    setNewFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveNewFile = (index: number) => {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveExisting = (fileToRemove: { name: string; size: number; link: string; }) => {
+    setFormData((prev) => ({
+      ...prev,
+      attachments: prev.attachments?.filter(
+        (file) => file.link !== fileToRemove.link
+      ),
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      const formDataToSend = new FormData();
+
+      // Append each field from formData (except attachments and _id)
+      for (const key in formData) {
+        if (key !== 'attachments' && key !== '_id') {
+          const value = formData[key as keyof Customer];
+          formDataToSend.append(key, value?.toString() || '');
+        }
+      }
+
+      // Append existing attachments
+      if (formData.attachments) {
+        formData.attachments.forEach((file, index) => {
+          formDataToSend.append(`attachments[${index}][name]`, file.name);
+          formDataToSend.append(`attachments[${index}][size]`, file.size.toString());
+          formDataToSend.append(`attachments[${index}][link]`, file.link);
+        });
+      }
+
+      // Append newFiles if there are any
+      newFiles.forEach((file) => {
+        formDataToSend.append('newFiles', file);
+      });
+
+      const response = await axios.put(`/api/customers/${customerId}`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      if (response.data.success) {
+        toast.success('Customer updated successfully!');
+        router.push(`/customers/${customerId}`);
+      } else {
+        toast.error(response.data.message || 'Failed to update customer');
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || 'Failed to update customer');
+      } else {
+        toast.error('Failed to update customer');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDirectUpdate = async () => {
+    setSaving(true);
+    try {
+      const formDataToSend = new FormData();
+
+      // Append each field from formData (except attachments and _id)
+      for (const key in formData) {
+        if (key !== 'attachments' && key !== '_id') {
+          const value = formData[key as keyof Customer];
+          formDataToSend.append(key, value?.toString() || '');
+        }
+      }
+
+      // Append existing attachments
+      if (formData.attachments) {
+        formData.attachments.forEach((file, index) => {
+          formDataToSend.append(`attachments[${index}][name]`, file.name);
+          formDataToSend.append(`attachments[${index}][size]`, file.size.toString());
+          formDataToSend.append(`attachments[${index}][link]`, file.link);
+        });
+      }
+
+      // Append newFiles if there are any
+      newFiles.forEach((file) => {
+        formDataToSend.append('newFiles', file);
+      });
+
+      const response = await axios.put(`/api/customers/${customerId}`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      if (response.data.success) {
+        toast.success('Customer updated successfully!');
+        router.push(`/customers/${customerId}`);
+      } else {
+        toast.error(response.data.message || 'Failed to update customer');
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message || 'Failed to update customer');
+      } else {
+        toast.error('Failed to update customer');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBack = () => {
+    router.push(`/customers/${customerId}`);
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleBack}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Edit Customer</h1>
+            <p className="text-gray-300">Update customer information</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Form */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            {/* Left Column */}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">First Name *</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Last Name *</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Address *</label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  rows={3}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">CIN/PASSPORT ID *</label>
+                <input
+                  type="text"
+                  name="idNumber"
+                  value={formData.idNumber}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Phone *</label>
+                <PhoneInput
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">WhatsApp</label>
+                <PhoneInput
+                  name="whatsapp"
+                  value={formData.whatsapp}
+                  onChange={handlePhoneChange}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-200">Wedding Date</label>
+                  <input
+                    type="date"
+                    name="weddingDate"
+                    value={formData.weddingDate}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-200">Wedding Time</label>
+                  <input
+                    type="time"
+                    name="weddingTime"
+                    value={formData.weddingTime}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Wedding Location</label>
+                <input
+                  type="text"
+                  name="weddingLocation"
+                  value={formData.weddingLocation}
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Wedding City *</label>
+                <input
+                  type="text"
+                  name="weddingCity"
+                  value={formData.weddingCity}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">Type *</label>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Client">Client</option>
+                  <option value="Prospect">Prospect</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Attachments Section */}
+          <AttachmentsSection
+            existingFiles={formData.attachments || []}
+            newFiles={newFiles}
+            onAddFiles={handleFilesAdded}
+            onRemoveExisting={handleRemoveExisting}
+            onRemoveNew={handleRemoveNewFile}
+          />
+
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-white/10">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+            >
+              Cancel
+            </button>
+            
+            <ApprovalHandler
+              actionType="edit"
+              resourceType="customer"
+              resourceId={customerId}
+              resourceName={`${formData.firstName} ${formData.lastName}`}
+              originalData={originalData}
+              newData={{
+                ...formData,
+                newFiles: newFiles // Include new files in the comparison
+              }}
+              onDirectAction={handleDirectUpdate}
+              onSuccess={() => {
+                toast.success('Customer updated successfully!');
+                router.push(`/customers/${customerId}`);
+              }}
+            >
+              <button
+                type="button"
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </ApprovalHandler>
+          </div>
+        </div>
+      </div>
+    </div>
+    </Layout>
+  );
+};
+
+export default EditCustomerPage; 

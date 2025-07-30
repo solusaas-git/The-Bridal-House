@@ -1,0 +1,466 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+  DocumentIcon,
+  CalendarIcon
+} from '@heroicons/react/24/outline';
+import { format } from 'date-fns';
+import Layout from '@/components/Layout';
+import { RootState } from '@/store/store';
+import {
+  setCosts,
+  setCostCategories,
+  setLoading,
+  setPagination,
+  setFilters,
+  removeCost
+} from '@/store/reducers/costSlice';
+import { canCreate, canEdit, canDelete } from '@/utils/permissions';
+import { formatCurrency } from '@/utils/currency';
+
+export default function CostsPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { costs, costCategories, loading, pagination, filters } = useSelector(
+    (state: RootState) => state.cost
+  );
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const currencySettings = useSelector((state: RootState) => state.settings);
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(filters.search);
+  const [selectedCategory, setSelectedCategory] = useState(filters.category);
+  const [startDate, setStartDate] = useState(filters.startDate);
+  const [endDate, setEndDate] = useState(filters.endDate);
+
+  // Permission checks
+  const userCanCreate = canCreate(currentUser, 'cost');
+  const userCanEdit = canEdit(currentUser, 'cost');
+  const userCanDelete = canDelete(currentUser, 'cost');
+
+  useEffect(() => {
+    fetchCosts();
+    fetchCostCategories();
+  }, []);
+
+  useEffect(() => {
+    // Apply filters when they change
+    const timeoutId = setTimeout(() => {
+      handleApplyFilters();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedCategory, startDate, endDate]);
+
+  const fetchCosts = async (customFilters?: Record<string, string>) => {
+    try {
+      dispatch(setLoading(true));
+      
+      const queryParams = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        search: customFilters?.search ?? filters.search,
+        category: customFilters?.category ?? filters.category,
+        startDate: customFilters?.startDate ?? filters.startDate,
+        endDate: customFilters?.endDate ?? filters.endDate,
+        sortBy: customFilters?.sortBy ?? filters.sortBy,
+        sortOrder: customFilters?.sortOrder ?? filters.sortOrder,
+      });
+
+      // Remove empty parameters
+      Array.from(queryParams.entries()).forEach(([key, value]) => {
+        if (!value) queryParams.delete(key);
+      });
+
+      const response = await axios.get(`/api/costs?${queryParams}`);
+      dispatch(setCosts(response.data.costs));
+      dispatch(setPagination(response.data.pagination));
+    } catch (error) {
+      console.error('Error fetching costs:', error);
+      toast.error('Failed to fetch costs');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const fetchCostCategories = async () => {
+    try {
+      const response = await axios.get('/api/cost-categories');
+      dispatch(setCostCategories(response.data.costCategories));
+    } catch (error) {
+      console.error('Error fetching cost categories:', error);
+    }
+  };
+
+  const handleApplyFilters = () => {
+    const newFilters = {
+      search: searchTerm,
+      category: selectedCategory,
+      startDate,
+      endDate,
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder
+    };
+    
+    dispatch(setFilters(newFilters));
+    fetchCosts(newFilters);
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(setPagination({ ...pagination, page }));
+    fetchCosts();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this cost?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/costs/${id}`);
+      dispatch(removeCost(id));
+      toast.success('Cost deleted successfully');
+    } catch (error: unknown) {
+      console.error('Error deleting cost:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete cost';
+      toast.error(errorMessage);
+    }
+  };
+
+  const getTotalCosts = () => {
+    return costs.reduce((total, cost) => total + cost.amount, 0);
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Costs</h1>
+            <p className="text-gray-300">Manage and track business expenses</p>
+          </div>
+          
+          {userCanCreate && (
+            <button
+              onClick={() => router.push('/costs/add')}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Add Cost
+            </button>
+          )}
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Search */}
+            <div className="relative flex-1 min-w-64">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search costs, notes, or categories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {costCategories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Clear Filters */}
+            {(startDate || endDate || selectedCategory) && (
+              <button
+                onClick={() => {
+                  setStartDate('');
+                  setEndDate('');
+                  setSelectedCategory('');
+                }}
+                className="px-3 py-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Active Filters Indicator */}
+        {(startDate || endDate || selectedCategory) && (
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-medium text-blue-300">Active filters:</span>
+              {selectedCategory && (
+                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-sm">
+                  Category: {costCategories.find(cat => cat._id === selectedCategory)?.name}
+                </span>
+              )}
+              {(startDate || endDate) && (
+                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-sm">
+                  Date: {
+                    startDate && endDate 
+                      ? `${startDate} to ${endDate}`
+                      : startDate 
+                        ? `from ${startDate}`
+                        : `until ${endDate}`
+                  }
+                </span>
+              )}
+              <span className="text-xs text-blue-400 ml-2">
+                Showing {pagination.total} result{pagination.total !== 1 ? 's' : ''} • Total: {formatCurrency(getTotalCosts(), currencySettings)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Table */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-300">Loading costs...</p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-white/5 border-b border-white/10">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Category
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Related
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Notes
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {costs.map((cost) => (
+                      <tr 
+                        key={cost._id} 
+                        className="hover:bg-white/5 cursor-pointer transition-colors"
+                        onClick={() => router.push(`/costs/${cost._id}`)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {format(new Date(cost.date), 'MMM dd, yyyy')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: cost.category.color }}
+                            />
+                            <span>{cost.category.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                          {formatCurrency(cost.amount, currencySettings)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {cost.relatedReservation && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                              Reservation
+                            </span>
+                          )}
+                          {cost.relatedProduct && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                              Product
+                            </span>
+                          )}
+                          {!cost.relatedReservation && !cost.relatedProduct && (
+                            <span className="text-gray-500">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-300">
+                          <div className="max-w-xs truncate">
+                            {cost.notes || '—'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/costs/${cost._id}`);
+                              }}
+                              className="p-1 text-gray-400 hover:text-blue-400 transition-colors"
+                              title="View"
+                            >
+                              <EyeIcon className="h-4 w-4" />
+                            </button>
+                            
+                            {userCanEdit && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  router.push(`/costs/${cost._id}/edit`);
+                                }}
+                                className="p-1 text-gray-400 hover:text-yellow-400 transition-colors"
+                                title="Edit"
+                              >
+                                <PencilIcon className="h-4 w-4" />
+                              </button>
+                            )}
+                            
+                            {userCanDelete && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(cost._id);
+                                }}
+                                className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                title="Delete"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {costs.length === 0 && (
+                  <div className="text-center py-12">
+                    <DocumentIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-400 text-lg mb-2">No costs found</p>
+                    <p className="text-gray-500 text-sm">
+                      {(startDate || endDate || selectedCategory) 
+                        ? 'Try adjusting your filters or search criteria'
+                        : 'Start by adding your first cost entry'
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination */}
+              {pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 bg-white/5 border-t border-white/10">
+                  <div className="text-sm text-gray-300">
+                    Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                    {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                    {pagination.total} entries
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handlePageChange(pagination.page - 1)}
+                      disabled={pagination.page === 1}
+                      className="px-3 py-1 text-gray-300 hover:text-white border border-white/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    
+                    {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
+                      const page = pagination.page <= 3 
+                        ? i + 1
+                        : pagination.page >= pagination.pages - 2
+                          ? pagination.pages - 4 + i
+                          : pagination.page - 2 + i;
+                      
+                      if (page < 1 || page > pagination.pages) return null;
+                      
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-3 py-1 border border-white/20 rounded transition-colors ${
+                            pagination.page === page
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'text-gray-300 hover:text-white hover:bg-white/10'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+                    
+                    <button
+                      onClick={() => handlePageChange(pagination.page + 1)}
+                      disabled={pagination.page === pagination.pages}
+                      className="px-3 py-1 text-gray-300 hover:text-white border border-white/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
+} 

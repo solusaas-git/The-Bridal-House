@@ -1,0 +1,970 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { createPortal } from 'react-dom';
+import {
+  PlusIcon,
+  Pencil1Icon,
+  TrashIcon,
+  EyeOpenIcon,
+  MagnifyingGlassIcon,
+  GearIcon,
+} from '@radix-ui/react-icons';
+import { RootState } from '@/store/store';
+import { setReservations, removeReservation } from '@/store/reducers/reservationSlice';
+import { formatCurrency } from '@/utils/currency';
+import Pagination from '@/components/ui/Pagination';
+import Layout from '@/components/Layout';
+import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+
+export default function ReservationsPage() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const reservations = useSelector((state: RootState) => state.reservation.reservations);
+  const currencySettings = useSelector((state: RootState) => state.settings);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const [savingPreferences, setSavingPreferences] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Date filter state
+  const [dateFilters, setDateFilters] = useState({
+    dateColumn: 'pickupDate', // Default column to filter
+    startDate: '',
+    endDate: '',
+  });
+
+
+
+  // Image hover popup state
+  const [hoveredImage, setHoveredImage] = useState<{
+    src: string;
+    alt: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // Column visibility state
+  const [columnVisibility, setColumnVisibility] = useState({
+    id: true,
+    createdAt: true,
+    clientName: true,
+    weddingDate: true,
+    items: true,
+    pickupDate: true,
+    returnDate: true,
+    availabilityDate: false,
+    total: true,
+    type: true,
+    status: true,
+    paymentStatus: true,
+    createdBy: false,
+    actions: true,
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load column preferences on component mount
+  useEffect(() => {
+    const loadColumnPreferences = async () => {
+      try {
+        const response = await axios.get('/api/user-preferences/columns/reservations');
+        if (response.data.success && response.data.columnPreferences) {
+          setColumnVisibility(response.data.columnPreferences);
+        }
+      } catch (error) {
+        console.error('Failed to load column preferences:', error);
+        // Keep default values if loading fails
+      }
+    };
+
+    loadColumnPreferences();
+  }, []);
+
+  const handleDropdownToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!dropdownOpen) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setDropdownOpen(!dropdownOpen);
+  };
+
+
+
+  // Fetch reservations with useCallback
+  const fetchReservations = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params: any = {
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchTerm,
+      };
+
+      // Add date filters if they are set
+      if (dateFilters.startDate) {
+        params.startDate = dateFilters.startDate;
+      }
+      if (dateFilters.endDate) {
+        params.endDate = dateFilters.endDate;
+      }
+      if (dateFilters.startDate || dateFilters.endDate) {
+        params.dateColumn = dateFilters.dateColumn;
+      }
+
+
+
+      const response = await axios.get('/api/reservations', { params });
+
+      if (response.data.success) {
+        dispatch(setReservations(response.data.reservations));
+        setTotalCount(response.data.pagination?.totalCount || response.data.reservations.length);
+      } else {
+        setError(response.data.message || 'Failed to fetch reservations');
+        toast.error(response.data.message || 'Failed to load reservations');
+      }
+    } catch (error) {
+      setError('Failed to fetch reservations');
+      console.error('Error fetching reservations:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(`Failed to load reservations: ${error.response.data.message || error.message}`);
+      } else {
+        toast.error('Failed to load reservations: Network error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, itemsPerPage, searchTerm, dateFilters, dispatch]);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
+
+  // Toggle column visibility and save to database
+  const toggleColumn = (column: string) => {
+    const newVisibility = {
+      ...columnVisibility,
+      [column]: !columnVisibility[column as keyof typeof columnVisibility],
+    };
+    
+    setColumnVisibility(newVisibility);
+    saveColumnPreferences(newVisibility);
+  };
+
+  const saveColumnPreferences = async (preferences: typeof columnVisibility) => {
+    try {
+      setSavingPreferences(true);
+      await axios.put('/api/user-preferences/columns/reservations', {
+        columnVisibility: preferences,
+      });
+      toast.success('Column preferences saved successfully');
+    } catch (error) {
+      console.error('Failed to save column preferences:', error);
+      toast.error('Failed to save column preferences');
+    } finally {
+      setSavingPreferences(false);
+    }
+  };
+
+  const handleRowClick = (reservationId: string) => {
+    router.push(`/reservations/${reservationId}`);
+  };
+
+  const handleDeleteReservation = async (reservationId: string, e?: React.MouseEvent) => {
+    // Prevent row click when clicking delete button
+    if (e) {
+      e.stopPropagation();
+    }
+
+    if (!confirm('Are you sure you want to delete this reservation?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        dispatch(removeReservation(reservationId));
+        toast.success('Reservation deleted successfully');
+        // Refresh the list
+        fetchReservations();
+      } else {
+        toast.error('Failed to delete reservation');
+      }
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+      toast.error('Failed to delete reservation');
+    }
+  };
+
+  // Filter reservations based on search term
+  const filteredReservations = reservations.filter((reservation: any) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      reservation.type?.toLowerCase().includes(searchLower) ||
+      reservation.status?.toLowerCase().includes(searchLower) ||
+      reservation.paymentStatus?.toLowerCase().includes(searchLower) ||
+      (reservation.client && (
+        `${reservation.client.firstName} ${reservation.client.lastName}`.toLowerCase().includes(searchLower) ||
+        reservation.client.email?.toLowerCase().includes(searchLower) ||
+        reservation.client.phone?.includes(searchLower)
+      )) ||
+      reservation.items?.some((item: any) => 
+        item.name?.toLowerCase().includes(searchLower)
+      )
+    );
+  });
+
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const handleImageHover = (e: React.MouseEvent, imageUrl: string, alt: string) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoveredImage({
+      src: imageUrl,
+      alt: alt,
+      x: rect.right + 10, // Position to the right of the image
+      y: rect.top - 50, // Position slightly above the image
+    });
+  };
+
+  const handleImageLeave = () => {
+    setHoveredImage(null);
+  };
+
+
+
+  const formatItemsList = (items: any[]) => {
+    if (!items || items.length === 0) {
+      return (
+        <span className="text-gray-400 text-sm">No items</span>
+      );
+    }
+
+    // Filter items to show only dresses (category: 677ee9fdd52d692ac0ea6339)
+    const dressItems = items.filter(item => item.category === '677ee9fdd52d692ac0ea6339');
+    
+    if (dressItems.length === 0) {
+      // If no dresses, show first item of any category
+      const mainItem = items[0];
+      const imageUrl = mainItem.primaryPhoto ? `/api/uploads/${mainItem.primaryPhoto}` : null;
+
+      return (
+        <div className="flex items-center gap-3">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={mainItem.name}
+              className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+              onMouseEnter={(e) => handleImageHover(e, imageUrl, mainItem.name)}
+              onMouseLeave={handleImageLeave}
+              onError={(e) => {
+                // Replace failed image with placeholder div
+                const placeholder = document.createElement('div');
+                placeholder.className = 'h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center';
+                placeholder.innerHTML = '<span class="text-xs text-gray-400">IMG</span>';
+                (e.target as HTMLImageElement).parentNode?.replaceChild(placeholder, e.target as HTMLImageElement);
+              }}
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center">
+              <span className="text-xs text-gray-400">IMG</span>
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="text-white text-sm">
+              {mainItem.name}
+            </span>
+            {items.length > 1 && (
+              <span className="text-gray-400 text-xs">
+                +{items.length - 1} more items
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Show the first dress as main item
+    const mainDress = dressItems[0];
+    const imageUrl = mainDress.primaryPhoto ? `/api/uploads/${mainDress.primaryPhoto}` : null;
+
+    return (
+      <div className="flex items-center gap-3">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={mainDress.name}
+            className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+            onMouseEnter={(e) => handleImageHover(e, imageUrl, mainDress.name)}
+            onMouseLeave={handleImageLeave}
+            onError={(e) => {
+              // Replace failed image with placeholder div
+              const placeholder = document.createElement('div');
+              placeholder.className = 'h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center';
+              placeholder.innerHTML = '<span class="text-xs text-gray-400">IMG</span>';
+              (e.target as HTMLImageElement).parentNode?.replaceChild(placeholder, e.target as HTMLImageElement);
+            }}
+          />
+        ) : (
+          <div className="h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center">
+            <span className="text-xs text-gray-400">IMG</span>
+          </div>
+        )}
+        <div className="flex flex-col">
+          <span className="text-white text-sm">
+            {mainDress.name}
+          </span>
+          {dressItems.length > 1 && (
+            <span className="text-gray-400 text-xs">
+              +{dressItems.length - 1} more dresses
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'Confirmed': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'Draft': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'Cancelled': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  const getPaymentStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'Paid': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'Partially Paid': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'Pending': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'Not Paid': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="space-y-6">
+          <div className="text-center text-red-400">
+            <p>Error: {error}</p>
+            <button 
+              onClick={fetchReservations}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Reservations</h1>
+            <p className="text-gray-300">Manage your reservation bookings</p>
+          </div>
+          <Link
+            href="/reservations/add"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          >
+            <PlusIcon className="h-4 w-4" />
+            Add Reservation
+          </Link>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Search */}
+            <div className="relative flex-1 min-w-64">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search reservations, clients, or products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Date Column Selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Filter by:</label>
+              <select
+                value={dateFilters.dateColumn}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="pickupDate">Pickup Date</option>
+                <option value="returnDate">Return Date</option>
+                <option value="weddingDate">Wedding Date</option>
+                <option value="availabilityDate">Availability Date</option>
+                <option value="createdAt">Created Date</option>
+              </select>
+            </div>
+
+            {/* Start Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
+              <input
+                type="date"
+                value={dateFilters.startDate}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
+              <input
+                type="date"
+                value={dateFilters.endDate}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Clear Filters */}
+            {(dateFilters.startDate || dateFilters.endDate) && (
+              <button
+                onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
+                className="px-3 py-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap"
+              >
+                Clear Dates
+              </button>
+            )}
+
+            {/* Column Visibility Toggle */}
+            <div className="relative dropdown-container ml-auto">
+              <button
+                onClick={handleDropdownToggle}
+                className="flex items-center gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors"
+              >
+                <GearIcon className="h-4 w-4" />
+                Columns
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Portal-rendered dropdown */}
+        {mounted && dropdownOpen && createPortal(
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 z-[9998]" 
+              onClick={() => setDropdownOpen(false)}
+            />
+            
+            {/* Dropdown */}
+            <div 
+              className="fixed w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-[9999]"
+              style={{
+                top: `${dropdownPosition.top}px`,
+                right: `${dropdownPosition.right}px`,
+              }}
+            >
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-white mb-3">
+                  Show/Hide Columns
+                  {savingPreferences && (
+                    <span className="ml-2 text-xs text-blue-400">Saving...</span>
+                  )}
+                </h3>
+                
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.id}
+                      onChange={() => toggleColumn('id')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">ID</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.createdAt}
+                      onChange={() => toggleColumn('createdAt')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Created</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.clientName}
+                      onChange={() => toggleColumn('clientName')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Client</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.weddingDate}
+                      onChange={() => toggleColumn('weddingDate')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Wedding Date</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.items}
+                      onChange={() => toggleColumn('items')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Items</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.pickupDate}
+                      onChange={() => toggleColumn('pickupDate')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Pickup Date</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.returnDate}
+                      onChange={() => toggleColumn('returnDate')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Return Date</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.availabilityDate}
+                      onChange={() => toggleColumn('availabilityDate')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Availability Date</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.total}
+                      onChange={() => toggleColumn('total')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Total</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.type}
+                      onChange={() => toggleColumn('type')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Type</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.status}
+                      onChange={() => toggleColumn('status')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Status</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.paymentStatus}
+                      onChange={() => toggleColumn('paymentStatus')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Payment</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.createdBy}
+                      onChange={() => toggleColumn('createdBy')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Created By</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={columnVisibility.actions}
+                      onChange={() => toggleColumn('actions')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Actions</span>
+                  </label>
+                </div>
+
+                <div className="flex justify-end space-x-2 mt-4 pt-3 border-t border-white/20">
+                  <button
+                    onClick={() => setDropdownOpen(false)}
+                    className="px-3 py-1 text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => saveColumnPreferences(columnVisibility)}
+                    disabled={savingPreferences}
+                    className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
+                  >
+                    {savingPreferences ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>,
+          document.body
+        )}
+
+        {/* Active Filters Indicator */}
+        {(dateFilters.startDate || dateFilters.endDate) && (
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-medium text-blue-300">Active filters:</span>
+              {(dateFilters.startDate || dateFilters.endDate) && (
+                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-sm">
+                  {dateFilters.dateColumn.charAt(0).toUpperCase() + dateFilters.dateColumn.slice(1)}: {
+                    dateFilters.startDate && dateFilters.endDate 
+                      ? `${dateFilters.startDate} to ${dateFilters.endDate}`
+                      : dateFilters.startDate 
+                        ? `from ${dateFilters.startDate}`
+                        : `until ${dateFilters.endDate}`
+                  }
+                </span>
+              )}
+              <span className="text-xs text-blue-400 ml-2">
+                Showing {totalCount} result{totalCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Table */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-300">Loading reservations...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-white/5 border-b border-white/10">
+                  <tr>
+                    {columnVisibility.id && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        ID
+                      </th>
+                    )}
+                    {columnVisibility.createdAt && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Created
+                      </th>
+                    )}
+                                         {columnVisibility.clientName && (
+                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                         Client
+                       </th>
+                     )}
+                     {columnVisibility.weddingDate && (
+                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                         Wedding Date
+                       </th>
+                     )}
+                     {columnVisibility.items && (
+                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                         Items
+                       </th>
+                     )}
+                    {columnVisibility.pickupDate && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Pickup Date
+                      </th>
+                    )}
+                    {columnVisibility.returnDate && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Return Date
+                      </th>
+                    )}
+                    {columnVisibility.availabilityDate && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Availability Date
+                      </th>
+                    )}
+                    {columnVisibility.total && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Total
+                      </th>
+                    )}
+                    {columnVisibility.type && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Type
+                      </th>
+                    )}
+                    {columnVisibility.status && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Status
+                      </th>
+                    )}
+                    {columnVisibility.paymentStatus && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Payment
+                      </th>
+                    )}
+                    {columnVisibility.createdBy && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Created By
+                      </th>
+                    )}
+                    {columnVisibility.actions && (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {reservations?.map((reservation: any, index) => (
+                    <tr 
+                      key={reservation._id} 
+                      className="hover:bg-white/5 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(reservation._id)}
+                    >
+                      {columnVisibility.id && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {reservation._id?.slice(-6) || 'N/A'}
+                        </td>
+                      )}
+                      {columnVisibility.createdAt && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {formatDate(reservation.createdAt)}
+                        </td>
+                      )}
+                                             {columnVisibility.clientName && (
+                         <td className="px-6 py-4 whitespace-nowrap">
+                           {reservation.client ? (
+                             <div>
+                               <div className="text-sm font-medium text-white">
+                                 {reservation.client.firstName} {reservation.client.lastName}
+                               </div>
+                               <div className="text-sm text-gray-400">{reservation.client.email}</div>
+                             </div>
+                           ) : (
+                             <span className="text-sm text-gray-400">No client</span>
+                           )}
+                         </td>
+                       )}
+                       {columnVisibility.weddingDate && (
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                           {reservation.client?.weddingDate ? formatDate(reservation.client.weddingDate) : 'N/A'}
+                         </td>
+                       )}
+                       {columnVisibility.items && (
+                         <td className="px-6 py-4 text-sm text-gray-300">
+                           {formatItemsList(reservation.items)}
+                         </td>
+                       )}
+                      {columnVisibility.pickupDate && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {formatDate(reservation.pickupDate)}
+                        </td>
+                      )}
+                      {columnVisibility.returnDate && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {formatDate(reservation.returnDate)}
+                        </td>
+                      )}
+                      {columnVisibility.availabilityDate && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {formatDate(reservation.availabilityDate)}
+                        </td>
+                      )}
+                      {columnVisibility.total && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                          {formatCurrency(reservation.total || reservation.totalAmount || 0, currencySettings)}
+                        </td>
+                      )}
+                      {columnVisibility.type && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {reservation.type}
+                        </td>
+                      )}
+                      {columnVisibility.status && (
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(reservation.status)}`}>
+                            {reservation.status}
+                          </span>
+                        </td>
+                      )}
+                      {columnVisibility.paymentStatus && (
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getPaymentStatusBadgeColor(reservation.paymentStatus || 'Pending')}`}>
+                            {reservation.paymentStatus || 'Pending'}
+                          </span>
+                        </td>
+                      )}
+                      {columnVisibility.createdBy && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {reservation.createdBy?.name || 'N/A'}
+                        </td>
+                      )}
+                      {columnVisibility.actions && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex items-center space-x-3">
+                            <Link
+                              href={`/reservations/${reservation._id}`}
+                              className="text-blue-400 hover:text-blue-300 transition-colors"
+                              title="View"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <EyeOpenIcon className="w-4 h-4" />
+                            </Link>
+                            <Link
+                              href={`/reservations/${reservation._id}/edit`}
+                              className="text-green-400 hover:text-green-300 transition-colors"
+                              title="Edit"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Pencil1Icon className="w-4 h-4" />
+                            </Link>
+                            <ApprovalHandler
+                              actionType="delete"
+                              resourceType="reservation"
+                              resourceId={reservation._id}
+                              resourceName={`Reservation #${reservation.reservationNumber || reservation._id}`}
+                              originalData={reservation}
+                              onDirectAction={async () => {
+                                await axios.delete(`/api/reservations/${reservation._id}`);
+                              }}
+                              onSuccess={() => {
+                                toast.success('Reservation deleted successfully');
+                                fetchReservations(); // Refresh the list
+                              }}
+                            >
+                              <button
+                                type="button"
+                                className="text-red-400 hover:text-red-300 transition-colors"
+                                title="Delete"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            </ApprovalHandler>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {reservations?.length === 0 && !loading && (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">No reservations found</p>
+                  {searchTerm && (
+                    <p className="text-gray-500 text-sm mt-2">
+                      Try adjusting your search criteria
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Image Hover Popup */}
+        {mounted && hoveredImage && createPortal(
+          <div
+            className="fixed z-[10000] pointer-events-none"
+            style={{
+              left: `${hoveredImage.x}px`,
+              top: `${hoveredImage.y}px`,
+            }}
+          >
+            <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl p-2 max-w-xs">
+              <img
+                src={hoveredImage.src}
+                alt={hoveredImage.alt}
+                className="w-64 h-64 object-cover rounded-lg"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiBmaWxsPSIjMzc0MTUxIi8+Cjx0ZXh0IHg9IjEyOCIgeT0iMTI4IiBmaWxsPSIjNkI3Mjg5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD4KPHN2Zz4=';
+                }}
+              />
+              <div className="mt-2 text-center">
+                <p className="text-white text-sm font-medium truncate">{hoveredImage.alt}</p>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Pagination */}
+        {totalCount > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={itemsPerPage}
+            totalCount={totalCount}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setItemsPerPage(size);
+              setCurrentPage(1); // Reset to first page when page size changes
+            }}
+            showPageSizeSelector={true}
+            pageSizeOptions={[10, 25, 50, 100]}
+          />
+        )}
+      </div>
+    </Layout>
+  );
+} 
