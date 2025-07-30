@@ -47,7 +47,7 @@ const AttachmentsSection = ({
     let url: string;
     if ('link' in file) {
       // Existing file (Attachment)
-      url = file.link.startsWith('http') ? file.link : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'}/api/uploads/${file.link}`;
+      url = file.link.startsWith('http') ? file.link : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${file.link}`;
     } else {
       // New file (File object) - add proper type checking
       if (file instanceof File) {
@@ -63,8 +63,16 @@ const AttachmentsSection = ({
 
   const handleDownload = (link: string) => {
     // Construct full URL for existing files
-    const fullUrl = link.startsWith('http') ? link : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'}/api/uploads/${link}`;
-    window.open(fullUrl, '_blank');
+    const fullUrl = link.startsWith('http') ? link : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${link}`;
+    
+    // Create a temporary link element to force download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = fullUrl;
+    downloadLink.download = link.split('/').pop() || 'download'; // Use filename from path
+    downloadLink.target = '_blank'; // Add target blank as fallback
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   const handlePreviewClick = (e: React.MouseEvent, file: Attachment | File) => {

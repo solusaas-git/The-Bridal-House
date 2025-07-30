@@ -325,7 +325,7 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
   };
 
   const handlePreview = (file: Attachment) => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     const fileUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
     const fileType = getFileType(file.name);
     
@@ -333,12 +333,13 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
   };
 
   const handleDownload = (file: Attachment) => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     const fileUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
     
     const link = document.createElement('a');
     link.href = fileUrl;
     link.download = file.name;
+    link.target = '_blank'; // Add target blank as fallback
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -431,7 +432,7 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {imageFiles.map((file, index) => {
-                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
                 const imageUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
                 
                 return (

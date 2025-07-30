@@ -216,7 +216,7 @@ const CustomerReservations = ({ reservations }: { reservations: Reservation[] })
   const constructImageUrl = (primaryPhoto: string) => {
     if (!primaryPhoto) return '';
     
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     
     // Handle different possible primaryPhoto formats
     if (primaryPhoto.startsWith('http')) {
@@ -449,16 +449,24 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
 
   const handlePreview = (file: IAttachment) => {
     const fileType = getFileType(file.name);
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     const url = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
     
     setPreviewFile({ file, url, type: fileType });
   };
 
   const handleDownload = (file: IAttachment) => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     const fullUrl = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
-    window.open(fullUrl, '_blank');
+    
+    // Create a temporary link element to force download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = fullUrl;
+    downloadLink.download = file.name || file.link.split('/').pop() || 'download';
+    downloadLink.target = '_blank'; // Add target blank as fallback
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   const closePreview = () => {
@@ -545,7 +553,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {imageFiles.map((file, index) => {
-              const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+              const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
               const imageUrl = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
               
               return (
