@@ -92,8 +92,17 @@ const getItemNames = async (itemIds: string[]) => {
 export const getChangedFields = async (originalData: any, newData: any): Promise<Record<string, any>> => {
   const changes: Record<string, any> = {};
   
+  console.log('🔍 getChangedFields called with:');
+  console.log('- originalData keys:', Object.keys(originalData || {}));
+  console.log('- newData keys:', Object.keys(newData || {}));
+  console.log('- originalData.category:', originalData?.category);
+  console.log('- originalData.amount:', originalData?.amount);
+  console.log('- originalData.date:', originalData?.date);
+  console.log('- originalData.createdBy:', originalData?.createdBy);
+  
   // Handle reservation-specific field mapping
   if (originalData && newData && originalData.pickupDate) {
+    console.log('🎯 Detected: RESERVATION data type');
     // This is a reservation comparison
     const originalReservation = originalData;
     const newFormData = newData;
@@ -175,6 +184,7 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
   
   // Handle customer-specific field mapping
   if (originalData && newData && (originalData.firstName || originalData.lastName)) {
+    console.log('🎯 Detected: CUSTOMER data type');
     // This is a customer comparison
     const originalCustomer = originalData;
     const newCustomer = newData;
@@ -360,6 +370,14 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
     newData.amount !== undefined ||
     (originalData.date && originalData.createdBy) // costs have date and createdBy
   )) {
+    console.log('🎯 Detected: COST data type');
+    console.log('- Condition checks:');
+    console.log('  - originalData.category:', !!originalData.category);
+    console.log('  - originalData.amount !== undefined:', originalData.amount !== undefined);
+    console.log('  - newData.category:', !!newData.category);
+    console.log('  - newData.amount !== undefined:', newData.amount !== undefined);
+    console.log('  - originalData.date && originalData.createdBy:', !!(originalData.date && originalData.createdBy));
+    
     // This is a cost comparison
     const originalCost = originalData;
     const newCost = newData;
@@ -583,12 +601,14 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
   }
   
   // Default comparison for other resource types
+  console.log('🎯 Using DEFAULT comparison (no specific type detected)');
   for (const [key, value] of Object.entries(newData)) {
     if (originalData[key] !== value) {
       changes[key] = value;
     }
   }
   
+  console.log('🔍 Final changes from default comparison:', changes);
   return changes;
 };
 
