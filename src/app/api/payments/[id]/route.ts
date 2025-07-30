@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Payment } from '@/models';
 import { handleSingleFileUpload, type UploadedFile } from '@/lib/upload';
+import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
 interface PaymentUpdateData {
   client?: string;
@@ -104,7 +105,32 @@ export async function PUT(
       const existingAttachments = formData.get('existingAttachments');
       if (existingAttachments) {
         try {
-          updateData.attachments = JSON.parse(existingAttachments as string);
+          const parsedExisting = JSON.parse(existingAttachments as string);
+          
+          // Get current payment to find deleted attachments
+          const currentPayment = await Payment.findById(id);
+          const currentAttachments = currentPayment?.attachments || [];
+          
+          // Find attachments that were deleted (exist in DB but not in form data)
+          const deletedAttachments = currentAttachments.filter((currentAtt: any) => 
+            !parsedExisting.some((existingAtt: any) => existingAtt.url === currentAtt.url)
+          );
+          
+          // Delete files from Vercel Blob storage
+          if (deletedAttachments.length > 0) {
+            console.log(`🗑️ Deleting ${deletedAttachments.length} removed payment attachment files`);
+            for (const deletedAtt of deletedAttachments) {
+              try {
+                await deleteFromVercelBlob(deletedAtt.url);
+                console.log(`✅ Deleted payment file: ${deletedAtt.name}`);
+              } catch (deleteError) {
+                console.error(`❌ Failed to delete payment file: ${deletedAtt.name}`, deleteError);
+                // Continue with other deletions
+              }
+            }
+          }
+          
+          updateData.attachments = parsedExisting;
         } catch {
           updateData.attachments = [];
         }
