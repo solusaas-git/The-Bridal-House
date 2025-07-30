@@ -512,18 +512,20 @@ export default function ViewCostPage() {
         {/* Image Preview Modal */}
         {imagePreview.show && (
           <div 
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 z-[9999]"
             onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
           >
-            <div className="relative max-w-6xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <div className="relative max-w-[95vw] max-h-[95vh] w-auto h-auto flex items-center justify-center">
               <img
                 src={imagePreview.src}
                 alt={imagePreview.alt}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
               />
               <button
                 onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-                className="absolute top-4 right-4 p-3 bg-black/70 hover:bg-black/90 text-white rounded-full transition-colors text-xl font-bold"
+                className="absolute -top-12 right-0 p-3 bg-white/20 hover:bg-white/30 text-white rounded-full transition-colors text-xl font-bold backdrop-blur-sm border border-white/20"
+                title="Close"
               >
                 ✕
               </button>
