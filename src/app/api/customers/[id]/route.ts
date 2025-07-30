@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Customer } from '@/models';
 import { handleSingleFileUpload, getCustomerUploadFolder } from '@/lib/upload';
+import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
 // GET /api/customers/[id] - Get a customer by ID
 export async function GET(
@@ -83,6 +84,29 @@ export async function PUT(
       const filteredExistingAttachments = existingAttachments.filter(att => att && att.name && att.link);
       console.log(`📎 Found ${filteredExistingAttachments.length} existing attachments in form data`);
 
+      // Get current customer to find deleted attachments
+      const currentCustomer = await Customer.findById(id);
+      const currentAttachments = currentCustomer?.attachments || [];
+      
+      // Find attachments that were deleted (exist in DB but not in form data)
+      const deletedAttachments = currentAttachments.filter((currentAtt: any) => 
+        !filteredExistingAttachments.some(existingAtt => existingAtt.link === currentAtt.link)
+      );
+      
+      // Delete files from Vercel Blob storage
+      if (deletedAttachments.length > 0) {
+        console.log(`🗑️ Deleting ${deletedAttachments.length} removed attachment files`);
+        for (const deletedAtt of deletedAttachments) {
+          try {
+            await deleteFromVercelBlob(deletedAtt.link);
+            console.log(`✅ Deleted file: ${deletedAtt.name}`);
+          } catch (deleteError) {
+            console.error(`❌ Failed to delete file: ${deletedAtt.name}`, deleteError);
+            // Continue with other deletions
+          }
+        }
+      }
+
       // Handle new file uploads
       const files = formData.getAll('newFiles') as File[];
       const newAttachments = [];
@@ -125,6 +149,18 @@ export async function PUT(
       
       // If there are deleted attachments, we need to handle that
       if ((updateData as any).deletedAttachments && Array.isArray((updateData as any).deletedAttachments)) {
+        // Delete files from Vercel Blob storage
+        console.log(`🗑️ Deleting ${(updateData as any).deletedAttachments.length} removed attachment files from approvals`);
+        for (const deletedAtt of (updateData as any).deletedAttachments) {
+          try {
+            await deleteFromVercelBlob(deletedAtt.link);
+            console.log(`✅ Deleted file: ${deletedAtt.name}`);
+          } catch (deleteError) {
+            console.error(`❌ Failed to delete file: ${deletedAtt.name}`, deleteError);
+            // Continue with other deletions
+          }
+        }
+        
         // Remove deleted attachments from existing ones
         const finalAttachments = existingAttachments.filter((existingFile: any) => 
           !(updateData as any).deletedAttachments.some((deletedFile: any) => deletedFile.link === existingFile.link)
