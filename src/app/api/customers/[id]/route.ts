@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Customer } from '@/models';
-import { handleSingleFileUpload, UPLOAD_FOLDERS } from '@/lib/upload';
+import { handleSingleFileUpload, getCustomerUploadFolder } from '@/lib/upload';
 
 // GET /api/customers/[id] - Get a customer by ID
 export async function GET(
@@ -70,7 +70,7 @@ export async function PUT(
         for (const file of files) {
           try {
             console.log(`📤 Uploading customer file: ${file.name}`);
-            const uploadResult = await handleSingleFileUpload(file, UPLOAD_FOLDERS.CUSTOMERS_IMAGES);
+            const uploadResult = await handleSingleFileUpload(file, getCustomerUploadFolder(file));
             newAttachments.push({
               name: file.name,
               link: uploadResult.url,  // Changed from 'url' to 'link' to match customer model

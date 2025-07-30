@@ -154,5 +154,45 @@ export async function uploadFilesForApproval(
   }
 }
 
+/**
+ * Determine the correct upload folder for customer files based on file type
+ */
+export function getCustomerUploadFolder(file: File): string {
+  const fileType = file.type.toLowerCase();
+  const fileName = file.name.toLowerCase();
+  
+  // Check if it's an image
+  if (fileType.startsWith('image/') || 
+      ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.bmp', '.svg'].some(ext => fileName.endsWith(ext))) {
+    return UPLOAD_FOLDERS.CUSTOMERS_IMAGES;
+  }
+  
+  // Everything else goes to documents folder
+  return UPLOAD_FOLDERS.CUSTOMERS_DOCUMENTS;
+}
+
+/**
+ * Determine the correct upload folder for product files based on file type
+ */
+export function getProductUploadFolder(file: File): string {
+  const fileType = file.type.toLowerCase();
+  const fileName = file.name.toLowerCase();
+  
+  // Check if it's an image
+  if (fileType.startsWith('image/') || 
+      ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.bmp', '.svg'].some(ext => fileName.endsWith(ext))) {
+    return UPLOAD_FOLDERS.PRODUCTS_IMAGES;
+  }
+  
+  // Check if it's a video
+  if (fileType.startsWith('video/') || 
+      ['.mp4', '.mov', '.avi', '.mkv', '.wmv', '.flv', '.webm'].some(ext => fileName.endsWith(ext))) {
+    return UPLOAD_FOLDERS.PRODUCTS_VIDEOS;
+  }
+  
+  // Everything else goes to documents folder
+  return UPLOAD_FOLDERS.PRODUCTS_DOCUMENTS;
+}
+
 // Export folder constants for backward compatibility
 export { UPLOAD_FOLDERS }; 
