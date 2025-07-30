@@ -56,24 +56,45 @@ export async function PUT(
       const formData = await request.formData();
       updateData = {};
       
-      // Process regular form fields
+      // Process regular form fields and collect existing attachments
+      const existingAttachments: any[] = [];
+      const attachmentPattern = /^attachments\[(\d+)\]\[(.+)\]$/;
+      
       formData.forEach((value, key) => {
         if (key !== 'newFiles') {
-          updateData[key] = value;
+          const attachmentMatch = key.match(attachmentPattern);
+          if (attachmentMatch) {
+            // This is an existing attachment field
+            const index = parseInt(attachmentMatch[1]);
+            const field = attachmentMatch[2];
+            
+            if (!existingAttachments[index]) {
+              existingAttachments[index] = {};
+            }
+            existingAttachments[index][field] = value;
+          } else {
+            // Regular form field
+            updateData[key] = value;
+          }
         }
       });
 
+      // Filter out empty slots and set existing attachments
+      const filteredExistingAttachments = existingAttachments.filter(att => att && att.name && att.link);
+      console.log(`📎 Found ${filteredExistingAttachments.length} existing attachments in form data`);
+
       // Handle new file uploads
       const files = formData.getAll('newFiles') as File[];
+      const newAttachments = [];
+      
       if (files && files.length > 0) {
-        const newAttachments = [];
         for (const file of files) {
           try {
             console.log(`📤 Uploading customer file: ${file.name}`);
             const uploadResult = await handleSingleFileUpload(file, getCustomerUploadFolder(file));
             newAttachments.push({
               name: file.name,
-              link: uploadResult.url,  // Changed from 'url' to 'link' to match customer model
+              link: uploadResult.url,
               size: file.size
             });
           } catch (uploadError) {
@@ -81,21 +102,19 @@ export async function PUT(
             // Continue with other files
           }
         }
-        
-        // Merge with existing attachments if any
-        if (newAttachments.length > 0) {
-          const existingCustomer = await Customer.findById(id);
-          const existingAttachments = existingCustomer?.attachments || [];
-          updateData.attachments = [...existingAttachments, ...newAttachments];
-        }
       }
+      
+      // Combine existing attachments with new ones
+      updateData.attachments = [...filteredExistingAttachments, ...newAttachments];
+      console.log(`📎 Final attachments count: ${updateData.attachments.length}`);
+      
     } else {
       // Handle JSON data
       updateData = await request.json();
     }
 
-    // Handle attachments from approval requests
-    if (updateData.attachments && Array.isArray(updateData.attachments)) {
+    // Handle attachments from approval requests (only for JSON requests)
+    if (!contentType?.includes('multipart/form-data') && updateData.attachments && Array.isArray(updateData.attachments)) {
       // The attachments are already uploaded and contain the file paths
       // Just use them as is
       console.log('Processing attachments from approval:', updateData.attachments);
