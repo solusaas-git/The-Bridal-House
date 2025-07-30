@@ -11,6 +11,7 @@ import {
   TrashIcon,
   EyeOpenIcon,
   CalendarIcon,
+  DownloadIcon,
 } from '@radix-ui/react-icons';
 import { ChevronLeft, ChevronRight, Calendar, Clock, User, Truck, Undo2 } from 'lucide-react';
 import { RootState } from '@/store/store';
@@ -135,6 +136,17 @@ export default function ProductViewPage() {
       console.error('Error deleting product:', error);
       toast.error('Failed to delete product');
     }
+  };
+
+  const handleDownload = (mediaUrl: string, fileName?: string) => {
+    // Create a temporary link element to force download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = getImageUrl(mediaUrl);
+    downloadLink.download = fileName || mediaUrl.split('/').pop() || 'download';
+    downloadLink.target = '_blank'; // Add target blank as fallback
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   const getImageUrl = (imagePath: string) => {
@@ -331,16 +343,27 @@ export default function ProductViewPage() {
                 {/* Images Section */}
                 <div className="space-y-4">
                   {/* Main Image */}
-                  <div className="bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center min-h-96 max-h-[600px]">
+                  <div className="bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center min-h-96 max-h-[600px] relative group">
                     {allImages[selectedImageIndex] ? (
-                      <img
-                        src={getImageUrl(allImages[selectedImageIndex])}
-                        alt={product.name}
-                        className="max-w-full max-h-full object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder-product.png';
-                        }}
-                      />
+                      <>
+                        <img
+                          src={getImageUrl(allImages[selectedImageIndex])}
+                          alt={product.name}
+                          className="max-w-full max-h-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/placeholder-product.png';
+                          }}
+                        />
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleDownload(allImages[selectedImageIndex], `${product.name}_image_${selectedImageIndex + 1}`)}
+                            className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                            title="Download Image"
+                          >
+                            <DownloadIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="text-gray-500">No Image Available</span>
@@ -380,12 +403,22 @@ export default function ProductViewPage() {
                       <h3 className="text-lg font-medium text-white">Videos</h3>
                       <div className="grid grid-cols-1 gap-4">
                         {product.videoUrls.map((videoUrl, index) => (
-                          <video
-                            key={index}
-                            src={getImageUrl(videoUrl)}
-                            controls
-                            className="w-full rounded-lg"
-                          />
+                          <div key={index} className="relative group">
+                            <video
+                              src={getImageUrl(videoUrl)}
+                              controls
+                              className="w-full rounded-lg"
+                            />
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => handleDownload(videoUrl, `${product.name}_video_${index + 1}`)}
+                                className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                                title="Download Video"
+                              >
+                                <DownloadIcon className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>

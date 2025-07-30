@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Product } from '@/models';
+import { Product, Category } from '@/models';
 import { handleMultipleFileFields } from '@/lib/upload';
+import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
 interface ProductUpdateData {
   name?: string;
@@ -63,6 +64,16 @@ export async function PUT(
     if (contentType?.includes('multipart/form-data')) {
       // Handle file uploads for updates
       const formData = await request.formData();
+      
+      // Get current product to find files that will be replaced
+      const currentProduct = await Product.findById(params.id);
+      if (!currentProduct) {
+        return NextResponse.json(
+          { message: 'Product not found' },
+          { status: 404 }
+        );
+      }
+      
       const uploadResults = await handleMultipleFileFields(formData);
 
       // Extract form data
@@ -78,16 +89,49 @@ export async function PUT(
         status: formData.get('status') as 'Draft' | 'Published',
       };
 
-      // Update file URLs if new files were uploaded
+      // Handle file deletions when files are replaced
       if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
+        // Delete old primary photo if it exists
+        if (currentProduct.primaryPhoto) {
+          try {
+            await deleteFromVercelBlob(currentProduct.primaryPhoto);
+            console.log(`✅ Deleted old primary photo: ${currentProduct.primaryPhoto}`);
+          } catch (deleteError) {
+            console.error(`❌ Failed to delete old primary photo:`, deleteError);
+          }
+        }
         updateData.primaryPhoto = uploadResults.primaryPhoto[0].url;
       }
 
       if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
+        // Delete old secondary images if they exist
+        if (currentProduct.secondaryImages && currentProduct.secondaryImages.length > 0) {
+          console.log(`🗑️ Deleting ${currentProduct.secondaryImages.length} old secondary images`);
+          for (const oldImage of currentProduct.secondaryImages) {
+            try {
+              await deleteFromVercelBlob(oldImage);
+              console.log(`✅ Deleted old secondary image: ${oldImage}`);
+            } catch (deleteError) {
+              console.error(`❌ Failed to delete old secondary image:`, deleteError);
+            }
+          }
+        }
         updateData.secondaryImages = uploadResults.secondaryImages.map(img => img.url);
       }
 
       if (uploadResults.videos && uploadResults.videos.length > 0) {
+        // Delete old videos if they exist
+        if (currentProduct.videoUrls && currentProduct.videoUrls.length > 0) {
+          console.log(`🗑️ Deleting ${currentProduct.videoUrls.length} old videos`);
+          for (const oldVideo of currentProduct.videoUrls) {
+            try {
+              await deleteFromVercelBlob(oldVideo);
+              console.log(`✅ Deleted old video: ${oldVideo}`);
+            } catch (deleteError) {
+              console.error(`❌ Failed to delete old video:`, deleteError);
+            }
+          }
+        }
         updateData.videoUrls = uploadResults.videos.map(video => video.url);
       }
     } else {

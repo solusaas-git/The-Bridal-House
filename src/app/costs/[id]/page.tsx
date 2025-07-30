@@ -15,7 +15,9 @@ import {
   PencilIcon,
   TrashIcon,
   DocumentIcon,
-  XMarkIcon
+  XMarkIcon,
+  EyeOpenIcon,
+  DownloadIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -157,6 +159,17 @@ export default function ViewCostPage() {
       // Open file in new tab
       window.open(encodeURI(attachment.url), '_blank');
     }
+  };
+
+  const handleDownload = (attachment: any) => {
+    // Create a temporary link element to force download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = encodeURI(attachment.url);
+    downloadLink.download = attachment.name || attachment.url.split('/').pop() || 'download';
+    downloadLink.target = '_blank'; // Add target blank as fallback
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   if (loading) {
@@ -410,33 +423,49 @@ export default function ViewCostPage() {
                       {cost.attachments.map((attachment, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group"
-                          onClick={() => handleFileClick(attachment)}
+                          className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors group"
                         >
                           <div className="flex-shrink-0">
                             {getFileType(attachment) === 'image' ? (
                               <img
                                 src={encodeURI(attachment.url)}
                                 alt={attachment.name}
-                                className="w-12 h-12 object-cover rounded"
+                                className="w-12 h-12 object-cover rounded cursor-pointer"
+                                onClick={() => handleFileClick(attachment)}
                               />
                             ) : (
-                              <div className="w-12 h-12 bg-gray-600 rounded flex items-center justify-center">
+                              <div 
+                                className="w-12 h-12 bg-gray-600 rounded flex items-center justify-center cursor-pointer"
+                                onClick={() => handleFileClick(attachment)}
+                              >
                                 <PaperClipIcon className="h-6 w-6 text-gray-300" />
                               </div>
                             )}
                           </div>
                           
                           <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm font-medium truncate group-hover:text-blue-300 transition-colors">
-                              {attachment.name}
-                            </p>
-                            <p className="text-gray-400 text-xs">
-                              {formatFileSize(attachment.size)}
-                            </p>
+                            <p className="text-sm font-medium text-white truncate">{attachment.name}</p>
+                            <p className="text-xs text-gray-400">{formatFileSize(attachment.size)}</p>
                           </div>
                           
-                          <ArrowLeftIcon className="h-4 w-4 text-gray-400 transform rotate-180 group-hover:text-blue-400 transition-colors" />
+                          <div className="flex items-center space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => handleFileClick(attachment)}
+                              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                              title="Preview"
+                            >
+                              <EyeOpenIcon className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDownload(attachment)}
+                              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                              title="Download"
+                            >
+                              <DownloadIcon className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>

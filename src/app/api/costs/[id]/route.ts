@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Cost, User, CostCategory } from '@/models';
+import Cost from '@/models/cost';
 import { handleSingleFileUpload } from '@/lib/upload';
+import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
 // Get single cost
 export async function GET(
@@ -141,8 +142,35 @@ export async function PUT(
       }
     }
 
-    // Combine existing and new attachments
+    // Get current cost to find deleted attachments
+    const currentCost = await Cost.findById(id);
+    const currentAttachments = currentCost?.attachments || [];
+    
+    // Handle deleted attachments if we have existing attachments data
     const existingAttachments = Array.isArray(costData.existingAttachments) ? costData.existingAttachments : [];
+    
+    if (contentType.includes('multipart/form-data')) {
+      // Find attachments that were deleted (exist in DB but not in form data)
+      const deletedAttachments = currentAttachments.filter((currentAtt: any) => 
+        !existingAttachments.some((existingAtt: any) => existingAtt.url === currentAtt.url)
+      );
+      
+      // Delete files from Vercel Blob storage
+      if (deletedAttachments.length > 0) {
+        console.log(`🗑️ Deleting ${deletedAttachments.length} removed cost attachment files`);
+        for (const deletedAtt of deletedAttachments) {
+          try {
+            await deleteFromVercelBlob(deletedAtt.url);
+            console.log(`✅ Deleted cost file: ${deletedAtt.name}`);
+          } catch (deleteError) {
+            console.error(`❌ Failed to delete cost file: ${deletedAtt.name}`, deleteError);
+            // Continue with other deletions
+          }
+        }
+      }
+    }
+
+    // Combine existing and new attachments
     const allAttachments = [
       ...existingAttachments,
       ...newAttachments
