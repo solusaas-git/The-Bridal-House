@@ -60,7 +60,7 @@ const TopBar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: TopBarProps) => {
             <img
               src="/TBH white.png"
               alt="TBH Logo"
-              className="h-8 w-auto"
+              className="h-8 lg:h-12 w-auto"
             />
           </button>
         </div>

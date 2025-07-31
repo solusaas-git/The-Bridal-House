@@ -167,7 +167,7 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
           uploadedFiles.push({
             name: file.name,
             size: file.size,
-            link: response.data.filePath
+            link: response.data.url
           });
         }
       } catch (error) {
