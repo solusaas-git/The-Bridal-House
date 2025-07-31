@@ -81,7 +81,7 @@ export async function PUT(
       });
 
       // Filter out empty slots and set existing attachments
-      const filteredExistingAttachments = existingAttachments.filter(att => att && att.name && att.link);
+      const filteredExistingAttachments = existingAttachments.filter(att => att && att.name && att.url);
       console.log(`📎 Found ${filteredExistingAttachments.length} existing attachments in form data`);
 
       // Get current customer to find deleted attachments
@@ -90,7 +90,7 @@ export async function PUT(
       
       // Find attachments that were deleted (exist in DB but not in form data)
       const deletedAttachments = currentAttachments.filter((currentAtt: any) => 
-        !filteredExistingAttachments.some(existingAtt => existingAtt.link === currentAtt.link)
+        !filteredExistingAttachments.some(existingAtt => existingAtt.url === currentAtt.url)
       );
       
       // Delete files from Vercel Blob storage
@@ -98,7 +98,7 @@ export async function PUT(
         console.log(`🗑️ Deleting ${deletedAttachments.length} removed attachment files`);
         for (const deletedAtt of deletedAttachments) {
           try {
-            await deleteFromVercelBlob(deletedAtt.link);
+            await deleteFromVercelBlob(deletedAtt.url);
             console.log(`✅ Deleted file: ${deletedAtt.name}`);
           } catch (deleteError) {
             console.error(`❌ Failed to delete file: ${deletedAtt.name}`, deleteError);
@@ -153,7 +153,7 @@ export async function PUT(
         console.log(`🗑️ Deleting ${(updateData as any).deletedAttachments.length} removed attachment files from approvals`);
         for (const deletedAtt of (updateData as any).deletedAttachments) {
           try {
-            await deleteFromVercelBlob(deletedAtt.link);
+            await deleteFromVercelBlob(deletedAtt.url || deletedAtt.link);
             console.log(`✅ Deleted file: ${deletedAtt.name}`);
           } catch (deleteError) {
             console.error(`❌ Failed to delete file: ${deletedAtt.name}`, deleteError);
@@ -163,7 +163,9 @@ export async function PUT(
         
         // Remove deleted attachments from existing ones
         const finalAttachments = existingAttachments.filter((existingFile: any) => 
-          !(updateData as any).deletedAttachments.some((deletedFile: any) => deletedFile.link === existingFile.link)
+          !(updateData as any).deletedAttachments.some((deletedFile: any) => 
+            (deletedFile.url || deletedFile.link) === (existingFile.url || existingFile.link)
+          )
         );
         
         // Add new attachments
