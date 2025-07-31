@@ -58,11 +58,13 @@ export async function GET(request: NextRequest) {
     // Build search filters
     const searchFilters: Record<string, unknown> = {};
 
-    // Search by customer name or reference
+    // Search by customer name, reference, or note
     if (query.search) {
+      // Use aggregation to search in populated client fields
+      const searchRegex = { $regex: query.search, $options: 'i' };
       searchFilters.$or = [
-        { reference: { $regex: query.search, $options: 'i' } },
-        { note: { $regex: query.search, $options: 'i' } },
+        { reference: searchRegex },
+        { note: searchRegex },
       ];
     }
 
@@ -101,18 +103,111 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get total count for pagination
-    const totalCount = await Payment.countDocuments(searchFilters);
+    // If there's a search term, use aggregation to search in customer names
+    let payments;
+    let totalCount;
 
-    // Fetch payments with population
-    const payments = await Payment
-      .find(searchFilters)
-      .populate('client', 'firstName lastName email phone')
-      .populate('reservation', 'reservationNumber eventDate')
-      .populate('createdBy', 'name email')
-      .sort({ paymentDate: -1, createdAt: -1 }) // Sort by paymentDate first, then createdAt
-      .skip(skip)
-      .limit(limit);
+    if (query.search) {
+      const searchRegex = { $regex: query.search, $options: 'i' };
+      
+      // Build the aggregation pipeline with proper typing
+      const pipeline: any[] = [
+        {
+          $lookup: {
+            from: 'customers',
+            localField: 'client',
+            foreignField: '_id',
+            as: 'clientInfo'
+          }
+        },
+        {
+          $lookup: {
+            from: 'reservations',
+            localField: 'reservation',
+            foreignField: '_id',
+            as: 'reservationInfo'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'createdBy',
+            foreignField: '_id',
+            as: 'createdByInfo'
+          }
+        },
+        {
+          $match: {
+            $and: [
+              // Apply other filters (excluding $or which we handle separately)
+              ...(Object.keys(searchFilters).filter(key => key !== '$or').map(key => ({ [key]: searchFilters[key] }))),
+              // Apply search filter
+              {
+                $or: [
+                  { reference: searchRegex },
+                  { note: searchRegex },
+                  { 'clientInfo.firstName': searchRegex },
+                  { 'clientInfo.lastName': searchRegex },
+                  { 
+                    $expr: { 
+                      $regexMatch: { 
+                        input: { 
+                          $concat: [
+                            { $ifNull: [{ $arrayElemAt: ['$clientInfo.firstName', 0] }, ''] },
+                            ' ',
+                            { $ifNull: [{ $arrayElemAt: ['$clientInfo.lastName', 0] }, ''] }
+                          ]
+                        }, 
+                        regex: query.search, 
+                        options: 'i' 
+                      } 
+                    } 
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          $addFields: {
+            client: { $arrayElemAt: ['$clientInfo', 0] },
+            reservation: { $arrayElemAt: ['$reservationInfo', 0] },
+            createdBy: { $arrayElemAt: ['$createdByInfo', 0] }
+          }
+        },
+        {
+          $project: {
+            clientInfo: 0,
+            reservationInfo: 0,
+            createdByInfo: 0
+          }
+        },
+        {
+          $sort: { paymentDate: -1, createdAt: -1 }
+        }
+      ];
+
+      // Get total count
+      const countPipeline = [...pipeline, { $count: 'total' }];
+      const countResult = await Payment.aggregate(countPipeline);
+      totalCount = countResult.length > 0 ? countResult[0].total : 0;
+
+      // Get paginated results
+      const resultPipeline = [...pipeline, { $skip: skip }, { $limit: limit }];
+      payments = await Payment.aggregate(resultPipeline);
+    } else {
+      // Use regular query without aggregation when no search term
+      totalCount = await Payment.countDocuments(searchFilters);
+      
+      payments = await Payment
+        .find(searchFilters)
+        .populate('client', 'firstName lastName email phone')
+        .populate('reservation', 'reservationNumber eventDate')
+        .populate('createdBy', 'name email')
+        .sort({ paymentDate: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+    }
 
     return NextResponse.json({
       success: true,

@@ -14,7 +14,6 @@ import {
   TrashIcon,
   GearIcon,
 } from '@radix-ui/react-icons';
-import PhoneInput from '@/components/ui/PhoneInput';
 import Layout from '@/components/Layout';
 import Pagination from '@/components/ui/Pagination';
 import { RootState } from '@/store/store';
@@ -84,7 +83,11 @@ const CustomersPage = () => {
       try {
         const response = await axios.get('/api/user-preferences/columns/customers');
         if (response.data.success && response.data.columnPreferences) {
-          setColumnVisibility(response.data.columnPreferences);
+          // Merge with default values to ensure all properties are defined
+          setColumnVisibility(prevState => ({
+            ...prevState,
+            ...response.data.columnPreferences
+          }));
         }
       } catch (error) {
         console.error('Failed to load column preferences:', error);
@@ -560,14 +563,7 @@ const CustomersPage = () => {
                       )}
                       {columnVisibility.phone && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {customer.phone ? (
-                            <PhoneInput 
-                              value={customer.phone} 
-                              onChange={() => {}} 
-                              className="pointer-events-none bg-transparent border-none p-0 text-white" 
-                              disabled 
-                            />
-                          ) : '-'}
+                          {customer.phone || '-'}
                         </td>
                       )}
                       {columnVisibility.weddingDate && (

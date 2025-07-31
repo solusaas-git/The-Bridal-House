@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { X, Check, User, Calendar, Clock, ExternalLink, FileText, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { toast } from 'react-toastify';
+import { XIcon } from 'lucide-react';
 
 interface Approval {
   _id: string;
@@ -60,6 +64,8 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
     x: 0,
     y: 0
   });
+  const { currentUser } = useSelector((state: RootState) => state.auth);
+  const userIsEmployee = currentUser?.role?.toLowerCase() === 'employee';
 
   if (!isOpen || !approval) return null;
 
@@ -854,7 +860,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
         </div>
 
         {/* Footer */}
-        {approval.status === 'pending' && !showReviewForm && (
+        {!userIsEmployee && approval.status === 'pending' && !showReviewForm && (
           <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10">
             <button
               onClick={() => startReview('reject')}

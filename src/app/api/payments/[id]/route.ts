@@ -164,9 +164,11 @@ export async function PUT(
         delete updateData.paymentTime; // Remove the separate time field
       }
 
-      // Add attachments if any were uploaded
-      if (paymentAttachments.length > 0) {
-        updateData.attachments = paymentAttachments;
+      // Combine existing and new attachments
+      if (updateData.attachments || paymentAttachments.length > 0) {
+        const existingAttachments = updateData.attachments || [];
+        const combinedAttachments = [...existingAttachments, ...paymentAttachments];
+        updateData.attachments = combinedAttachments;
       }
 
       // Convert amount to number if provided

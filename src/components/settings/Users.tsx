@@ -2,15 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Plus, X, Edit, Trash2, Mail } from "lucide-react";
+import { Plus, X, Edit, Trash2, Mail, UserCheck } from "lucide-react";
 import { RootState } from "@/store/store";
 import { setUsers, addUser, removeUser, updateUser } from "@/store/reducers/userSlice";
+import { setCurrentUser } from "@/store/reducers/authSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { isAdmin } from "@/utils/permissions";
 
 interface User {
   _id: string;
-  username: string;
+  name: string;
   email: string;
   role: string;
   status?: string;
@@ -22,6 +24,7 @@ interface User {
 const Users = () => {
   const dispatch = useDispatch();
   const users = useSelector((state: RootState) => state.user.users);
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -29,10 +32,11 @@ const Users = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [itemToDelete, setItemToDelete] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [impersonating, setImpersonating] = useState(false);
 
   // Form data for modals
   const [formData, setFormData] = useState({
-    username: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -70,8 +74,8 @@ const Users = () => {
   const validateForm = () => {
     const newErrors: any = {};
 
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -133,9 +137,10 @@ const Users = () => {
     setLoading(true);
     try {
       const submitData: any = {
-        username: formData.username,
+        name: formData.name,
         email: formData.email,
         role: formData.role,
+        status: formData.status,
       };
 
       // Only include password if provided
@@ -161,7 +166,7 @@ const Users = () => {
     setItemToDelete({
       id: user._id,
       type: "user",
-      name: user.username,
+      name: user.name,
     });
     setShowDeleteModal(true);
   };
@@ -184,9 +189,27 @@ const Users = () => {
     }
   };
 
+  const handleImpersonate = async (user: User) => {
+    if (!user || !user._id) return;
+
+    setImpersonating(true);
+    try {
+      const response = await axios.post('/api/auth/impersonate', { userId: user._id });
+      dispatch(setCurrentUser(response.data.user));
+      toast.success(`Now impersonating ${user.name}`);
+      // Optionally redirect to dashboard or reload page
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      console.error('Error impersonating user:', error);
+      toast.error(error.response?.data?.message || 'Failed to impersonate user');
+    } finally {
+      setImpersonating(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
-      username: '',
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -205,7 +228,7 @@ const Users = () => {
   const openEditModal = (user: User) => {
     setEditingUser(user);
     setFormData({
-      username: user.username || '',
+      name: user.name || '',
       email: user.email || '',
       password: '',
       confirmPassword: '',
@@ -251,7 +274,7 @@ const Users = () => {
             className="bg-white/10 rounded-lg p-4 flex items-center justify-between"
           >
             <div className="space-y-1">
-              <h3 className="text-lg font-medium text-white">{user.username}</h3>
+              <h3 className="text-lg font-medium text-white">{user.name}</h3>
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Mail className="h-4 w-4" />
                 {user.email}
@@ -289,6 +312,16 @@ const Users = () => {
               >
                 <Trash2 className="h-4 w-4 text-red-400" />
               </button>
+              {isAdmin(currentUser) && user._id !== currentUser?._id && (
+                <button
+                  onClick={() => handleImpersonate(user)}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  disabled={impersonating}
+                  title="Impersonate User"
+                >
+                  <UserCheck className="h-4 w-4 text-purple-400" />
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -317,21 +350,21 @@ const Users = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Username *
+                  Name *
                 </label>
                 <input
                   type="text"
-                  name="username"
-                  value={formData.username}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   className={`w-full px-3 py-2 bg-white/10 border ${
-                    errors.username ? 'border-red-500' : 'border-white/20'
+                    errors.name ? 'border-red-500' : 'border-white/20'
                   } rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  placeholder="Enter username"
+                  placeholder="Enter name"
                   required
                 />
-                {errors.username && (
-                  <p className="text-xs text-red-400 mt-1">{errors.username}</p>
+                {errors.name && (
+                  <p className="text-xs text-red-400 mt-1">{errors.name}</p>
                 )}
               </div>
 
@@ -408,6 +441,21 @@ const Users = () => {
                       {role.label}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
                 </select>
               </div>
 

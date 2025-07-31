@@ -320,10 +320,12 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
     }
     
     // Compare attachments (if they exist) - only if there are actual changes
-    if (originalPayment.attachments || newPayment.attachments || newPayment.newFiles) {
+    if (originalPayment.attachments || newPayment.existingAttachments || newPayment.newFiles) {
       const originalAttachments = originalPayment.attachments || [];
-      const newAttachments = newPayment.attachments || [];
+      const existingAttachments = newPayment.existingAttachments || [];
       const newFiles = newPayment.newFiles || [];
+      
+
       
       // Check if there are actual changes
       const hasNewFiles = newFiles.length > 0;
@@ -334,23 +336,17 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
         name: att.name,
         url: att.url || att.link
       }));
-      const newAttachmentKeys = newAttachments.map((att: any) => ({
+      const existingAttachmentKeys = existingAttachments.map((att: any) => ({
         name: att.name,
         url: att.url || att.link
       }));
-      const hasModifiedAttachments = JSON.stringify(originalAttachmentKeys) !== JSON.stringify(newAttachmentKeys);
+      const hasModifiedAttachments = JSON.stringify(originalAttachmentKeys) !== JSON.stringify(existingAttachmentKeys);
       
       if (hasNewFiles || hasDeletedFiles || hasModifiedAttachments) {
-        // Only include attachments in changes if there are actual changes
-        if (newAttachments.length > 0 || hasNewFiles) {
-          const finalAttachments = [...newAttachments];
-          
-          // Add new files to the attachments
-          if (newFiles.length > 0) {
-            finalAttachments.push(...newFiles);
-          }
-          
-          changes.attachments = finalAttachments;
+        // Only include NEW attachments in changes, not existing ones
+        // The approval review will handle merging with existing attachments
+        if (hasNewFiles) {
+          changes.attachments = newFiles;  // Only send new files
         }
         
         // Add specific information about what changed
@@ -465,15 +461,10 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
       const hasModifiedAttachments = JSON.stringify(originalAttachmentKeys) !== JSON.stringify(newAttachmentKeys);
       
       if (hasNewFiles || hasDeletedFiles || hasModifiedAttachments) {
-        if (newAttachments.length > 0 || hasNewFiles) {
-          const finalAttachments = [...newAttachments];
-          
-          // Add new files to the attachments
-          if (newFiles.length > 0) {
-            finalAttachments.push(...newFiles);
-          }
-          
-          changes.attachments = finalAttachments;
+        // Only include NEW attachments in changes, not existing ones
+        // The approval review will handle merging with existing attachments
+        if (hasNewFiles) {
+          changes.attachments = newFiles;  // Only send new files
         }
         
         // Add specific information about what changed

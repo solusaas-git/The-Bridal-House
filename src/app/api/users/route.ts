@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     
     if (search) {
       query.$or = [
-        { username: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
         { role: { $regex: search, $options: 'i' } },
       ];
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { username, email, password, role } = body;
+    const { name, email, password, role, status } = body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -76,10 +76,11 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const user = new User({
-      username,
+      name,
       email,
       password: hashedPassword,
       role,
+      status: status || 'Active',
     });
 
     await user.save();

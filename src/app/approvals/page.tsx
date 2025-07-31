@@ -14,12 +14,12 @@ import {
   PersonIcon,
   ExternalLinkIcon,
 } from '@radix-ui/react-icons';
-import { Check, X, Eye, Search, Calendar, User, ExternalLink } from 'lucide-react';
+import { Check, X, Eye, Search, Calendar, User, ExternalLink, Trash } from 'lucide-react';
 import { RootState } from '@/store/store';
 import { setApprovals, updateApprovalStatus, setLoading } from '@/store/reducers/approvalSlice';
 import { reviewApproval } from '@/utils/approval';
 import Layout from '@/components/Layout';
-import { isAdmin } from '@/utils/permissions';
+import { isAdmin, isManager } from '@/utils/permissions';
 import ApprovalDetailsModal from '@/components/approvals/ApprovalDetailsModal';
 
 interface Approval {
@@ -60,24 +60,62 @@ export default function ApprovalsPage() {
   const [reviewingId, setReviewingId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isAutoRefresh, setIsAutoRefresh] = useState(true);
+  const [countdown, setCountdown] = useState(5);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Check if user is admin
-  const userIsAdmin = isAdmin(currentUser);
+  // Check if user can view approvals (employees and managers+)
+  const canViewPage = currentUser?.role?.toLowerCase() === 'employee' || isManager(currentUser);
+  const userIsEmployee = currentUser?.role?.toLowerCase() === 'employee';
 
   useEffect(() => {
-    if (userIsAdmin) {
+    if (canViewPage) {
       loadApprovals();
+      
+      // Set up auto-refresh every 5 seconds only if enabled and user is admin/manager
+      if (!userIsEmployee) {
+        const interval = setInterval(() => {
+          if (isAutoRefresh && !reviewingId && !showDetailsModal && !deletingId) {
+            loadApprovals();
+            setCountdown(5); // Reset countdown
+          }
+        }, 5000);
+        
+        // Set up countdown timer
+        const countdownInterval = setInterval(() => {
+          if (isAutoRefresh && !reviewingId && !showDetailsModal && !deletingId) {
+            setCountdown(prev => prev > 1 ? prev - 1 : 5);
+          }
+        }, 1000);
+        
+        // Cleanup intervals on unmount
+        return () => {
+          clearInterval(interval);
+          clearInterval(countdownInterval);
+        };
+      }
     }
-  }, [userIsAdmin]);
+  }, [canViewPage, userIsEmployee, isAutoRefresh, reviewingId, showDetailsModal, deletingId]);
 
   const loadApprovals = async () => {
     dispatch(setLoading(true));
     try {
-      const response = await axios.get('/api/approvals');
-      dispatch(setApprovals(response.data));
+      // Use different endpoints based on user role
+      const endpoint = userIsEmployee ? '/api/approvals/my-requests' : '/api/approvals';
+      const response = await axios.get(endpoint);
+      
+      if (response.data) {
+        // Both endpoints return arrays directly
+        const approvalsData = response.data;
+        dispatch(setApprovals(approvalsData || []));
+        setLastUpdated(new Date());
+      }
     } catch (error) {
       console.error('Error loading approvals:', error);
-      toast.error('Failed to load approvals');
+      toast.error('Failed to load approval requests');
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -85,6 +123,8 @@ export default function ApprovalsPage() {
     setReviewingId(approvalId);
     try {
       await reviewApproval(approvalId, action, comment);
+      // Reload approvals to get updated status
+      await loadApprovals();
       // The count is automatically updated by the reviewApproval function
     } catch (error: any) {
       console.error('Error reviewing approval:', error);
@@ -97,6 +137,25 @@ export default function ApprovalsPage() {
   const handleViewDetails = (approval: Approval) => {
     setSelectedApproval(approval);
     setShowDetailsModal(true);
+  };
+
+  const handleDelete = async (approvalId: string) => {
+    if (!confirm('Are you sure you want to delete this approval request? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingId(approvalId);
+    try {
+      await axios.delete(`/api/approvals/${approvalId}`);
+      toast.success('Approval request deleted successfully');
+      // Reload approvals to get updated list
+      await loadApprovals();
+    } catch (error: any) {
+      console.error('Error deleting approval:', error);
+      toast.error(error.response?.data?.error || 'Failed to delete approval request');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const getActionDescription = (actionType: string, resourceType: string) => {
@@ -237,7 +296,7 @@ export default function ApprovalsPage() {
     );
   };
 
-  if (!userIsAdmin) {
+  if (!canViewPage) {
     return (
       <Layout>
         <div className="text-center text-gray-400">
@@ -253,14 +312,49 @@ export default function ApprovalsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-xl sm:text-3xl font-semibold text-white">Approvals</h1>
-          <button
-            onClick={loadApprovals}
-            disabled={loading}
-            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg text-white text-sm font-medium transition-colors w-full sm:w-auto"
-          >
-            {loading ? 'Loading...' : 'Refresh'}
-          </button>
+          <div>
+            <h1 className="text-xl sm:text-3xl font-semibold text-white">
+              {userIsEmployee ? 'My Approval Requests' : 'Approvals'}
+            </h1>
+            {!userIsEmployee && lastUpdated && (
+              <p className="text-sm text-gray-400 mt-1">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+                {isAutoRefresh && (
+                  <span className="ml-2 inline-flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-1"></span>
+                    Auto-refresh active
+                    {!reviewingId && !showDetailsModal && !deletingId && (
+                      <span className="ml-2 text-xs bg-green-600/20 px-2 py-0.5 rounded">
+                        Next: {countdown}s
+                      </span>
+                    )}
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {!userIsEmployee && (
+              <button
+                onClick={() => setIsAutoRefresh(!isAutoRefresh)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isAutoRefresh 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${isAutoRefresh ? 'bg-white' : 'bg-gray-400'}`}></span>
+                Auto-refresh
+              </button>
+            )}
+            <button
+              onClick={loadApprovals}
+              disabled={loading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg text-white text-sm font-medium transition-colors"
+            >
+              {loading ? 'Loading...' : 'Refresh'}
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -300,9 +394,11 @@ export default function ApprovalsPage() {
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Request
                   </th>
-                  <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Requested By
-                  </th>
+                  {!userIsEmployee && (
+                    <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
+                      Requested By
+                    </th>
+                  )}
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
                     Action
                   </th>
@@ -328,14 +424,16 @@ export default function ApprovalsPage() {
                         {getActionDescription(approval.actionType, approval.resourceType)}
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-400" />
-                        <div className="text-sm text-white">
-                          {approval.requestedBy?.name || 'Unknown User'}
+                    {!userIsEmployee && (
+                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-400" />
+                          <div className="text-sm text-white">
+                            {approval.requestedBy?.name || 'Unknown User'}
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
+                    )}
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       {getActionBadge(approval.actionType)}
                     </td>
@@ -362,7 +460,7 @@ export default function ApprovalsPage() {
                         >
                           <Eye className="h-4 w-4 text-blue-400" />
                         </button>
-                        {approval.status === 'pending' && (
+                        {!userIsEmployee && approval.status === 'pending' && (
                           <>
                             <button
                               onClick={() => handleReview(approval._id, 'approve')}
@@ -381,6 +479,20 @@ export default function ApprovalsPage() {
                               <X className="h-4 w-4 text-red-400" />
                             </button>
                           </>
+                        )}
+                        {!userIsEmployee && (
+                          <button
+                            onClick={() => handleDelete(approval._id)}
+                            disabled={deletingId === approval._id}
+                            className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+                            title="Delete"
+                          >
+                            {deletingId === approval._id ? (
+                              <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Trash className="h-4 w-4 text-red-400" />
+                            )}
+                          </button>
                         )}
                       </div>
                     </td>

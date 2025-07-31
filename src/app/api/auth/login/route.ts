@@ -36,10 +36,11 @@ export async function POST(request: NextRequest) {
     }
 
     const userResponse = {
-      id: user._id,
-      username: user.username,
+      _id: user._id,
+      name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status,
       isVerified: user.isVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set('session', JSON.stringify({
       userId: user._id,
-      username: user.username,
+      name: user.name,
       email: user.email,
       role: user.role,
     }), {

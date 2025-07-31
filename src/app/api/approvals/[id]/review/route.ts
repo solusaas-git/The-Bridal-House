@@ -113,14 +113,24 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       const approvalPath = filePath;
       const filename = approvalPath.split('/').pop();
       
-              if (!filename) {
-          console.warn('Could not extract filename from:', approvalPath);
-          movedAttachments.push(attachment);
-          continue;
-        }
+      if (!filename) {
+        console.warn('Could not extract filename from:', approvalPath);
+        movedAttachments.push(attachment);
+        continue;
+      }
 
-      // Find the file in Vercel Blob
-      const sourceBlob = blobs.find(blob => blob.pathname.includes(filename) || blob.pathname.endsWith(filename));
+      // Decode URL encoded filename for comparison
+      const decodedFilename = decodeURIComponent(filename);
+
+      // Find the file in Vercel Blob - try both encoded and decoded versions
+      const sourceBlob = blobs.find(blob => 
+        blob.pathname.includes(filename) || 
+        blob.pathname.includes(decodedFilename) ||
+        blob.pathname.endsWith(filename) || 
+        blob.pathname.endsWith(decodedFilename) ||
+        blob.url.includes(filename) ||
+        blob.url.includes(decodedFilename)
+      );
       
       if (!sourceBlob) {
         console.warn('File not found in Vercel Blob:', filename);
@@ -132,9 +142,10 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       const targetFolder = getResourceUploadFolder(resourceType, filename);
       
       // Generate new filename with timestamp to avoid conflicts
+      // Use decoded filename for cleaner file names
       const timestamp = Date.now();
-      const fileExtension = filename.split('.').pop();
-      const baseName = filename.replace(/\.[^/.]+$/, '');
+      const fileExtension = decodedFilename.split('.').pop();
+      const baseName = decodedFilename.replace(/\.[^/.]+$/, '');
       const newFilename = `${timestamp}-${baseName}.${fileExtension}`;
       const targetPath = `${targetFolder}/${newFilename}`;
 
@@ -159,24 +170,45 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       };
 
       // Ensure required fields are present with fallbacks
-      if (!updatedAttachment.name && filename) {
-        updatedAttachment.name = filename;
+      if (!updatedAttachment.name) {
+        updatedAttachment.name = decodedFilename || 'Unknown';
       }
-      if (!updatedAttachment.size && attachment.size) {
-        updatedAttachment.size = attachment.size;
+      if (!updatedAttachment.size) {
+        // If size is missing, try to get it from the fetched file or set a default
+        try {
+          const fileSize = parseInt(response.headers.get('content-length') || '0');
+          updatedAttachment.size = fileSize || 0;
+        } catch {
+          updatedAttachment.size = 0;
+        }
       }
-      if (!updatedAttachment.type && filename) {
+      if (!updatedAttachment.type) {
         // Infer type from file extension
-        updatedAttachment.type = getFileTypeFromExtension(filename);
+        updatedAttachment.type = getFileTypeFromExtension(decodedFilename || updatedAttachment.name || '');
       }
+      if (!updatedAttachment.uploadedAt) {
+        updatedAttachment.uploadedAt = new Date();
+      }
+
+
 
       movedAttachments.push(updatedAttachment);
 
       console.log(`✅ Moved file from ${approvalPath} to ${targetPath}`);
     } catch (error) {
       console.error('Error moving attachment:', attachment, error);
-      // Keep original attachment if move fails
-      movedAttachments.push(attachment);
+      // Keep original attachment if move fails, but ensure required fields
+      const fallbackName = attachment.name || 'Unknown';
+      const fallbackAttachment = {
+        ...attachment,
+        name: fallbackName,
+        url: attachment.url || attachment.link || '',
+        size: attachment.size || 0,
+        type: attachment.type || getFileTypeFromExtension(fallbackName),
+        uploadedAt: attachment.uploadedAt || new Date()
+      };
+
+      movedAttachments.push(fallbackAttachment);
     }
   }
 
@@ -249,16 +281,14 @@ async function executeApprovedAction(approval: any) {
     
     // Move attachments from general folder to resource-specific folder if needed
     if (fieldsToUpdate.attachments) {
-      console.log('🔄 Moving attachments for approval:', approval._id);
       try {
         const movedAttachments = await moveAttachmentsToResourceFolder(
           fieldsToUpdate.attachments,
           approval.resourceType
         );
         fieldsToUpdate.attachments = movedAttachments;
-        console.log('✅ Attachments moved successfully');
       } catch (error) {
-        console.error('❌ Error moving attachments:', error);
+        console.error('Error moving attachments:', error);
         // Continue with original attachments if move fails
       }
     }
@@ -282,6 +312,29 @@ async function executeApprovedAction(approval: any) {
           );
           break;
         case 'payment':
+          // Special handling for attachments to merge with existing ones
+          if (fieldsToUpdate.attachments || fieldsToUpdate.deletedAttachments) {
+            const currentPayment = await Payment.findById(approval.resourceId);
+            const currentAttachments = currentPayment?.attachments || [];
+            const newAttachments = fieldsToUpdate.attachments || [];  // Only new attachments now
+            const deletedAttachments = fieldsToUpdate.deletedAttachments || [];
+            
+            // Filter out deleted attachments from current ones
+            const remainingCurrentAttachments = currentAttachments.filter((current: any) => 
+              !deletedAttachments.some((deleted: any) => 
+                (current.url || current.link) === (deleted.url || deleted.link)
+              )
+            );
+            
+            // Combine remaining current + new attachments (no duplication)
+            const combinedAttachments = [...remainingCurrentAttachments, ...newAttachments];
+            
+            fieldsToUpdate.attachments = combinedAttachments;
+            
+            // Remove deletedAttachments from the update data as it's not a valid field
+            delete fieldsToUpdate.deletedAttachments;
+          }
+          
           const updatedPayment = await Payment.findByIdAndUpdate(
             approval.resourceId, 
             { $set: fieldsToUpdate },
@@ -306,6 +359,29 @@ async function executeApprovedAction(approval: any) {
           }
           break;
         case 'cost':
+          // Special handling for attachments to merge with existing ones
+          if (fieldsToUpdate.attachments || fieldsToUpdate.deletedAttachments) {
+            const currentCost = await Cost.findById(approval.resourceId);
+            const currentAttachments = currentCost?.attachments || [];
+            const newAttachments = fieldsToUpdate.attachments || [];  // Only new attachments now
+            const deletedAttachments = fieldsToUpdate.deletedAttachments || [];
+            
+            // Filter out deleted attachments from current ones
+            const remainingCurrentAttachments = currentAttachments.filter((current: any) => 
+              !deletedAttachments.some((deleted: any) => 
+                (current.url || current.link) === (deleted.url || deleted.link)
+              )
+            );
+            
+            // Combine remaining current + new attachments (no duplication)
+            const combinedAttachments = [...remainingCurrentAttachments, ...newAttachments];
+            
+            fieldsToUpdate.attachments = combinedAttachments;
+            
+            // Remove deletedAttachments from the update data as it's not a valid field
+            delete fieldsToUpdate.deletedAttachments;
+          }
+          
           await Cost.findByIdAndUpdate(
             approval.resourceId, 
             { $set: fieldsToUpdate },

@@ -30,7 +30,7 @@ export function canViewMenu(user: User | null, permission: string): boolean {
   }
   
   // Define basic permissions that all authenticated users can access
-  const basicPermissions = ['dashboard', 'customers', 'payments', 'reservations', 'products', 'costs'];
+  const basicPermissions = ['dashboard', 'customers', 'payments', 'reservations', 'products', 'costs', 'approvals'];
   
   if (basicPermissions.includes(permission)) {
     return true;
@@ -39,7 +39,7 @@ export function canViewMenu(user: User | null, permission: string): boolean {
   // For other specific permissions, check user role
   switch (userRole) {
     case 'manager':
-      return ['approvals'].includes(permission);
+      return ['settings'].includes(permission);
     case 'employee':
       return false; // Employees only get basic permissions
     default:
@@ -73,7 +73,7 @@ export const canDelete = (user: User | null, resource: string): boolean => {
     case 'manager':
       return ['customers', 'payments', 'reservations', 'items', 'costs'].includes(resource);
     case 'employee':
-      return ['reservations'].includes(resource);
+      return ['reservations', 'costs'].includes(resource);
     default:
       return false;
   }
@@ -107,6 +107,10 @@ export const needsApproval = (user: User | null, action: 'edit' | 'delete' | 'cr
     if (action === 'create' && resourceType === 'cost') {
       return false;
     }
+    // Employees need approval for cost deletion
+    if (action === 'delete' && resourceType === 'cost') {
+      return true;
+    }
     // All other actions need approval
     return true;
   }
@@ -120,5 +124,5 @@ export const canManageApprovals = (user: User | null): boolean => {
 };
 
 export const canViewApprovals = (user: User | null): boolean => {
-  return isManager(user);
+  return user?.role?.toLowerCase() === 'employee' || isManager(user);
 }; 

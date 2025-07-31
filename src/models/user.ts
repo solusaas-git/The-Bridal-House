@@ -1,10 +1,11 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IUser extends Document {
-  username: string;
+  name: string;
   email: string;
   password: string;
   role: string;
+  status?: string;
   resetToken?: string;
   resetTokenExpiry?: Date;
   isVerified: boolean;
@@ -15,13 +16,12 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
   {
-    username: {
+    name: {
       type: String,
-      required: [true, 'Username is required'],
-      unique: true,
+      required: [true, 'Name is required'],
       trim: true,
-      minlength: [3, 'Username must be at least 3 characters long'],
-      maxlength: [30, 'Username cannot exceed 30 characters'],
+      minlength: [2, 'Name must be at least 2 characters long'],
+      maxlength: [50, 'Name cannot exceed 50 characters'],
     },
     email: {
       type: String,
@@ -40,6 +40,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ['admin', 'manager', 'employee'],
       default: 'employee',
+    },
+    status: {
+      type: String,
+      enum: ['Active', 'Inactive'],
+      default: 'Active',
     },
     resetToken: String,
     resetTokenExpiry: Date,

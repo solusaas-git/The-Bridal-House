@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setCurrentUser } from '@/store/reducers/authSlice';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import TopBar from '@/components/TopBar';
 
@@ -19,6 +21,11 @@ export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated, currentUser } = useSelector((state: RootState) => state.auth);
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [stoppingImpersonation, setStoppingImpersonation] = useState(false);
+
+  // Check if user is currently impersonating (has originalAdmin in session)
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [originalAdminInfo, setOriginalAdminInfo] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -52,6 +59,45 @@ export default function Layout({ children }: LayoutProps) {
     checkAuth();
   }, [router, dispatch, currentUser]);
 
+  useEffect(() => {
+    // Check session for impersonation info
+    const checkImpersonation = async () => {
+      try {
+        const response = await axios.get('/api/auth/me', { withCredentials: true });
+        if (response.data.success && response.data.originalAdmin) {
+          setIsImpersonating(true);
+          setOriginalAdminInfo(response.data.originalAdmin);
+        }
+      } catch (error) {
+        // Not impersonating or error checking
+        setIsImpersonating(false);
+        setOriginalAdminInfo(null);
+      }
+    };
+
+    if (currentUser) {
+      checkImpersonation();
+    }
+  }, [currentUser]);
+
+  const handleStopImpersonation = async () => {
+    setStoppingImpersonation(true);
+    try {
+      const response = await axios.post('/api/auth/stop-impersonation');
+      dispatch(setCurrentUser(response.data.user));
+      setIsImpersonating(false);
+      setOriginalAdminInfo(null);
+      toast.success('Stopped impersonation');
+      // Redirect to settings/users or reload
+      router.push('/settings');
+    } catch (error: any) {
+      console.error('Error stopping impersonation:', error);
+      toast.error(error.response?.data?.message || 'Failed to stop impersonation');
+    } finally {
+      setStoppingImpersonation(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
@@ -69,6 +115,29 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      {/* Floating Impersonation Banner */}
+      {isImpersonating && originalAdminInfo && (
+        <div className="fixed top-4 right-4 bg-yellow-600 text-black px-4 py-2 text-sm font-medium rounded-lg shadow-lg z-[60] max-w-sm animate-in slide-in-from-right-5 fade-in duration-300">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="flex items-center gap-1">
+                <span className="animate-pulse">⚠️</span>
+                <span className="hidden sm:inline text-xs">Impersonating</span>
+                <span className="font-semibold truncate">{currentUser?.name}</span>
+              </span>
+            </div>
+            <button
+              onClick={handleStopImpersonation}
+              disabled={stoppingImpersonation}
+              className="flex items-center gap-1 px-2 py-1 bg-black/20 hover:bg-black/30 rounded text-xs transition-colors disabled:opacity-50 flex-shrink-0"
+              title={`Stop impersonating ${currentUser?.name} (Originally: ${originalAdminInfo.name})`}
+            >
+              <X className="h-3 w-3" />
+              <span className="hidden lg:inline">{stoppingImpersonation ? 'Stop...' : 'Stop'}</span>
+            </button>
+          </div>
+        </div>
+      )}
       <TopBar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <main className="pt-16 lg:pt-24 lg:ml-56 transition-all duration-300">

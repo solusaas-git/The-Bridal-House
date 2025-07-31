@@ -39,14 +39,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user: {
-        id: user._id,
-        username: user.username,
+        _id: user._id,
+        name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         isVerified: user.isVerified,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
+      // Include original admin info if impersonating
+      originalAdmin: sessionData.originalAdmin || null,
     });
 
   } catch (error) {

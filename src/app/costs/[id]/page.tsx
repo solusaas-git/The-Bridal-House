@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeftIcon,
   CalendarIcon,
@@ -19,6 +20,7 @@ import {
   EyeIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
+import { Cross2Icon, FileIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
 import { RootState } from '@/store/store';
@@ -81,13 +83,7 @@ export default function ViewCostPage() {
   
   const [cost, setCost] = useState<Cost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
-  const [selectedAttachment, setSelectedAttachment] = useState<{name: string; url: string; type: string} | null>(null);
-  const [imagePreview, setImagePreview] = useState({
-    show: false,
-    src: '',
-    alt: ''
-  });
+  const [previewFile, setPreviewFile] = useState<{ file: any; url: string; type: string } | null>(null);
 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
@@ -142,22 +138,91 @@ export default function ViewCostPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getFileType = (file: { type: string; name: string }) => {
-    if (file.type?.startsWith('image/')) return 'image';
-    if (file.type === 'application/pdf') return 'pdf';
-    return 'document';
+  const getFileType = (fileName: string): string => {
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+    
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
+      return 'image';
+    } else if (extension === 'pdf') {
+      return 'pdf';
+    } else if (['txt', 'md'].includes(extension)) {
+      return 'text';
+    } else if (['doc', 'docx'].includes(extension)) {
+      return 'document';
+    }
+    return 'other';
   };
 
   const handleFileClick = (attachment: any) => {
-    if (getFileType(attachment) === 'image') {
-      setImagePreview({
-        show: true,
-        src: encodeURI(attachment.url),
-        alt: attachment.name
-      });
-    } else {
-      // Open file in new tab
-      window.open(encodeURI(attachment.url), '_blank');
+    const fileName = attachment.name;
+    const fileType = getFileType(fileName);
+    const url = attachment.url.startsWith('http') ? attachment.url : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${attachment.url}`;
+    
+    setPreviewFile({ file: attachment, url, type: fileType });
+  };
+
+  const closePreview = () => {
+    setPreviewFile(null);
+  };
+
+  const renderPreviewContent = () => {
+    if (!previewFile) return null;
+
+    const { file, url, type } = previewFile;
+    const fileName = file.name;
+
+    switch (type) {
+      case 'image':
+        return (
+          <div className="relative max-w-full max-h-[80vh] overflow-auto">
+            <img
+              src={url}
+              alt={fileName}
+              className="max-w-full h-auto object-contain"
+              onError={() => {
+                console.error('Failed to load image:', url);
+              }}
+            />
+          </div>
+        );
+      
+      case 'pdf':
+        return (
+          <div className="w-full h-[80vh]">
+            <iframe
+              src={`${url}#scrollbar=1&zoom=page-fit`}
+              className="w-full h-full border-0"
+              title={fileName}
+            />
+          </div>
+        );
+      
+      case 'text':
+        return (
+          <div className="max-w-full max-h-[80vh] overflow-auto bg-gray-900 p-4 rounded">
+            <iframe
+              src={url}
+              className="w-full h-96 border-0 bg-white"
+              title={fileName}
+            />
+          </div>
+        );
+      
+      default:
+        return (
+          <div className="text-center p-8">
+            <FileIcon className="h-16 w-16 text-white/60 mx-auto mb-4" />
+            <p className="text-white mb-4">Preview not available for this file type</p>
+            <p className="text-gray-400 text-sm mb-4">{fileName}</p>
+            <button
+              type="button"
+              onClick={() => handleDownload(file)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            >
+              Download to View
+            </button>
+          </div>
+        );
     }
   };
 
@@ -340,10 +405,10 @@ export default function ViewCostPage() {
                                       src={getImageUrl(item.primaryPhoto)}
                                       alt={item.name}
                                       className="w-10 h-10 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
-                                      onClick={() => setImagePreview({
-                                        show: true,
-                                        src: getImageUrl(item.primaryPhoto),
-                                        alt: item.name
+                                      onClick={() => setPreviewFile({
+                                        file: { name: item.name, size: 0, type: 'image' },
+                                        url: getImageUrl(item.primaryPhoto),
+                                        type: 'image'
                                       })}
                                       onError={(e) => {
                                         console.log('Image failed to load:', item.primaryPhoto);
@@ -381,10 +446,10 @@ export default function ViewCostPage() {
                             className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => {
                               if (cost.relatedProduct?.primaryPhoto) {
-                                setImagePreview({
-                                  show: true,
-                                  src: getImageUrl(cost.relatedProduct.primaryPhoto),
-                                  alt: cost.relatedProduct.name || 'Product'
+                                setPreviewFile({
+                                  file: { name: cost.relatedProduct.name || 'Product', size: 0, type: 'image' },
+                                  url: getImageUrl(cost.relatedProduct.primaryPhoto),
+                                  type: 'image'
                                 });
                               }
                             }}
@@ -426,7 +491,7 @@ export default function ViewCostPage() {
                           className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors group"
                         >
                           <div className="flex-shrink-0">
-                            {getFileType(attachment) === 'image' ? (
+                            {getFileType(attachment.name) === 'image' ? (
                               <img
                                 src={encodeURI(attachment.url)}
                                 alt={attachment.name}
@@ -505,78 +570,46 @@ export default function ViewCostPage() {
           </div>
         </div>
 
-        {/* Image Preview Modal */}
-        {imagePreview.show && (
-          <div 
-            className="fixed top-0 left-0 w-screen h-screen bg-black/90 backdrop-blur-lg flex items-center justify-center p-4"
-            onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-            style={{ 
-              zIndex: 999999,
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh'
-            }}
-          >
-            <div 
-              className="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-2xl flex flex-col"
-              style={{
-                width: '90vw',
-                height: '90vh',
-                maxWidth: '90vw',
-                maxHeight: '90vh'
-              }}
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-                <div className="flex-1 text-center">
-                  <h3 className="text-white font-medium text-sm truncate px-4">{imagePreview.alt}</h3>
+        {/* Preview Modal - Rendered as Portal */}
+        {previewFile && createPortal(
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-2 sm:p-4">
+            <div className={`relative w-full h-full bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden ${
+              previewFile.type === 'pdf' 
+                ? 'max-w-7xl max-h-[95vh]' 
+                : 'max-w-6xl max-h-[90vh]'
+            }`}>
+              {/* Header with file info and close button */}
+              <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-black/70 backdrop-blur-sm rounded-t-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-600/20 p-2 rounded-lg">
+                    <FileIcon className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">{previewFile.file.name}</p>
+                    <p className="text-gray-300 text-xs">
+                      {formatFileSize(previewFile.file.size)} • {previewFile.type.toUpperCase()}
+                    </p>
+                  </div>
                 </div>
                 <button
-                  onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
-                  title="Close"
+                  onClick={closePreview}
+                  className="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
                 >
-                  <XMarkIcon className="h-5 w-5 text-gray-400 group-hover:text-white" />
+                  <Cross2Icon className="h-6 w-6 text-white" />
                 </button>
               </div>
-
-              {/* Image Container */}
-              <div className="relative bg-black/20 rounded-xl overflow-hidden border border-white/10 flex-1 flex items-center justify-center min-h-0">
-                <img
-                  src={imagePreview.src}
-                  alt={imagePreview.alt}
-                  className="max-w-full max-h-full w-auto h-auto object-contain"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-
-              {/* Modal Footer */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <PaperClipIcon className="h-4 w-4" />
-                  <span>Attachment Preview</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleDownload({ url: imagePreview.src, name: imagePreview.alt })}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
-                  >
-                    <ArrowDownTrayIcon className="h-4 w-4" />
-                    Download
-                  </button>
-                </div>
+              
+              {/* Content area with optimized layout based on file type */}
+              <div className={`w-full h-full ${
+                previewFile.type === 'pdf'
+                  ? 'pt-16 pb-2 px-2' // Minimal padding for PDFs to maximize viewing area
+                  : 'pt-16 pb-8 px-8 flex items-center justify-center' // Centered layout for images
+              }`}>
+                {renderPreviewContent()}
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </Layout>

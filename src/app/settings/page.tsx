@@ -17,7 +17,7 @@ const Settings = () => {
 
   // Check permissions for different settings sections using utility functions
   const userIsAdmin = isAdmin(currentUser);
-  const canAccessUsers = true; // Temporarily allow all users
+  const canAccessUsers = userIsAdmin; // Only admins can access users (for impersonation security)
   const canAccessRoles = true; // Temporarily allow all users
   const canAccessCurrency = true; // Temporarily allow all users
   const canAccessCategories = true; // Temporarily allow all users to see categories

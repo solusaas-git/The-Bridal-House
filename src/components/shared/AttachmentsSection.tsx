@@ -10,7 +10,7 @@ interface AttachmentsSectionProps {
   existingFiles?: Attachment[];
   newFiles?: File[];
   onAddFiles: (files: File[]) => void;
-  onRemoveExisting?: (file: Attachment) => void;
+  onRemoveExisting?: (file: Attachment, index: number) => void;
   onRemoveNew?: (index: number) => void;
 }
 
@@ -226,7 +226,7 @@ const AttachmentsSection = ({
                   {onRemoveExisting && (
                     <button
                       type="button"
-                      onClick={(e) => handleRemoveClick(e, () => onRemoveExisting(file))}
+                      onClick={(e) => handleRemoveClick(e, () => onRemoveExisting(file, index))}
                       className="p-1 hover:bg-white/10 rounded transition-colors opacity-0 group-hover:opacity-100"
                       title="Remove"
                     >

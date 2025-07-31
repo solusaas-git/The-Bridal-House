@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { createPortal } from 'react-dom';
 import {
   CalendarIcon,
   CurrencyDollarIcon,
@@ -13,8 +14,11 @@ import {
   XMarkIcon,
   ArrowLeftIcon,
   DocumentIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  EyeIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
+import { Cross2Icon, FileIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
 import { RootState } from '@/store/store';
@@ -89,22 +93,115 @@ export default function EditCostPage() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState({
-    show: false,
-    src: '',
-    alt: ''
-  });
+  const [previewFile, setPreviewFile] = useState<{ file: any; url: string; type: string } | null>(null);
 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
     return `/api/uploads/${imagePath}`;
   };
 
+
+
+  const handleFilePreview = (file: ExistingAttachment | File, isExisting: boolean = true) => {
+    let fileName: string;
+    let url: string;
+    
+    if (isExisting) {
+      // Existing attachment
+      const attachment = file as ExistingAttachment;
+      fileName = attachment.name;
+      url = attachment.url.startsWith('http') ? attachment.url : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${attachment.url}`;
+    } else {
+      // New file
+      const fileObj = file as File;
+      fileName = fileObj.name;
+      url = URL.createObjectURL(fileObj);
+    }
+    
+    const fileType = getFileType(fileName);
+    setPreviewFile({ file, url, type: fileType });
+  };
+
+  const closePreview = () => {
+    if (previewFile?.url && !previewFile.url.startsWith('http')) {
+      // Clean up object URL for new files
+      URL.revokeObjectURL(previewFile.url);
+    }
+    setPreviewFile(null);
+  };
+
+  const renderPreviewContent = () => {
+    if (!previewFile) return null;
+
+    const { file, url, type } = previewFile;
+    const fileName = file.name || 'Unknown file';
+
+    switch (type) {
+      case 'image':
+        return (
+          <div className="relative max-w-full max-h-[80vh] overflow-auto">
+            <img
+              src={url}
+              alt={fileName}
+              className="max-w-full h-auto object-contain"
+              onError={() => {
+                console.error('Failed to load image:', url);
+              }}
+            />
+          </div>
+        );
+      
+      case 'pdf':
+        return (
+          <div className="w-full h-[80vh]">
+            <iframe
+              src={`${url}#scrollbar=1&zoom=page-fit`}
+              className="w-full h-full border-0"
+              title={fileName}
+            />
+          </div>
+        );
+      
+      case 'text':
+        return (
+          <div className="max-w-full max-h-[80vh] overflow-auto bg-gray-900 p-4 rounded">
+            <iframe
+              src={url}
+              className="w-full h-96 border-0 bg-white"
+              title={fileName}
+            />
+          </div>
+        );
+      
+      default:
+        return (
+          <div className="text-center p-8">
+            <FileIcon className="h-16 w-16 text-white/60 mx-auto mb-4" />
+            <p className="text-white mb-4">Preview not available for this file type</p>
+            <p className="text-gray-400 text-sm mb-4">{fileName}</p>
+            <button
+              type="button"
+              onClick={() => {
+                const downloadUrl = previewFile.url;
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = fileName;
+                link.click();
+              }}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            >
+              Download to View
+            </button>
+          </div>
+        );
+    }
+  };
+
   // Compute newData for approval system
   const newData = {
     ...formData,
     existingAttachments,
-    newFiles: attachments,
+    newFiles: attachments.map(att => att.file), // Extract File objects from AttachmentFile structure
     deletedAttachments: deletedAttachments
   };
 
@@ -337,11 +434,22 @@ export default function EditCostPage() {
     }
   };
 
-  const getFileType = (file: File | ExistingAttachment) => {
-    const type = 'type' in file ? file.type : (file as any).type || '';
-    if (type.startsWith('image/')) return 'image';
-    if (type === 'application/pdf') return 'pdf';
-    return 'document';
+  const getFileType = (file: File | ExistingAttachment | string) => {
+    if (typeof file === 'string') {
+      // Handle filename string
+      const extension = file.split('.').pop()?.toLowerCase() || '';
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
+      if (extension === 'pdf') return 'pdf';
+      if (['txt', 'md'].includes(extension)) return 'text';
+      if (['doc', 'docx'].includes(extension)) return 'document';
+      return 'other';
+    } else {
+      // Handle File or ExistingAttachment object
+      const type = 'type' in file ? file.type : (file as any).type || '';
+      if (type.startsWith('image/')) return 'image';
+      if (type === 'application/pdf') return 'pdf';
+      return 'document';
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -540,10 +648,10 @@ export default function EditCostPage() {
                                     className="w-12 h-12 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => {
                                       if (selectedItem.primaryPhoto) {
-                                        setImagePreview({
-                                          show: true,
-                                          src: getImageUrl(selectedItem.primaryPhoto),
-                                          alt: selectedItem.name || 'Product'
+                                        setPreviewFile({
+                                          file: { name: selectedItem.name || 'Product', size: 0, type: 'image' },
+                                          url: getImageUrl(selectedItem.primaryPhoto),
+                                          type: 'image'
                                         });
                                       }
                                     }}
@@ -583,10 +691,10 @@ export default function EditCostPage() {
                                        className="w-10 h-10 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
                                        onClick={() => {
                                          if (item.primaryPhoto) {
-                                           setImagePreview({
-                                             show: true,
-                                             src: getImageUrl(item.primaryPhoto),
-                                             alt: item.name
+                                           setPreviewFile({
+                                             file: { name: item.name, size: 0, type: 'image' },
+                                             url: getImageUrl(item.primaryPhoto),
+                                             type: 'image'
                                            });
                                          }
                                        }}
@@ -713,6 +821,31 @@ export default function EditCostPage() {
                               {formatFileSize(attachment.size)}
                             </p>
                             
+                            {/* Action buttons */}
+                            <div className="flex items-center justify-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                type="button"
+                                onClick={() => handleFilePreview(attachment, true)}
+                                className="p-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                title="Preview"
+                              >
+                                <EyeIcon className="h-3 w-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const link = document.createElement('a');
+                                  link.href = attachment.url;
+                                  link.download = attachment.name;
+                                  link.click();
+                                }}
+                                className="p-1 bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
+                                title="Download"
+                              >
+                                <ArrowDownTrayIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+                            
                             <button
                               type="button"
                               onClick={() => removeExistingAttachment(attachment)}
@@ -778,6 +911,18 @@ export default function EditCostPage() {
                               {formatFileSize(attachment.file.size)}
                             </p>
                             
+                            {/* Action buttons */}
+                            <div className="flex items-center justify-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                type="button"
+                                onClick={() => handleFilePreview(attachment.file, false)}
+                                className="p-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                title="Preview"
+                              >
+                                <EyeIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+                            
                             <button
                               type="button"
                               onClick={() => removeNewAttachment(index)}
@@ -831,26 +976,46 @@ export default function EditCostPage() {
             </form>
         </div>
 
-        {/* Image Preview Modal */}
-        {imagePreview.show && (
-          <div 
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-          >
-            <div className="relative max-w-6xl max-h-[90vh] w-full h-full flex items-center justify-center">
-              <img
-                src={imagePreview.src}
-                alt={imagePreview.alt}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              />
-              <button
-                onClick={() => setImagePreview({ show: false, src: '', alt: '' })}
-                className="absolute top-4 right-4 p-3 bg-black/70 hover:bg-black/90 text-white rounded-full transition-colors text-xl font-bold"
-              >
-                ✕
-              </button>
+        {/* Preview Modal - Rendered as Portal */}
+        {previewFile && createPortal(
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-2 sm:p-4">
+            <div className={`relative w-full h-full bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden ${
+              previewFile.type === 'pdf' 
+                ? 'max-w-7xl max-h-[95vh]' 
+                : 'max-w-6xl max-h-[90vh]'
+            }`}>
+              {/* Header with file info and close button */}
+              <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-black/70 backdrop-blur-sm rounded-t-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-600/20 p-2 rounded-lg">
+                    <FileIcon className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">{previewFile.file.name || 'Unknown file'}</p>
+                    <p className="text-gray-300 text-xs">
+                      {previewFile.file.size ? `${(previewFile.file.size / 1024 / 1024).toFixed(2)} MB • ` : ''}{previewFile.type.toUpperCase()}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={closePreview}
+                  className="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
+                >
+                  <Cross2Icon className="h-6 w-6 text-white" />
+                </button>
+              </div>
+              
+              {/* Content area with optimized layout based on file type */}
+              <div className={`w-full h-full ${
+                previewFile.type === 'pdf'
+                  ? 'pt-16 pb-2 px-2' // Minimal padding for PDFs to maximize viewing area
+                  : 'pt-16 pb-8 px-8 flex items-center justify-center' // Centered layout for images
+              }`}>
+                {renderPreviewContent()}
+              </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </Layout>

@@ -29,6 +29,7 @@ import {
 import { canCreate, canEdit, canDelete } from '@/utils/permissions';
 import { formatCurrency } from '@/utils/currency';
 import DateFilter from '@/components/shared/DateFilter';
+import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 
 // Component that uses useSearchParams
 function CostsContent() {
@@ -204,22 +205,6 @@ function CostsContent() {
   const handlePageChange = (page: number) => {
     dispatch(setPagination({ ...pagination, page }));
     fetchCosts();
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this cost?')) {
-      return;
-    }
-
-    try {
-      await axios.delete(`/api/costs/${id}`);
-      dispatch(removeCost(id));
-      toast.success('Cost deleted successfully');
-    } catch (error: unknown) {
-      console.error('Error deleting cost:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete cost';
-      toast.error(errorMessage);
-    }
   };
 
   const getTotalCosts = () => {
@@ -449,16 +434,31 @@ function CostsContent() {
                             )}
                             
                             {userCanDelete && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDelete(cost._id);
+                              <ApprovalHandler
+                                actionType="delete"
+                                resourceType="cost"
+                                resourceId={cost._id}
+                                resourceName={`Cost - ${cost.category.name} (${formatCurrency(cost.amount, currencySettings)})`}
+                                originalData={cost}
+                                onDirectAction={async () => {
+                                  await axios.delete(`/api/costs/${cost._id}`);
                                 }}
-                                className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-                                title="Delete"
+                                onSuccess={() => {
+                                  toast.success('Cost deleted successfully');
+                                  dispatch(removeCost(cost._id));
+                                  fetchCosts(); // Refresh the list
+                                }}
                               >
-                                <TrashIcon className="h-4 w-4" />
-                              </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                  title="Delete"
+                                >
+                                  <TrashIcon className="h-4 w-4" />
+                                </button>
+                              </ApprovalHandler>
                             )}
                           </div>
                         </td>

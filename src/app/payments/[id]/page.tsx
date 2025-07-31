@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeftIcon,
   Pencil1Icon,
@@ -406,8 +407,8 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
       case 'pdf':
         return (
           <iframe
-            src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
-            className="w-full h-full border-none rounded-lg"
+            src={`${url}#toolbar=0&navpanes=0&scrollbar=1&zoom=page-fit`}
+            className="w-full h-full border-none rounded-lg bg-white"
             title={previewFile.file.name}
             onError={() => {
               console.error('PDF failed to load:', url);
@@ -629,11 +630,27 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
           </div>
         )}
 
-        {/* Preview Modal */}
-        {previewFile && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="relative w-full h-full max-w-6xl max-h-[90vh] bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden">
-              <div className="absolute top-4 right-4 z-10">
+        {/* Preview Modal - Rendered as Portal to escape Layout constraints */}
+        {previewFile && createPortal(
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-2 sm:p-4">
+            <div className={`relative w-full h-full bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden ${
+              previewFile.type === 'pdf' 
+                ? 'max-w-7xl max-h-[95vh]' 
+                : 'max-w-6xl max-h-[90vh]'
+            }`}>
+              {/* Header with file info and close button */}
+              <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-black/70 backdrop-blur-sm rounded-t-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-600/20 p-2 rounded-lg">
+                    <FileIcon className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">{previewFile.file.name}</p>
+                    <p className="text-gray-300 text-xs">
+                      {(previewFile.file.size / 1024 / 1024).toFixed(2)} MB • {previewFile.type.toUpperCase()}
+                    </p>
+                  </div>
+                </div>
                 <button
                   onClick={closePreview}
                   className="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
@@ -641,19 +658,18 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
                   <Cross2Icon className="h-6 w-6 text-white" />
                 </button>
               </div>
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2">
-                  <p className="text-white text-sm font-medium">{previewFile.file.name}</p>
-                  <p className="text-gray-300 text-xs">
-                    {(previewFile.file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-              </div>
-              <div className="w-full h-full flex items-center justify-center p-8">
+              
+              {/* Content area with optimized layout based on file type */}
+              <div className={`w-full h-full ${
+                previewFile.type === 'pdf'
+                  ? 'pt-16 pb-2 px-2' // Minimal padding for PDFs to maximize viewing area
+                  : 'pt-16 pb-8 px-8 flex items-center justify-center' // Centered layout for images
+              }`}>
                 {renderPreviewContent()}
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>

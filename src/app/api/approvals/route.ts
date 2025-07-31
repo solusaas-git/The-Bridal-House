@@ -18,11 +18,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin
+    // Check if user is admin or manager
     const user = await User.findById(session.userId);
-    if (!user || user.role !== 'Admin') {
+    const userRole = user?.role?.toLowerCase();
+    if (!user || (userRole !== 'admin' && userRole !== 'manager')) {
       return NextResponse.json(
-        { error: 'Admin access required' },
+        { error: 'Manager or Admin access required' },
         { status: 403 }
       );
     }

@@ -41,7 +41,7 @@ export async function PUT(
     const { id } = await params;
 
     const body = await request.json();
-    const { username, email, password, role } = body;
+    const { name, email, password, role, status } = body;
 
     const user = await User.findById(id);
     
@@ -64,9 +64,10 @@ export async function PUT(
     }
 
     // Update fields
-    if (username) user.username = username;
+    if (name) user.name = name;
     if (email) user.email = email;
     if (role) user.role = role;
+    if (status) user.status = status;
     
     // Hash new password if provided and not empty
     if (password && password.trim() !== '') {

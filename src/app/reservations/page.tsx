@@ -155,7 +155,11 @@ function ReservationsContent() {
       try {
         const response = await axios.get('/api/user-preferences/columns/reservations');
         if (response.data.success && response.data.columnPreferences) {
-          setColumnVisibility(response.data.columnPreferences);
+          // Merge with default values to ensure all properties are defined
+          setColumnVisibility(prevState => ({
+            ...prevState,
+            ...response.data.columnPreferences
+          }));
         }
       } catch (error) {
         console.error('Failed to load column preferences:', error);

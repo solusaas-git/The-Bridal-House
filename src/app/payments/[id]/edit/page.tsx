@@ -305,7 +305,15 @@ const EditPaymentPage = () => {
           size: att.size || 0,
           url: att.url || att.link || '' // Handle both 'url' and 'link' fields
         }));
-        setExistingFiles(attachments);
+        
+        // Remove duplicates based on URL to fix database inconsistencies
+        const uniqueAttachments = attachments.filter((att: IAttachment, index: number, self: IAttachment[]) => 
+          index === self.findIndex((a: IAttachment) => a.url === att.url && a.url !== '')
+        );
+        
+
+        
+        setExistingFiles(uniqueAttachments);
         
         // Set customer information
         if (payment.client) {
@@ -539,8 +547,10 @@ const EditPaymentPage = () => {
   };
 
   // Fix the handleRemoveExisting function parameter type
-  const handleRemoveExisting = (file: IAttachment) => {
-    setExistingFiles(prev => prev.filter(f => f.url !== file.url));
+  const handleRemoveExisting = (file: IAttachment, fileIndex: number) => {
+    // Remove by index instead of URL to avoid deleting duplicates
+    const filesToKeep = existingFiles.filter((_, index) => index !== fileIndex);
+    setExistingFiles(filesToKeep);
     setDeletedAttachments(prev => [...prev, file]);
   };
 
@@ -581,7 +591,7 @@ const EditPaymentPage = () => {
 
       // Add new attachments
       newFiles.forEach(file => {
-        formDataToSend.append('newFiles', file);
+        formDataToSend.append('attachments', file);
       });
 
       const response = await axios.put(`/api/payments/${paymentId}`, formDataToSend, {
@@ -999,7 +1009,7 @@ const EditPaymentPage = () => {
                     paymentTime: formData.paymentTime,
                     reference: formData.reference,
                     note: formData.note,
-                    attachments: existingFiles,
+                    existingAttachments: existingFiles,
                     newFiles: newFiles,
                     deletedAttachments: deletedAttachments
                   }}
