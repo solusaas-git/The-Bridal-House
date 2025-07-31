@@ -2,14 +2,9 @@ import { useState } from "react";
 import { FileIcon, DownloadIcon, TrashIcon, EyeOpenIcon, Cross2Icon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import FileUpload from "./FileUpload";
+import type { IAttachment } from "@/models";
 
-interface Attachment {
-  name: string;
-  size: number;
-  url: string;
-  type?: string;
-  uploadedAt?: string;
-}
+type Attachment = IAttachment;
 
 interface AttachmentsSectionProps {
   existingFiles?: Attachment[];
@@ -221,7 +216,7 @@ const AttachmentsSection = ({
                   
                   <button
                     type="button"
-                    onClick={(e) => handleDownloadClick(e, file.link)}
+                    onClick={(e) => handleDownloadClick(e, file.url)}
                     className="p-1 hover:bg-white/10 rounded transition-colors"
                     title="Download"
                   >

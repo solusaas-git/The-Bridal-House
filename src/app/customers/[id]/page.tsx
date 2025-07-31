@@ -12,6 +12,7 @@ import {
   Cross2Icon
 } from '@radix-ui/react-icons';
 import Layout from '@/components/Layout';
+import type { IAttachment } from '@/models';
 
 interface Customer {
   _id: string;
@@ -29,22 +30,10 @@ interface Customer {
   type: 'Client' | 'Prospect';
   createdAt: string;
   updatedAt: string;
-  attachments?: Array<{
-    name: string;
-    size: number;
-    url: string;
-    type?: string;
-    uploadedAt?: string;
-  }>;
+  attachments?: IAttachment[];
 }
 
-interface IAttachment {
-  name: string;
-  size: number;
-  url: string;
-  type?: string;
-  uploadedAt?: string;
-}
+
 
 interface Reservation {
   _id: string;
