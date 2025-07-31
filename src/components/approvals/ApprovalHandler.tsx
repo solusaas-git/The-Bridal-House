@@ -148,6 +148,38 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
     }
   };
 
+  // Helper function to get approval upload directory based on resource type and file type
+  const getApprovalUploadDir = (resourceType: string, fileName: string): string => {
+    // Determine file type from extension
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+    const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico'];
+    const videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'];
+    
+    let fileType = 'documents'; // Default
+    if (imageExts.includes(extension)) {
+      fileType = 'images';
+    } else if (videoExts.includes(extension)) {
+      fileType = 'videos';
+    }
+
+    // Create approval folder structure that mirrors normal uploads
+    switch (resourceType) {
+      case 'customer':
+        return `approvals/customers/${fileType}`;
+      case 'item':
+      case 'product':
+        return `approvals/products/${fileType}`;
+      case 'payment':
+        return 'approvals/payments';
+      case 'reservation':
+        return 'approvals/reservations';
+      case 'cost':
+        return 'approvals/costs';
+      default:
+        return 'approvals/general';
+    }
+  };
+
   // Helper function to upload files for approval requests
   const uploadFilesForApproval = async (files: File[]): Promise<Array<{name: string, size: number, link: string}>> => {
     const uploadedFiles = [];
@@ -156,6 +188,12 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
       try {
         const formData = new FormData();
         formData.append('file', file);
+        
+        // Add the approval-specific upload directory
+        const uploadDir = getApprovalUploadDir(resourceType, file.name);
+        formData.append('uploadDir', uploadDir);
+        
+        console.log(`📤 Uploading approval file: ${file.name} to ${uploadDir}`);
         
         const response = await axios.post('/api/uploads', formData, {
           headers: {

@@ -103,21 +103,21 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       // Check both 'link' and 'url' fields for the file path
       const filePath = attachment.link || attachment.url;
       
-      // Skip if attachment already has a proper URL (not from general folder)
-      if (!filePath || !filePath.includes('uploads/general/')) {
+      // Skip if attachment already has a proper URL (not from approval folder)
+      if (!filePath || !filePath.includes('approvals/')) {
         movedAttachments.push(attachment);
         continue;
       }
 
-      // Extract filename from the general path
-      const generalPath = filePath;
-      const filename = generalPath.split('/').pop();
+      // Extract filename from the approval path
+      const approvalPath = filePath;
+      const filename = approvalPath.split('/').pop();
       
-      if (!filename) {
-        console.warn('Could not extract filename from:', generalPath);
-        movedAttachments.push(attachment);
-        continue;
-      }
+              if (!filename) {
+          console.warn('Could not extract filename from:', approvalPath);
+          movedAttachments.push(attachment);
+          continue;
+        }
 
       // Find the file in Vercel Blob
       const sourceBlob = blobs.find(blob => blob.pathname.includes(filename) || blob.pathname.endsWith(filename));
@@ -128,8 +128,8 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
         continue;
       }
 
-      // Determine target folder based on resource type
-      const targetFolder = getResourceUploadFolder(resourceType);
+      // Determine target folder based on resource type and file type
+      const targetFolder = getResourceUploadFolder(resourceType, filename);
       
       // Generate new filename with timestamp to avoid conflicts
       const timestamp = Date.now();
@@ -172,7 +172,7 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
 
       movedAttachments.push(updatedAttachment);
 
-      console.log(`✅ Moved file from ${generalPath} to ${targetPath}`);
+      console.log(`✅ Moved file from ${approvalPath} to ${targetPath}`);
     } catch (error) {
       console.error('Error moving attachment:', attachment, error);
       // Keep original attachment if move fails
@@ -184,16 +184,28 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
 }
 
 
-// Helper function to get the correct upload folder for each resource type
-function getResourceUploadFolder(resourceType: string): string {
+// Helper function to get the correct production upload folder for each resource type and file type
+function getResourceUploadFolder(resourceType: string, filename: string): string {
+  // Determine file type from extension
+  const extension = filename.split('.').pop()?.toLowerCase() || '';
+  const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico'];
+  const videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'];
+  
+  let fileType = 'documents'; // Default
+  if (imageExts.includes(extension)) {
+    fileType = 'images';
+  } else if (videoExts.includes(extension)) {
+    fileType = 'videos';
+  }
+
   switch (resourceType) {
     case 'customer':
-      return 'uploads/customers/documents';
+      return `uploads/customers/${fileType}`;
     case 'payment':
       return 'uploads/payment';
     case 'item':
     case 'product':
-      return 'uploads/products';
+      return `uploads/products/${fileType}`;
     case 'reservation':
       return 'uploads/reservations';
     case 'cost':

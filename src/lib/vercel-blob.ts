@@ -2,13 +2,25 @@ import { put, del, list } from '@vercel/blob';
 
 // Maintain the same folder structure as your current system
 export const UPLOAD_FOLDERS = {
+  // Production folders
   CUSTOMERS_IMAGES: 'uploads/customers/images',
   CUSTOMERS_DOCUMENTS: 'uploads/customers/documents', 
   PRODUCTS_IMAGES: 'uploads/products/images',
   PRODUCTS_VIDEOS: 'uploads/products/videos',
   PRODUCTS_DOCUMENTS: 'uploads/products/documents',
   PAYMENTS: 'uploads/payment',
-  COSTS: 'uploads/costs'
+  COSTS: 'uploads/costs',
+  
+  // Approval folders (mirror the production structure)
+  APPROVALS_CUSTOMERS_IMAGES: 'approvals/customers/images',
+  APPROVALS_CUSTOMERS_DOCUMENTS: 'approvals/customers/documents',
+  APPROVALS_PRODUCTS_IMAGES: 'approvals/products/images', 
+  APPROVALS_PRODUCTS_VIDEOS: 'approvals/products/videos',
+  APPROVALS_PRODUCTS_DOCUMENTS: 'approvals/products/documents',
+  APPROVALS_PAYMENTS: 'approvals/payments',
+  APPROVALS_RESERVATIONS: 'approvals/reservations',
+  APPROVALS_COSTS: 'approvals/costs',
+  APPROVALS_GENERAL: 'approvals/general'
 } as const;
 
 export interface UploadResult {
