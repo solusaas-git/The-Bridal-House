@@ -548,6 +548,59 @@ const EditPaymentPage = () => {
     setNewFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDirectSubmit = async () => {
+    // Validation
+    if (!formData.client || !formData.amount || !formData.paymentDate) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (parseFloat(formData.amount.toString()) <= 0) {
+      toast.error('Amount must be greater than 0');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const formDataToSend = new FormData();
+      
+      // Add form fields
+      formDataToSend.append('client', formData.client);
+      if (formData.reservation) formDataToSend.append('reservation', formData.reservation);
+      formDataToSend.append('paymentDate', formData.paymentDate);
+      if (formData.paymentTime) formDataToSend.append('paymentTime', formData.paymentTime);
+      formDataToSend.append('amount', formData.amount.toString());
+      if (formData.paymentMethod) formDataToSend.append('paymentMethod', formData.paymentMethod);
+      if (formData.paymentType) formDataToSend.append('paymentType', formData.paymentType);
+      if (formData.reference) formDataToSend.append('reference', formData.reference);
+      if (formData.note) formDataToSend.append('note', formData.note);
+      
+      // Add existing attachments (those not deleted)
+      formDataToSend.append('existingAttachments', JSON.stringify(existingFiles));
+
+      // Add new attachments
+      newFiles.forEach(file => {
+        formDataToSend.append('newFiles', file);
+      });
+
+      const response = await axios.put(`/api/payments/${paymentId}`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      toast.success('Payment updated successfully');
+      router.push(`/payments/${paymentId}`);
+    } catch (error: any) {
+      console.error('Error updating payment:', error);
+      toast.error(error.response?.data?.error || 'Failed to update payment');
+      throw error;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   // Enhanced financial calculation functions
   const calculateFinancials = (reservation: Reservation) => {
     console.log('Calculating financials for reservation:', reservation);
@@ -950,9 +1003,7 @@ const EditPaymentPage = () => {
                     newFiles: newFiles,
                     deletedAttachments: deletedAttachments
                   }}
-                  onDirectAction={async () => {
-                    await handleSubmit(new Event('submit') as any);
-                  }}
+                  onDirectAction={handleDirectSubmit}
                   onSuccess={() => {
                     toast.success('Payment updated successfully');
                     router.push(`/payments/${paymentId}`);
