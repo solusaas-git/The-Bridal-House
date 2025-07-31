@@ -212,6 +212,7 @@ const EditPaymentPage = () => {
 
   const [existingFiles, setExistingFiles] = useState<IAttachment[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [deletedAttachments, setDeletedAttachments] = useState<IAttachment[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -540,6 +541,7 @@ const EditPaymentPage = () => {
   // Fix the handleRemoveExisting function parameter type
   const handleRemoveExisting = (file: IAttachment) => {
     setExistingFiles(prev => prev.filter(f => f.url !== file.url));
+    setDeletedAttachments(prev => [...prev, file]);
   };
 
   const handleRemoveNew = (index: number) => {
@@ -946,9 +948,7 @@ const EditPaymentPage = () => {
                     note: formData.note,
                     attachments: existingFiles,
                     newFiles: newFiles,
-                    deletedAttachments: payment?.attachments?.filter(originalFile => 
-                      !existingFiles.some(existingFile => existingFile.url === (originalFile as any).url)
-                    ) || []
+                    deletedAttachments: deletedAttachments
                   }}
                   onDirectAction={async () => {
                     await handleSubmit(new Event('submit') as any);

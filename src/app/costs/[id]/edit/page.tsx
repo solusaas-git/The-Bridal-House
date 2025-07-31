@@ -82,6 +82,7 @@ export default function EditCostPage() {
 
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [existingAttachments, setExistingAttachments] = useState<ExistingAttachment[]>([]);
+  const [deletedAttachments, setDeletedAttachments] = useState<ExistingAttachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,10 +105,7 @@ export default function EditCostPage() {
     ...formData,
     existingAttachments,
     newFiles: attachments,
-    deletedAttachments: originalData && originalData.attachments ? 
-      (originalData.attachments as any[]).filter(originalAtt => 
-        !existingAttachments.some(existingAtt => existingAtt.url === originalAtt.url)
-      ) : []
+    deletedAttachments: deletedAttachments
   };
 
   useEffect(() => {
@@ -280,6 +278,7 @@ export default function EditCostPage() {
 
   const removeExistingAttachment = (attachment: ExistingAttachment) => {
     setExistingAttachments(prev => prev.filter(att => att._id !== attachment._id));
+    setDeletedAttachments(prev => [...prev, attachment]);
   };
 
   const handleDirectSubmit = async () => {
