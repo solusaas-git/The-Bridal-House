@@ -150,12 +150,28 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       // Delete the old file
       await del(sourceBlob.url);
 
-      // Update attachment with new URL
-      movedAttachments.push({
-        ...attachment,
-        link: newUrl,
-        url: newUrl // Add both fields for compatibility
-      });
+      // Update attachment with new URL while preserving all original fields
+      // Handle different attachment schemas across models
+      const updatedAttachment: any = {
+        ...attachment, // Preserve all original fields
+        link: newUrl,  // Customer model uses 'link'
+        url: newUrl,   // Payment and Cost models use 'url'
+      };
+
+      // Ensure required fields are present with fallbacks
+      if (!updatedAttachment.name && filename) {
+        updatedAttachment.name = filename;
+      }
+      if (!updatedAttachment.size && attachment.size) {
+        updatedAttachment.size = attachment.size;
+      }
+      if (!updatedAttachment.type && filename) {
+        // Infer type from file extension
+        const ext = filename.split('.').pop()?.toLowerCase();
+        updatedAttachment.type = getFileType(ext || '');
+      }
+
+      movedAttachments.push(updatedAttachment);
 
       console.log(`✅ Moved file from ${generalPath} to ${targetPath}`);
     } catch (error) {
@@ -166,6 +182,20 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
   }
 
   return movedAttachments;
+}
+
+// Helper function to determine file type from extension
+function getFileType(extension: string): string {
+  const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+  const documentExts = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
+  const videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'];
+  const audioExts = ['mp3', 'wav', 'aac', 'ogg', 'wma'];
+
+  if (imageExts.includes(extension)) return 'image';
+  if (documentExts.includes(extension)) return 'document';
+  if (videoExts.includes(extension)) return 'video';
+  if (audioExts.includes(extension)) return 'audio';
+  return 'other';
 }
 
 // Helper function to get the correct upload folder for each resource type
