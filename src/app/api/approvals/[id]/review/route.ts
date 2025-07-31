@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Approval, User, Customer, Product, Payment, Reservation, Cost } from '@/models';
+import { Approval, User, Customer, Product, Payment, Reservation, Cost, getFileTypeFromExtension } from '@/models';
 import { put, del } from '@vercel/blob';
 import { list } from '@vercel/blob';
 
@@ -167,8 +167,7 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
       }
       if (!updatedAttachment.type && filename) {
         // Infer type from file extension
-        const ext = filename.split('.').pop()?.toLowerCase();
-        updatedAttachment.type = getFileType(ext || '');
+        updatedAttachment.type = getFileTypeFromExtension(filename);
       }
 
       movedAttachments.push(updatedAttachment);
@@ -184,19 +183,6 @@ async function moveAttachmentsToResourceFolder(attachments: any[], resourceType:
   return movedAttachments;
 }
 
-// Helper function to determine file type from extension
-function getFileType(extension: string): string {
-  const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
-  const documentExts = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
-  const videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'];
-  const audioExts = ['mp3', 'wav', 'aac', 'ogg', 'wma'];
-
-  if (imageExts.includes(extension)) return 'image';
-  if (documentExts.includes(extension)) return 'document';
-  if (videoExts.includes(extension)) return 'video';
-  if (audioExts.includes(extension)) return 'audio';
-  return 'other';
-}
 
 // Helper function to get the correct upload folder for each resource type
 function getResourceUploadFolder(resourceType: string): string {

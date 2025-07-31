@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { AttachmentSchema } from './shared/attachment';
 
 const costSchema = new mongoose.Schema({
   date: {
@@ -30,24 +31,7 @@ const costSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  attachments: [{
-    name: {
-      type: String,
-      required: true
-    },
-    url: {
-      type: String,
-      required: true
-    },
-    size: {
-      type: Number,
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
-    }
-  }],
+  attachments: [AttachmentSchema],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

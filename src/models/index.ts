@@ -9,4 +9,8 @@ export { Settings } from './settings';
 export { default as Approval } from './approval';
 export { default as Cost } from './cost';
 export { default as CostCategory } from './costCategory';
-export { default as UserPreferences } from './userPreferences'; 
+export { default as UserPreferences } from './userPreferences';
+
+// Export shared schemas and interfaces
+export type { IAttachment } from './shared/attachment';
+export { AttachmentSchema, getFileTypeFromExtension, createAttachment } from './shared/attachment'; 

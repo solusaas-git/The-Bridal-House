@@ -1,10 +1,5 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
-
-export interface IAttachment {
-  name: string;
-  size: number;
-  link: string;
-}
+import { IAttachment, AttachmentSchema } from './shared/attachment';
 
 export interface ICustomer extends Document {
   firstName: string;
@@ -24,12 +19,6 @@ export interface ICustomer extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-const AttachmentSchema = new Schema<IAttachment>({
-  name: { type: String, required: true }, // File name
-  size: { type: Number, required: true }, // File size in bytes
-  link: { type: String, required: true }, // File link
-});
 
 const CustomerSchema = new Schema<ICustomer>(
   {

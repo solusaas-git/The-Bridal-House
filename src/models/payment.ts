@@ -1,10 +1,5 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
-
-export interface IPaymentAttachment {
-  name?: string;
-  size?: number;
-  url?: string;
-}
+import { IAttachment, AttachmentSchema } from './shared/attachment';
 
 export interface IPayment extends Document {
   client: mongoose.Types.ObjectId;
@@ -15,7 +10,7 @@ export interface IPayment extends Document {
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
   reference?: string;
   note?: string;
-  attachments: IPaymentAttachment[];
+  attachments: IAttachment[];
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -41,19 +36,7 @@ const PaymentSchema = new Schema<IPayment>(
     note: {
       type: String,
     },
-    attachments: [
-      {
-        name: {
-          type: String,
-        },
-        size: {
-          type: Number,
-        },
-        url: {
-          type: String,
-        },
-      },
-    ],
+    attachments: [AttachmentSchema],
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true }
