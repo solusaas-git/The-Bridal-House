@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Cost from '@/models/cost';
-import { CostCategory, User } from '@/models';
+import { CostCategory, User, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload } from '@/lib/upload';
 import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
@@ -135,7 +135,8 @@ export async function PUT(
           name: file.name,
           url: uploadResult.url,
           size: file.size,
-          type: file.type
+          type: getFileTypeFromExtension(file.name),
+          uploadedAt: new Date()
         });
       } catch (uploadError) {
         console.error('Error uploading file:', uploadError);

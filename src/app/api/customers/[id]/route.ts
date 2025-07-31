@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Customer } from '@/models';
+import { Customer, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload, getCustomerUploadFolder } from '@/lib/upload';
 import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 
@@ -118,8 +118,10 @@ export async function PUT(
             const uploadResult = await handleSingleFileUpload(file, getCustomerUploadFolder(file));
             newAttachments.push({
               name: file.name,
-              link: uploadResult.url,
-              size: file.size
+              url: uploadResult.url,
+              size: file.size,
+              type: getFileTypeFromExtension(file.name),
+              uploadedAt: new Date()
             });
           } catch (uploadError) {
             console.error('Error uploading customer file:', uploadError);

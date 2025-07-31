@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Payment } from '@/models';
+import { Payment, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload, type UploadedFile } from '@/lib/upload';
 import { updateReservationPaymentStatus } from '@/utils/reservation';
 
@@ -183,6 +183,8 @@ export async function POST(request: NextRequest) {
         name: file.name,
         size: file.size,
         url: file.url,
+        type: getFileTypeFromExtension(file.name),
+        uploadedAt: new Date()
       }));
 
       const newPayment = new Payment({

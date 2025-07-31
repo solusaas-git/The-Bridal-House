@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Payment } from '@/models';
+import { Payment, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload, type UploadedFile } from '@/lib/upload';
 import { deleteFromVercelBlob } from '@/lib/vercel-blob';
 import { updateReservationPaymentStatus } from '@/utils/reservation';
@@ -154,6 +154,8 @@ export async function PUT(
         name: file.name,
         size: file.size,
         url: file.url,
+        type: getFileTypeFromExtension(file.name),
+        uploadedAt: new Date()
       }));
 
       // Combine date and time if both are provided

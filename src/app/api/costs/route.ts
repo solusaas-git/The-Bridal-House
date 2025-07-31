@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Cost, CostCategory } from '@/models';
+import { Cost, CostCategory, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload } from '@/lib/upload';
 
 // Get all costs with filtering and pagination
@@ -170,7 +170,8 @@ export async function POST(request: NextRequest) {
             name: file.name,
             url: uploadResult.url,
             size: file.size,
-            type: file.type
+            type: getFileTypeFromExtension(file.name),
+            uploadedAt: new Date()
           });
         } catch (uploadError) {
           console.error('Error uploading file:', uploadError);

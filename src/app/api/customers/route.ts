@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Customer } from '@/models';
+import { Customer, getFileTypeFromExtension } from '@/models';
 import { handleSingleFileUpload, getCustomerUploadFolder } from '@/lib/upload';
 
 interface CustomerQuery {
@@ -129,8 +129,10 @@ export async function POST(request: NextRequest) {
             const uploadResult = await handleSingleFileUpload(file, uploadFolder);
             attachments.push({
               name: file.name,
-              link: uploadResult.url,  // Changed from 'url' to 'link' to match customer model
-              size: file.size
+              url: uploadResult.url,
+              size: file.size,
+              type: getFileTypeFromExtension(file.name),
+              uploadedAt: new Date()
             });
           } catch (uploadError) {
             console.error('Error uploading customer file:', uploadError);
