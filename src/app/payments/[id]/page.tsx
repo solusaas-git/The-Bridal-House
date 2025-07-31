@@ -47,7 +47,8 @@ interface Reservation {
 interface Attachment {
   name: string;
   size: number;
-  url: string;
+  url?: string;
+  link?: string; // Some attachments might use 'link' instead of 'url'
 }
 
 interface Payment {
@@ -326,18 +327,30 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
 
   const handlePreview = (file: Attachment) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-    const fileUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
+    // Handle both 'url' and 'link' fields and add null checks
+    const fileUrl = file.url || (file as any).link;
+    if (!fileUrl) {
+      toast.error('File URL not found');
+      return;
+    }
+    const finalUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
     const fileType = getFileType(file.name);
     
-    setPreviewFile({ file, url: fileUrl, type: fileType });
+    setPreviewFile({ file, url: finalUrl, type: fileType });
   };
 
   const handleDownload = (file: Attachment) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-    const fileUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
+    // Handle both 'url' and 'link' fields and add null checks
+    const fileUrl = file.url || (file as any).link;
+    if (!fileUrl) {
+      toast.error('File URL not found');
+      return;
+    }
+    const finalUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
     
     const link = document.createElement('a');
-    link.href = fileUrl;
+    link.href = finalUrl;
     link.download = file.name;
     link.target = '_blank'; // Add target blank as fallback
     document.body.appendChild(link);
@@ -431,9 +444,11 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
               Images ({imageFiles.length})
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {imageFiles.map((file, index) => {
+              {imageFiles.filter(file => file.url || (file as any).link).map((file, index) => {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-                const imageUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
+                // Handle both 'url' and 'link' fields and add null checks
+                const fileUrl = file.url || (file as any).link;
+                const imageUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
                 
                 return (
                   <div key={index} className="relative group">
