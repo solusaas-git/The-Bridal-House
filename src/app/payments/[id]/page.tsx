@@ -315,6 +315,8 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
 // Payment Attachments Component
 const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
   const [previewFile, setPreviewFile] = useState<{ file: Attachment; url: string; type: string } | null>(null);
+  
+
 
   const getFileType = (filename: string): string => {
     const extension = filename.split('.').pop()?.toLowerCase();
@@ -328,11 +330,20 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
   const handlePreview = (file: Attachment) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     // Handle both 'url' and 'link' fields and add null checks
-    const fileUrl = file.url || (file as any).link;
+    let fileUrl = file.url || (file as any).link;
+    
+    // If no URL field, try to construct one from the filename (legacy fallback)
+    if (!fileUrl && file.name) {
+      console.warn('⚠️ Attachment missing URL field, attempting fallback:', file);
+      fileUrl = `uploads/payment/${file.name}`;
+    }
+    
     if (!fileUrl) {
-      toast.error('File URL not found');
+      toast.error('File URL not found - attachment data is incomplete');
+      console.error('❌ Attachment missing URL:', file);
       return;
     }
+    
     const finalUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
     const fileType = getFileType(file.name);
     
@@ -342,11 +353,20 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
   const handleDownload = (file: Attachment) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
     // Handle both 'url' and 'link' fields and add null checks
-    const fileUrl = file.url || (file as any).link;
+    let fileUrl = file.url || (file as any).link;
+    
+    // If no URL field, try to construct one from the filename (legacy fallback)
+    if (!fileUrl && file.name) {
+      console.warn('⚠️ Attachment missing URL field, attempting fallback:', file);
+      fileUrl = `uploads/payment/${file.name}`;
+    }
+    
     if (!fileUrl) {
-      toast.error('File URL not found');
+      toast.error('File URL not found - attachment data is incomplete');
+      console.error('❌ Attachment missing URL:', file);
       return;
     }
+    
     const finalUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
     
     const link = document.createElement('a');
@@ -420,8 +440,13 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
     }
   };
 
-  const imageFiles = attachments.filter(file => getFileType(file.name) === 'image');
-  const documentFiles = attachments.filter(file => getFileType(file.name) !== 'image');
+  // Filter attachments that have valid URLs or can use fallback
+  const validAttachments = attachments.filter(file => 
+    file.url || (file as any).link || (file.name && typeof file.name === 'string')
+  );
+  
+  const imageFiles = validAttachments.filter(file => getFileType(file.name) === 'image');
+  const documentFiles = validAttachments.filter(file => getFileType(file.name) !== 'image');
 
   if (!attachments || attachments.length === 0) {
     return (
@@ -429,6 +454,28 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
         <div className="text-center py-12">
           <FileIcon className="h-12 w-12 text-white/40 mx-auto mb-4" />
           <p className="text-gray-400">No attachments found</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (validAttachments.length === 0) {
+    return (
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+        <div className="text-center py-12">
+          <FileIcon className="h-12 w-12 text-white/40 mx-auto mb-4" />
+          <p className="text-gray-400">Attachments found but cannot be accessed</p>
+          <p className="text-xs text-gray-500 mt-2">
+            {attachments.length} attachment(s) exist but have incomplete file URL data
+          </p>
+          <div className="mt-4 space-y-2">
+            {attachments.map((file, index) => (
+              <div key={index} className="bg-red-500/10 border border-red-500/20 rounded p-2 text-xs">
+                <div className="text-red-400">📄 {file.name}</div>
+                <div className="text-red-300/60">File reference exists but URL missing</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -444,10 +491,19 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
               Images ({imageFiles.length})
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {imageFiles.filter(file => file.url || (file as any).link).map((file, index) => {
+              {imageFiles.map((file, index) => {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
                 // Handle both 'url' and 'link' fields and add null checks
-                const fileUrl = file.url || (file as any).link;
+                let fileUrl = file.url || (file as any).link;
+                
+                // If no URL field, try to construct one from the filename (legacy fallback)
+                if (!fileUrl && file.name) {
+                  console.warn('⚠️ Image attachment missing URL field, attempting fallback:', file);
+                  fileUrl = `uploads/payment/${file.name}`;
+                }
+                
+                if (!fileUrl) return null; // Skip if still no URL
+                
                 const imageUrl = fileUrl.startsWith('http') ? fileUrl : `${backendUrl}/api/uploads/${fileUrl}`;
                 
                 return (
@@ -461,13 +517,23 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
                         className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                         onClick={() => handlePreview(file)}
                         onError={(e) => {
-                          console.error('Image load error:', e);
+                          console.error('Image load error for:', file.name, 'URL:', imageUrl);
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent) {
                             const fallback = parent.querySelector('.fallback-icon') as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                              // Add text indicator for broken image
+                              const text = fallback.querySelector('.broken-text') as HTMLElement;
+                              if (!text) {
+                                const brokenText = document.createElement('div');
+                                brokenText.className = 'broken-text text-xs text-red-400 mt-1 text-center';
+                                brokenText.textContent = 'File not found';
+                                fallback.appendChild(brokenText);
+                              }
+                            }
                           }
                         }}
                       />
@@ -610,6 +676,7 @@ const PaymentViewPage = () => {
       setLoading(true);
       const response = await axios.get(`/api/payments/${paymentId}`);
       if (response.data.success) {
+        
         setPayment(response.data.payment);
       } else {
         toast.error('Payment not found');
