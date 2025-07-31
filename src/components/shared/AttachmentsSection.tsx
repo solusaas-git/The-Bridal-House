@@ -6,7 +6,9 @@ import FileUpload from "./FileUpload";
 interface Attachment {
   name: string;
   size: number;
-  link: string;
+  url: string;
+  type?: string;
+  uploadedAt?: string;
 }
 
 interface AttachmentsSectionProps {
@@ -45,9 +47,9 @@ const AttachmentsSection = ({
     const fileType = getFileType(fileName);
     
     let url: string;
-    if ('link' in file) {
+    if ('url' in file) {
       // Existing file (Attachment)
-      url = file.link.startsWith('http') ? file.link : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${file.link}`;
+      url = file.url.startsWith('http') ? file.url : `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055'}/api/uploads/${file.url}`;
     } else {
       // New file (File object) - add proper type checking
       if (file instanceof File) {

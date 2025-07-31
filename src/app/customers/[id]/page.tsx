@@ -32,14 +32,18 @@ interface Customer {
   attachments?: Array<{
     name: string;
     size: number;
-    link: string;
+    url: string;
+    type?: string;
+    uploadedAt?: string;
   }>;
 }
 
 interface IAttachment {
   name: string;
   size: number;
-  link: string;
+  url: string;
+  type?: string;
+  uploadedAt?: string;
 }
 
 interface Reservation {
@@ -450,23 +454,23 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
   const handlePreview = (file: IAttachment) => {
     const fileType = getFileType(file.name);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-    const url = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
+    const url = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
     
     console.log('🖼️ Preview URL:', url);
     console.log('🖼️ File type:', fileType);
-    console.log('🖼️ Original file.link:', file.link);
+    console.log('🖼️ Original file.url:', file.url);
     
     setPreviewFile({ file, url, type: fileType });
   };
 
   const handleDownload = (file: IAttachment) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-    const fullUrl = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
+    const fullUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
     
     // Create a temporary link element to force download
     const downloadLink = document.createElement('a');
     downloadLink.href = fullUrl;
-    downloadLink.download = file.name || file.link.split('/').pop() || 'download';
+    downloadLink.download = file.name || file.url.split('/').pop() || 'download';
     downloadLink.target = '_blank'; // Add target blank as fallback
     document.body.appendChild(downloadLink);
     downloadLink.click();
@@ -562,7 +566,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {imageFiles.map((file, index) => {
               const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3055';
-              const imageUrl = file.link.startsWith('http') ? file.link : `${backendUrl}/api/uploads/${file.link}`;
+              const imageUrl = file.url.startsWith('http') ? file.url : `${backendUrl}/api/uploads/${file.url}`;
               
               return (
                 <div key={index} className="relative group">
