@@ -11,6 +11,7 @@ import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import type { IAttachment } from '@/models';
 
 interface Customer {
   _id: string;
@@ -26,11 +27,7 @@ interface Customer {
   weddingCity: string;
   whatsapp?: string;
   type: 'Client' | 'Prospect';
-  attachments?: Array<{
-    name: string;
-    size: number;
-    link: string;
-  }>;
+  attachments?: IAttachment[];
 }
 
 const EditCustomerPage = () => {
@@ -128,11 +125,11 @@ const EditCustomerPage = () => {
     setNewFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleRemoveExisting = (fileToRemove: { name: string; size: number; link: string; }) => {
+  const handleRemoveExisting = (fileToRemove: IAttachment) => {
     setFormData((prev) => ({
       ...prev,
       attachments: prev.attachments?.filter(
-        (file) => file.link !== fileToRemove.link
+        (file) => file.url !== fileToRemove.url
       ),
     }));
   };
@@ -157,7 +154,7 @@ const EditCustomerPage = () => {
         formData.attachments.forEach((file, index) => {
           formDataToSend.append(`attachments[${index}][name]`, file.name);
           formDataToSend.append(`attachments[${index}][size]`, file.size.toString());
-          formDataToSend.append(`attachments[${index}][link]`, file.link);
+          formDataToSend.append(`attachments[${index}][url]`, file.url);
         });
       }
 
@@ -208,7 +205,7 @@ const EditCustomerPage = () => {
         formData.attachments.forEach((file, index) => {
           formDataToSend.append(`attachments[${index}][name]`, file.name);
           formDataToSend.append(`attachments[${index}][size]`, file.size.toString());
-          formDataToSend.append(`attachments[${index}][link]`, file.link);
+          formDataToSend.append(`attachments[${index}][url]`, file.url);
         });
       }
 

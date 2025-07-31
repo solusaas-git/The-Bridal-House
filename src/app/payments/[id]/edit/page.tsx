@@ -15,6 +15,7 @@ import Layout from '@/components/Layout';
 import { formatCurrency } from '@/utils/currency';
 import AttachmentsSection from '@/components/shared/AttachmentsSection';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import type { IAttachment } from '@/models';
 
 // Types
 interface Customer {
@@ -59,12 +60,6 @@ interface Reservation {
   advancePercentage?: number;
 }
 
-interface Attachment {
-  name: string;
-  size: number;
-  link: string;
-}
-
 interface Payment {
   _id: string;
   client: Customer;
@@ -75,7 +70,7 @@ interface Payment {
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
   reference?: string;
   note?: string;
-  attachments: Attachment[];
+  attachments: IAttachment[];
 }
 
 // Component to show real-time financial information for reservations
@@ -215,7 +210,7 @@ const EditPaymentPage = () => {
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const [existingFiles, setExistingFiles] = useState<Attachment[]>([]);
+  const [existingFiles, setExistingFiles] = useState<IAttachment[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -307,7 +302,7 @@ const EditPaymentPage = () => {
         const attachments = (payment.attachments || []).map((att: { name?: string; size?: number; url?: string; link?: string }) => ({
           name: att.name || '',
           size: att.size || 0,
-          link: att.url || att.link || '' // Handle both 'url' and 'link' fields
+          url: att.url || att.link || '' // Handle both 'url' and 'link' fields
         }));
         setExistingFiles(attachments);
         
@@ -542,8 +537,9 @@ const EditPaymentPage = () => {
     setNewFiles(prev => [...prev, ...files]);
   };
 
-  const handleRemoveExisting = (file: Attachment) => {
-    setExistingFiles(prev => prev.filter(f => f.link !== file.link));
+  // Fix the handleRemoveExisting function parameter type
+  const handleRemoveExisting = (file: IAttachment) => {
+    setExistingFiles(prev => prev.filter(f => f.url !== file.url));
   };
 
   const handleRemoveNew = (index: number) => {
@@ -951,7 +947,7 @@ const EditPaymentPage = () => {
                     attachments: existingFiles,
                     newFiles: newFiles,
                     deletedAttachments: payment?.attachments?.filter(originalFile => 
-                      !existingFiles.some(existingFile => existingFile.link === (originalFile as any).url)
+                      !existingFiles.some(existingFile => existingFile.url === (originalFile as any).url)
                     ) || []
                   }}
                   onDirectAction={async () => {

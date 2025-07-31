@@ -167,7 +167,7 @@ const AttachmentsSection = ({
             <p className="text-gray-400 text-sm mb-4">{fileName}</p>
             <button
               type="button"
-              onClick={(e) => handleDownloadClick(e, 'link' in file ? file.link : '')}
+              onClick={(e) => handleDownloadClick(e, 'url' in file ? file.url : '')}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
             >
               Download to View
@@ -298,7 +298,7 @@ const AttachmentsSection = ({
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
-                  onClick={(e) => handleDownloadClick(e, 'link' in previewFile.file ? previewFile.file.link : '')}
+                  onClick={(e) => handleDownloadClick(e, 'url' in previewFile.file ? previewFile.file.url : '')}
                   className="p-2 hover:bg-white/10 rounded transition-colors"
                   title="Download"
                 >
