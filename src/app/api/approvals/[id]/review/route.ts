@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Approval, User, Customer, Product, Payment, Reservation } from '@/models';
+import { Approval, User, Customer, Product, Payment, Reservation, Cost } from '@/models';
 import { put, del } from '@vercel/blob';
 import { list } from '@vercel/blob';
 
@@ -195,13 +195,24 @@ async function executeApprovedAction(approval: any) {
         await Customer.findByIdAndDelete(approval.resourceId);
         break;
       case 'item':
+      case 'product':
         await Product.findByIdAndDelete(approval.resourceId);
         break;
       case 'payment':
+        // Get payment before deletion to update reservation status
+        const paymentToDelete = await Payment.findById(approval.resourceId);
         await Payment.findByIdAndDelete(approval.resourceId);
+        // Update reservation payment status after deleting a payment
+        if (paymentToDelete?.reservation) {
+          const { updateReservationPaymentStatus } = await import('@/utils/reservation');
+          await updateReservationPaymentStatus(paymentToDelete.reservation.toString());
+        }
         break;
       case 'reservation':
         await Reservation.findByIdAndDelete(approval.resourceId);
+        break;
+      case 'cost':
+        await Cost.findByIdAndDelete(approval.resourceId);
         break;
     }
   } else if (approval.actionType === 'edit') {
@@ -235,6 +246,7 @@ async function executeApprovedAction(approval: any) {
           );
           break;
         case 'item':
+        case 'product':
           await Product.findByIdAndUpdate(
             approval.resourceId, 
             { $set: fieldsToUpdate },
@@ -242,18 +254,81 @@ async function executeApprovedAction(approval: any) {
           );
           break;
         case 'payment':
-          await Payment.findByIdAndUpdate(
+          const updatedPayment = await Payment.findByIdAndUpdate(
+            approval.resourceId, 
+            { $set: fieldsToUpdate },
+            { new: true, runValidators: true }
+          );
+          // Update reservation payment status when editing a payment
+          if (updatedPayment?.reservation) {
+            const { updateReservationPaymentStatus } = await import('@/utils/reservation');
+            await updateReservationPaymentStatus(updatedPayment.reservation);
+          }
+          break;
+        case 'reservation':
+          const updatedReservation = await Reservation.findByIdAndUpdate(
+            approval.resourceId, 
+            { $set: fieldsToUpdate },
+            { new: true, runValidators: true }
+          );
+          // Update reservation payment status when editing a reservation
+          if (updatedReservation?._id) {
+            const { updateReservationPaymentStatus } = await import('@/utils/reservation');
+            await updateReservationPaymentStatus(updatedReservation._id.toString());
+          }
+          break;
+        case 'cost':
+          await Cost.findByIdAndUpdate(
             approval.resourceId, 
             { $set: fieldsToUpdate },
             { new: true, runValidators: true }
           );
           break;
+      }
+    }
+  } else if (approval.actionType === 'create') {
+    // For create actions, use the full data from newData
+    let dataToCreate = approval.newData || {};
+    
+    // Move attachments from general folder to resource-specific folder if needed
+    if (dataToCreate.attachments) {
+      console.log('🔄 Moving attachments for new resource creation:', approval._id);
+      try {
+        const movedAttachments = await moveAttachmentsToResourceFolder(
+          dataToCreate.attachments,
+          approval.resourceType
+        );
+        dataToCreate.attachments = movedAttachments;
+        console.log('✅ Attachments moved successfully for new resource');
+      } catch (error) {
+        console.error('❌ Error moving attachments for new resource:', error);
+        // Continue with original attachments if move fails
+      }
+    }
+    
+    // Create the new resource
+    if (Object.keys(dataToCreate).length > 0) {
+      switch (approval.resourceType) {
+        case 'customer':
+          await Customer.create(dataToCreate);
+          break;
+        case 'item':
+        case 'product':
+          await Product.create(dataToCreate);
+          break;
+        case 'payment':
+          const newPayment = await Payment.create(dataToCreate);
+          // Update reservation payment status when creating a payment
+          if (newPayment.reservation) {
+            const { updateReservationPaymentStatus } = await import('@/utils/reservation');
+            await updateReservationPaymentStatus(newPayment.reservation);
+          }
+          break;
         case 'reservation':
-          await Reservation.findByIdAndUpdate(
-            approval.resourceId, 
-            { $set: fieldsToUpdate },
-            { new: true, runValidators: true }
-          );
+          await Reservation.create(dataToCreate);
+          break;
+        case 'cost':
+          await Cost.create(dataToCreate);
           break;
       }
     }
