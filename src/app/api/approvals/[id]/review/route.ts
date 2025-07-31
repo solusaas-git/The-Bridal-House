@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Approval, User, Customer, Product, Payment, Reservation } from '@/models';
+import { put, del } from '@vercel/blob';
+import { list } from '@vercel/blob';
 
 export async function PUT(
   request: NextRequest,
@@ -89,6 +91,102 @@ export async function PUT(
   }
 }
 
+// Helper function to move files from general folder to resource-specific folder
+async function moveAttachmentsToResourceFolder(attachments: any[], resourceType: string): Promise<any[]> {
+  if (!attachments || attachments.length === 0) return attachments;
+
+  const { blobs } = await list();
+  const movedAttachments = [];
+
+  for (const attachment of attachments) {
+    try {
+      // Check both 'link' and 'url' fields for the file path
+      const filePath = attachment.link || attachment.url;
+      
+      // Skip if attachment already has a proper URL (not from general folder)
+      if (!filePath || !filePath.includes('uploads/general/')) {
+        movedAttachments.push(attachment);
+        continue;
+      }
+
+      // Extract filename from the general path
+      const generalPath = filePath;
+      const filename = generalPath.split('/').pop();
+      
+      if (!filename) {
+        console.warn('Could not extract filename from:', generalPath);
+        movedAttachments.push(attachment);
+        continue;
+      }
+
+      // Find the file in Vercel Blob
+      const sourceBlob = blobs.find(blob => blob.pathname.includes(filename) || blob.pathname.endsWith(filename));
+      
+      if (!sourceBlob) {
+        console.warn('File not found in Vercel Blob:', filename);
+        movedAttachments.push(attachment);
+        continue;
+      }
+
+      // Determine target folder based on resource type
+      const targetFolder = getResourceUploadFolder(resourceType);
+      
+      // Generate new filename with timestamp to avoid conflicts
+      const timestamp = Date.now();
+      const fileExtension = filename.split('.').pop();
+      const baseName = filename.replace(/\.[^/.]+$/, '');
+      const newFilename = `${timestamp}-${baseName}.${fileExtension}`;
+      const targetPath = `${targetFolder}/${newFilename}`;
+
+      // Download the file content
+      const response = await fetch(sourceBlob.url);
+      const fileBuffer = await response.arrayBuffer();
+
+      // Upload to new location
+      const { url: newUrl } = await put(targetPath, fileBuffer, {
+        access: 'public',
+      });
+
+      // Delete the old file
+      await del(sourceBlob.url);
+
+      // Update attachment with new URL
+      movedAttachments.push({
+        ...attachment,
+        link: newUrl,
+        url: newUrl // Add both fields for compatibility
+      });
+
+      console.log(`✅ Moved file from ${generalPath} to ${targetPath}`);
+    } catch (error) {
+      console.error('Error moving attachment:', attachment, error);
+      // Keep original attachment if move fails
+      movedAttachments.push(attachment);
+    }
+  }
+
+  return movedAttachments;
+}
+
+// Helper function to get the correct upload folder for each resource type
+function getResourceUploadFolder(resourceType: string): string {
+  switch (resourceType) {
+    case 'customer':
+      return 'uploads/customers/documents';
+    case 'payment':
+      return 'uploads/payment';
+    case 'item':
+    case 'product':
+      return 'uploads/products';
+    case 'reservation':
+      return 'uploads/reservations';
+    case 'cost':
+      return 'uploads/costs';
+    default:
+      return 'uploads/general';
+  }
+}
+
 // Helper function to execute approved actions
 async function executeApprovedAction(approval: any) {
   if (approval.actionType === 'delete') {
@@ -108,7 +206,23 @@ async function executeApprovedAction(approval: any) {
     }
   } else if (approval.actionType === 'edit') {
     // For edit actions, use only the changed fields from newData
-    const fieldsToUpdate = approval.newData || {};
+    let fieldsToUpdate = approval.newData || {};
+    
+    // Move attachments from general folder to resource-specific folder if needed
+    if (fieldsToUpdate.attachments) {
+      console.log('🔄 Moving attachments for approval:', approval._id);
+      try {
+        const movedAttachments = await moveAttachmentsToResourceFolder(
+          fieldsToUpdate.attachments,
+          approval.resourceType
+        );
+        fieldsToUpdate.attachments = movedAttachments;
+        console.log('✅ Attachments moved successfully');
+      } catch (error) {
+        console.error('❌ Error moving attachments:', error);
+        // Continue with original attachments if move fails
+      }
+    }
     
     // Only proceed if there are fields to update
     if (Object.keys(fieldsToUpdate).length > 0) {
