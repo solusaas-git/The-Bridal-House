@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { createPortal } from 'react-dom';
@@ -22,9 +22,11 @@ import Pagination from '@/components/ui/Pagination';
 import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 
-export default function ReservationsPage() {
+// Component that uses useSearchParams
+function ReservationsContent() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const reservations = useSelector((state: RootState) => state.reservation.reservations);
   const currencySettings = useSelector((state: RootState) => state.settings);
 
@@ -38,6 +40,7 @@ export default function ReservationsPage() {
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
   const [savingPreferences, setSavingPreferences] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isProcessingUrlParams, setIsProcessingUrlParams] = useState(false);
 
   // Date filter state
   const [dateFilters, setDateFilters] = useState({
@@ -46,6 +49,73 @@ export default function ReservationsPage() {
     endDate: '',
   });
 
+  // Payment status filter state (multiselect, exclude "Paid" by default)
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(['Not Paid', 'Partially Paid', 'Pending']);
+  const [localPaymentStatusFilter, setLocalPaymentStatusFilter] = useState(['Not Paid', 'Partially Paid', 'Pending']);
+  const [isPaymentStatusDropdownOpen, setIsPaymentStatusDropdownOpen] = useState(false);
+  const paymentStatusDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const urlStartDate = searchParams.get('startDate');
+    const urlEndDate = searchParams.get('endDate');
+    const urlDateColumn = searchParams.get('dateColumn');
+    const urlPaymentStatus = searchParams.get('paymentStatus');
+    
+    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus) {
+      setIsProcessingUrlParams(true);
+      setDateFilters({
+        dateColumn: urlDateColumn || 'weddingDate', // Default to weddingDate for upcoming payments
+        startDate: urlStartDate || '',
+        endDate: urlEndDate || '',
+      });
+      if (urlPaymentStatus) {
+        setPaymentStatusFilter(urlPaymentStatus.split(','));
+      }
+      // Trigger fetch with the new date filters directly
+      const fetchWithUrlParams = async () => {
+        try {
+          setLoading(true);
+          const params: any = {
+            page: 1, // Reset to first page when filtering from URL
+            limit: itemsPerPage,
+            search: searchTerm,
+          };
+
+          if (urlStartDate) {
+            params.startDate = urlStartDate;
+          }
+          if (urlEndDate) {
+            params.endDate = urlEndDate;
+          }
+          if (urlStartDate || urlEndDate) {
+            params.dateColumn = urlDateColumn || 'weddingDate';
+          }
+          if (urlPaymentStatus) {
+            params.paymentStatus = urlPaymentStatus;
+          } else {
+            // Default behavior: exclude "Paid" status
+            params.paymentStatus = 'Not Paid,Partially Paid,Pending';
+          }
+
+          const response = await axios.get('/api/reservations', { params });
+
+          if (response.data.success) {
+            dispatch(setReservations(response.data.reservations));
+            setTotalCount(response.data.pagination?.totalCount || response.data.reservations.length);
+            setCurrentPage(1); // Reset to first page
+          }
+        } catch (error) {
+          console.error('Error fetching reservations with URL params:', error);
+        } finally {
+          setLoading(false);
+          setIsProcessingUrlParams(false);
+        }
+      };
+      
+      fetchWithUrlParams();
+    }
+  }, [searchParams, itemsPerPage, searchTerm, dispatch]);
 
 
   // Image hover popup state
@@ -67,6 +137,7 @@ export default function ReservationsPage() {
     returnDate: true,
     availabilityDate: false,
     total: true,
+    remainingBalance: true,
     type: true,
     status: true,
     paymentStatus: true,
@@ -129,6 +200,14 @@ export default function ReservationsPage() {
         params.dateColumn = dateFilters.dateColumn;
       }
 
+      // Add payment status filter (default excludes "Paid")
+      if (paymentStatusFilter.length > 0) {
+        params.paymentStatus = paymentStatusFilter.join(',');
+      } else {
+        // If no specific status is selected, exclude "Paid" by default
+        params.paymentStatus = 'Not Paid,Partially Paid,Pending';
+      }
+
 
 
       const response = await axios.get('/api/reservations', { params });
@@ -151,11 +230,63 @@ export default function ReservationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, searchTerm, dateFilters, dispatch]);
+  }, [currentPage, itemsPerPage, searchTerm, dateFilters, paymentStatusFilter, dispatch]);
+
+  // Payment status filter handlers
+  const handlePaymentStatusApply = () => {
+    setPaymentStatusFilter(localPaymentStatusFilter);
+    setIsPaymentStatusDropdownOpen(false);
+  };
+
+  const handlePaymentStatusCancel = () => {
+    setLocalPaymentStatusFilter(paymentStatusFilter);
+    setIsPaymentStatusDropdownOpen(false);
+  };
+
+  // Close payment status dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!isPaymentStatusDropdownOpen) return;
+      
+      const target = event.target as Node;
+      const isClickInsideDropdown = paymentStatusDropdownRef.current?.contains(target);
+      
+      // Check if click is inside the portal dropdown (which is rendered in document.body)
+      const dropdownElement = document.querySelector('[data-payment-status-dropdown]');
+      const isClickInsidePortal = dropdownElement?.contains(target);
+      
+      if (!isClickInsideDropdown && !isClickInsidePortal) {
+        setLocalPaymentStatusFilter(paymentStatusFilter); // Reset to current applied filters
+        setIsPaymentStatusDropdownOpen(false);
+      }
+    };
+
+    if (isPaymentStatusDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isPaymentStatusDropdownOpen, paymentStatusFilter]);
 
   useEffect(() => {
+    // Skip initial fetch if we're processing URL parameters or if URL parameters exist
+    const urlStartDate = searchParams.get('startDate');
+    const urlEndDate = searchParams.get('endDate');
+    const urlDateColumn = searchParams.get('dateColumn');
+    const urlPaymentStatus = searchParams.get('paymentStatus');
+    
+    if (isProcessingUrlParams) {
+      return; // Skip fetch if currently processing URL params
+    }
+    
+    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus) {
+      return; // Skip fetch if URL params exist (they'll be handled by the URL params effect)
+    }
+    
     fetchReservations();
-  }, [fetchReservations]);
+  }, [fetchReservations, isProcessingUrlParams, searchParams]);
 
   // Toggle column visibility and save to database
   const toggleColumn = (column: string) => {
@@ -420,54 +551,140 @@ export default function ReservationsPage() {
 
             {/* Date Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
-              {/* Date Column Selector */}
+            {/* Date Column Selector */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Filter by:</label>
-                <select
-                  value={dateFilters.dateColumn}
-                  onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
+              <select
+                value={dateFilters.dateColumn}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                >
-                  <option value="pickupDate">Pickup Date</option>
-                  <option value="returnDate">Return Date</option>
-                  <option value="weddingDate">Wedding Date</option>
-                  <option value="availabilityDate">Availability Date</option>
-                  <option value="createdAt">Created Date</option>
-                </select>
-              </div>
+              >
+                <option value="pickupDate">Pickup Date</option>
+                <option value="returnDate">Return Date</option>
+                <option value="weddingDate">Wedding Date</option>
+                <option value="availabilityDate">Availability Date</option>
+                <option value="createdAt">Created Date</option>
+              </select>
+            </div>
 
               {/* Date Range */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-                {/* Start Date */}
+            {/* Start Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
-                  <input
-                    type="date"
-                    value={dateFilters.startDate}
-                    onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
+              <input
+                type="date"
+                value={dateFilters.startDate}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
                     className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                  />
-                </div>
+              />
+            </div>
 
-                {/* End Date */}
+            {/* End Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
-                  <input
-                    type="date"
-                    value={dateFilters.endDate}
-                    onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
+              <input
+                type="date"
+                value={dateFilters.endDate}
+                onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
                     className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                  />
+              />
                 </div>
-              </div>
+            </div>
 
-              {/* Clear Filters */}
-              {(dateFilters.startDate || dateFilters.endDate) && (
-                <button
-                  onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
+            {/* Clear Filters */}
+            {(dateFilters.startDate || dateFilters.endDate) && (
+              <button
+                onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap w-full sm:w-auto"
+              >
+                Clear Dates
+              </button>
+            )}
+            </div>
+
+            {/* Payment Status Filter */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative" ref={paymentStatusDropdownRef}>
+                <button
+                  onClick={() => {
+                    if (!isPaymentStatusDropdownOpen) {
+                      setLocalPaymentStatusFilter(paymentStatusFilter);
+                    }
+                    setIsPaymentStatusDropdownOpen(!isPaymentStatusDropdownOpen);
+                  }}
+                  className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none min-w-[140px] flex items-center justify-between"
                 >
-                  Clear Dates
+                  <span>
+                    {paymentStatusFilter.length === 0 
+                      ? 'All Statuses' 
+                      : paymentStatusFilter.length === 1 
+                        ? paymentStatusFilter[0]
+                        : `${paymentStatusFilter.length} selected`
+                    }
+                  </span>
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isPaymentStatusDropdownOpen && createPortal(
+                  <div 
+                    data-payment-status-dropdown
+                    className="absolute z-[9999] mt-1 bg-gray-800 border border-white/20 rounded-md shadow-lg min-w-[140px] max-w-[200px]"
+                    style={{
+                      top: paymentStatusDropdownRef.current ? 
+                        paymentStatusDropdownRef.current.getBoundingClientRect().bottom + window.scrollY + 4 : 0,
+                      left: paymentStatusDropdownRef.current ? 
+                        paymentStatusDropdownRef.current.getBoundingClientRect().left + window.scrollX : 0,
+                    }}
+                  >
+                    {['Not Paid', 'Partially Paid', 'Paid', 'Pending'].map((status) => (
+                      <label
+                        key={status}
+                        className="flex items-center px-3 py-2 hover:bg-white/10 cursor-pointer text-xs sm:text-sm text-white"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={localPaymentStatusFilter.includes(status)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setLocalPaymentStatusFilter([...localPaymentStatusFilter, status]);
+                            } else {
+                              setLocalPaymentStatusFilter(localPaymentStatusFilter.filter(s => s !== status));
+                            }
+                          }}
+                          className="mr-2 rounded"
+                        />
+                        {status}
+                      </label>
+                    ))}
+                    
+                    {/* Apply/Cancel buttons */}
+                    <div className="border-t border-white/20 p-2 flex gap-2">
+                      <button
+                        onClick={handlePaymentStatusApply}
+                        className="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
+                      >
+                        Apply
+                      </button>
+                      <button
+                        onClick={handlePaymentStatusCancel}
+                        className="flex-1 px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>,
+                  document.body
+                )}
+              </div>
+              {paymentStatusFilter.length > 0 && (
+                <button
+                  onClick={() => setPaymentStatusFilter([])}
+                  className="px-2 py-1 text-xs text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors"
+                >
+                  Clear
                 </button>
               )}
             </div>
@@ -604,6 +821,16 @@ export default function ReservationsPage() {
                   <label className="flex items-center">
                     <input
                       type="checkbox"
+                      checked={columnVisibility.remainingBalance}
+                      onChange={() => toggleColumn('remainingBalance')}
+                      className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                    />
+                    <span className="ml-2 text-sm text-gray-300">Remaining Balance</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
                       checked={columnVisibility.type}
                       onChange={() => toggleColumn('type')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
@@ -674,25 +901,30 @@ export default function ReservationsPage() {
         )}
 
         {/* Active Filters Indicator */}
-        {(dateFilters.startDate || dateFilters.endDate) && (
+        {(dateFilters.startDate || dateFilters.endDate || paymentStatusFilter.length > 0) && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <span className="text-xs sm:text-sm font-medium text-blue-300">Active filters:</span>
               <div className="flex flex-wrap items-center gap-2">
-                {(dateFilters.startDate || dateFilters.endDate) && (
+              {(dateFilters.startDate || dateFilters.endDate) && (
                   <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
-                    {dateFilters.dateColumn.charAt(0).toUpperCase() + dateFilters.dateColumn.slice(1)}: {
-                      dateFilters.startDate && dateFilters.endDate 
-                        ? `${dateFilters.startDate} to ${dateFilters.endDate}`
-                        : dateFilters.startDate 
-                          ? `from ${dateFilters.startDate}`
-                          : `until ${dateFilters.endDate}`
-                    }
-                  </span>
-                )}
-                <span className="text-xs text-blue-400">
-                  Showing {totalCount} result{totalCount !== 1 ? 's' : ''}
+                  {dateFilters.dateColumn.charAt(0).toUpperCase() + dateFilters.dateColumn.slice(1)}: {
+                    dateFilters.startDate && dateFilters.endDate 
+                      ? `${dateFilters.startDate} to ${dateFilters.endDate}`
+                      : dateFilters.startDate 
+                        ? `from ${dateFilters.startDate}`
+                        : `until ${dateFilters.endDate}`
+                  }
                 </span>
+              )}
+              {paymentStatusFilter.length > 0 && (
+                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
+                  Payment Status: {paymentStatusFilter.join(', ')}
+                </span>
+              )}
+                <span className="text-xs text-blue-400">
+                Showing {totalCount} result{totalCount !== 1 ? 's' : ''}
+              </span>
               </div>
             </div>
           </div>
@@ -753,6 +985,11 @@ export default function ReservationsPage() {
                     {columnVisibility.total && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Total
+                      </th>
+                    )}
+                    {columnVisibility.remainingBalance && (
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Remaining Balance
                       </th>
                     )}
                     {columnVisibility.type && (
@@ -841,6 +1078,17 @@ export default function ReservationsPage() {
                       {columnVisibility.total && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {formatCurrency(reservation.total || reservation.totalAmount || 0, currencySettings)}
+                        </td>
+                      )}
+                      {columnVisibility.remainingBalance && (
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <span className={`${
+                            (reservation.remainingBalance || 0) > 0 
+                              ? 'text-yellow-400' 
+                              : 'text-green-400'
+                          }`}>
+                            {formatCurrency(reservation.remainingBalance || 0, currencySettings)}
+                          </span>
                         </td>
                       )}
                       {columnVisibility.type && (
@@ -974,5 +1222,22 @@ export default function ReservationsPage() {
         )}
       </div>
     </Layout>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function ReservationsPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="min-h-screen bg-gray-900 text-white">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <ReservationsContent />
+    </Suspense>
   );
 } 

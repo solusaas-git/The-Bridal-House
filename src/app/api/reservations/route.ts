@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Reservation, Customer } from '@/models';
+import { updateReservationPaymentStatus } from '@/utils/reservation';
 
 // GET - Get all reservations
 export async function GET(request: NextRequest) {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const dateColumn = searchParams.get('dateColumn') || 'pickupDate';
+    const paymentStatus = searchParams.get('paymentStatus');
     
     const skip = (page - 1) * limit;
 
@@ -74,7 +76,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-
+    // Payment status filtering
+    if (paymentStatus) {
+      const statusArray = paymentStatus.split(',').map(s => s.trim());
+      query.paymentStatus = { $in: statusArray };
+    }
 
     // Get reservations with pagination
     let reservations = await Reservation.find(query)
@@ -182,10 +188,20 @@ export async function POST(request: NextRequest) {
     // Create new reservation
     const newReservation = new Reservation({
       ...body,
-      createdBy: userId
+      createdBy: userId,
+      remainingBalance: body.total || 0, // Initialize with total amount
+      paymentStatus: 'Not Paid' // Initialize as not paid since no payments exist yet
     });
 
     const savedReservation = await newReservation.save();
+    
+    // Calculate and update payment status (in case there are existing payments)
+    try {
+      await updateReservationPaymentStatus(savedReservation.id);
+    } catch (error) {
+      console.error('Error updating reservation payment status after creation:', error);
+      // Don't fail the creation if payment status update fails
+    }
     
     // Populate the saved reservation
     const reservationData = await Reservation.findById(savedReservation._id)

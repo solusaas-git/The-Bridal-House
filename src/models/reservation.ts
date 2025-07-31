@@ -19,6 +19,7 @@ export interface IReservation extends Document {
   advancePercentage: number;
   advanceAmount: number;
   total: number;
+  remainingBalance: number;
   notes?: string;
   bufferAfter?: number;
   bufferBefore?: number;
@@ -103,6 +104,10 @@ const reservationSchema = new Schema<IReservation>(
       default: 0,
     },
     total: {
+      type: Number,
+      default: 0,
+    },
+    remainingBalance: {
       type: Number,
       default: 0,
     },

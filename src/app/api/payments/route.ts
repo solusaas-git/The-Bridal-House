@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Payment } from '@/models';
 import { handleSingleFileUpload, type UploadedFile } from '@/lib/upload';
+import { updateReservationPaymentStatus } from '@/utils/reservation';
 
 interface PaymentQuery {
   page?: string;
@@ -89,10 +90,14 @@ export async function GET(request: NextRequest) {
     if (query.dateFrom || query.dateTo) {
       searchFilters.paymentDate = {};
       if (query.dateFrom) {
-        (searchFilters.paymentDate as Record<string, unknown>).$gte = new Date(query.dateFrom);
+        const dateFromObj = new Date(query.dateFrom);
+        dateFromObj.setHours(0, 0, 0, 0); // Start of day
+        (searchFilters.paymentDate as Record<string, unknown>).$gte = dateFromObj;
       }
       if (query.dateTo) {
-        (searchFilters.paymentDate as Record<string, unknown>).$lte = new Date(query.dateTo);
+        const dateToObj = new Date(query.dateTo);
+        dateToObj.setHours(23, 59, 59, 999); // End of day
+        (searchFilters.paymentDate as Record<string, unknown>).$lte = dateToObj;
       }
     }
 
@@ -105,7 +110,7 @@ export async function GET(request: NextRequest) {
       .populate('client', 'firstName lastName email phone')
       .populate('reservation', 'reservationNumber eventDate')
       .populate('createdBy', 'name email')
-      .sort({ createdAt: -1 })
+      .sort({ paymentDate: -1, createdAt: -1 }) // Sort by paymentDate first, then createdAt
       .skip(skip)
       .limit(limit);
 
@@ -190,6 +195,14 @@ export async function POST(request: NextRequest) {
 
       const savedPayment = await newPayment.save();
 
+      // Update reservation payment status and remaining balance
+      try {
+        await updateReservationPaymentStatus(savedPayment.reservation);
+      } catch (error) {
+        console.error('Error updating reservation payment status:', error);
+        // Don't fail the payment creation if reservation update fails
+      }
+
       // Populate the saved payment
       const populatedPayment = await Payment.findById(savedPayment._id)
         .populate('client', 'firstName lastName email phone')
@@ -218,6 +231,14 @@ export async function POST(request: NextRequest) {
       });
 
       const savedPayment = await newPayment.save();
+
+      // Update reservation payment status and remaining balance
+      try {
+        await updateReservationPaymentStatus(savedPayment.reservation);
+      } catch (error) {
+        console.error('Error updating reservation payment status:', error);
+        // Don't fail the payment creation if reservation update fails
+      }
 
       // Populate the saved payment
       const populatedPayment = await Payment.findById(savedPayment._id)

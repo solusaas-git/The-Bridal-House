@@ -322,13 +322,13 @@ export default function AddCostPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
-            <button
-              onClick={() => router.back()}
+          <button
+            onClick={() => router.back()}
               className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
-            >
-              <ArrowLeftIcon className="h-4 w-4 mr-2" />
-              Back to Costs
-            </button>
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            Back to Costs
+          </button>
             <h1 className="text-xl sm:text-2xl font-bold text-white">Add New Cost</h1>
           </div>
         </div>
@@ -571,7 +571,7 @@ export default function AddCostPage() {
                           </div>
                           {formData.relatedType === 'reservation' && selectedItem.weddingDate && (
                             <div className="text-xs text-gray-400">
-                              {format(new Date(selectedItem.weddingDate), 'MMM dd, yyyy')}
+                              {format(new Date(selectedItem.weddingDate), 'dd/MM/yyyy')}
                             </div>
                           )}
                         </div>

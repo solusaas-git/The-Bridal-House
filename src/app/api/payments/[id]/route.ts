@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import { Payment } from '@/models';
 import { handleSingleFileUpload, type UploadedFile } from '@/lib/upload';
 import { deleteFromVercelBlob } from '@/lib/vercel-blob';
+import { updateReservationPaymentStatus } from '@/utils/reservation';
 
 interface PaymentUpdateData {
   client?: string;
@@ -194,6 +195,14 @@ export async function PUT(
         }, { status: 404 });
       }
 
+      // Update reservation payment status and remaining balance
+      try {
+        await updateReservationPaymentStatus(updatedPayment.reservation);
+      } catch (error) {
+        console.error('Error updating reservation payment status:', error);
+        // Don't fail the payment update if reservation update fails
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Payment updated successfully',
@@ -231,6 +240,14 @@ export async function PUT(
         }, { status: 404 });
       }
 
+      // Update reservation payment status and remaining balance
+      try {
+        await updateReservationPaymentStatus(updatedPayment.reservation);
+      } catch (error) {
+        console.error('Error updating reservation payment status:', error);
+        // Don't fail the payment update if reservation update fails
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Payment updated successfully',
@@ -264,6 +281,14 @@ export async function DELETE(
         success: false,
         message: 'Payment not found',
       }, { status: 404 });
+    }
+
+    // Update reservation payment status and remaining balance after deletion
+    try {
+      await updateReservationPaymentStatus(deletedPayment.reservation);
+    } catch (error) {
+      console.error('Error updating reservation payment status after deletion:', error);
+      // Don't fail the payment deletion if reservation update fails
     }
 
     return NextResponse.json({

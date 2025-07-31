@@ -670,13 +670,13 @@ const EditPaymentPage = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
-            <button
-              onClick={handleBack}
+          <button
+            onClick={handleBack}
               className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
-            >
-              <ArrowLeftIcon className="h-4 w-4 mr-2" />
-              Back to Payment
-            </button>
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            Back to Payment
+          </button>
             <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Payment</h1>
           </div>
         </div>

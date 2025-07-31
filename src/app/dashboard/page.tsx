@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
-import { subDays } from 'date-fns';
+import { subDays, addDays, addWeeks, addMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import axios from 'axios';
 import { setCustomers } from '@/store/reducers/customerSlice';
@@ -19,6 +19,7 @@ import SystemHealthWidget from '@/components/dashboard/SystemHealthWidget';
 import WidgetManager from '@/components/dashboard/WidgetManager';
 import { useWidgetVisibility } from '@/hooks/useWidgetVisibility';
 import Layout from '@/components/Layout';
+import { useRouter } from 'next/navigation';
 
 interface DateRange {
   startDate: Date;
@@ -46,12 +47,16 @@ interface Reservation {
   status: string;
   pickupDate: string;
   returnDate: string;
+  total?: number;
   client?: {
-    firstName: string;
-    lastName: string;
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    weddingDate?: string;
   };
   items?: Array<{
     name: string;
+    image?: string;
   }>;
 }
 
@@ -81,12 +86,47 @@ const PREDEFINED_RANGES: Record<string, DateRange> = {
     })(),
   },
   'This Week': {
-    startDate: subDays(new Date(), 7),
-    endDate: new Date(),
+    startDate: (() => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return today;
+    })(),
+    endDate: (() => {
+      const today = new Date();
+      const endOfCurrentWeek = endOfWeek(today, { weekStartsOn: 1 }); // Sunday end
+      endOfCurrentWeek.setHours(23, 59, 59, 999);
+      return endOfCurrentWeek;
+    })(),
+  },
+  'Next Week': {
+    startDate: (() => {
+      const today = new Date();
+      const nextWeekStart = startOfWeek(addWeeks(today, 1), { weekStartsOn: 1 }); // Monday start
+      nextWeekStart.setHours(0, 0, 0, 0);
+      return nextWeekStart;
+    })(),
+    endDate: (() => {
+      const today = new Date();
+      const nextWeekEnd = endOfWeek(addWeeks(today, 1), { weekStartsOn: 1 }); // Sunday end
+      nextWeekEnd.setHours(23, 59, 59, 999);
+      return nextWeekEnd;
+    })(),
   },
   'This Month': {
     startDate: subDays(new Date(), 30),
     endDate: new Date(),
+  },
+  'Next Month': {
+    startDate: (() => {
+      const nextMonthStart = startOfMonth(addMonths(new Date(), 1));
+      nextMonthStart.setHours(0, 0, 0, 0);
+      return nextMonthStart;
+    })(),
+    endDate: (() => {
+      const nextMonthEnd = endOfMonth(addMonths(new Date(), 1));
+      nextMonthEnd.setHours(23, 59, 59, 999);
+      return nextMonthEnd;
+    })(),
   },
   'Last Month': {
     startDate: subDays(new Date(), 60),
@@ -108,6 +148,8 @@ const DashboardContent = () => {
   const payments = useSelector((state: RootState) => (state.payment as { payments: Payment[] })?.payments || []);
   const costs = useSelector((state: RootState) => (state.cost as { costs: Cost[] })?.costs || []);
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
 
@@ -183,13 +225,22 @@ const DashboardContent = () => {
   const [customEndDate, setCustomEndDate] = useState('');
 
   // Define widgets - matching original order and structure
-  const availableWidgets = useMemo(() => [
-    { id: 'stats', label: 'Statistics', width: 'full' },
-    { id: 'pickups', label: 'Upcoming Pickups', width: 'half' },
-    { id: 'returns', label: 'Upcoming Returns', width: 'half' },
-    { id: 'quickActions', label: 'Quick Actions', width: 'half' },
-    { id: 'systemHealth', label: 'System Health', width: 'half' },
-  ], []);
+  const availableWidgets = useMemo(() => {
+    const widgets = [
+      { id: 'stats', label: 'Statistics', width: 'full' },
+      { id: 'pickups', label: 'Upcoming Pickups', width: 'half' },
+      { id: 'returns', label: 'Upcoming Returns', width: 'half' },
+      { id: 'quickActions', label: 'Quick Actions', width: 'half' },
+      { id: 'systemHealth', label: 'System Health', width: 'half' },
+    ];
+
+    // Filter out stats widget for employee role
+    if (currentUser?.role === 'employee') {
+      return widgets.filter(widget => widget.id !== 'stats');
+    }
+
+    return widgets;
+  }, [currentUser]);
 
   // Widget state management
   const { visibleWidgets, toggleWidget, loading: widgetLoading } = useWidgetVisibility();
@@ -214,7 +265,9 @@ const DashboardContent = () => {
   const filteredPayments = useMemo(() => {
     if (!payments || payments.length === 0) return [];
     return payments.filter((payment: any) => {
-      const paymentDate = new Date(payment.paymentDate || payment.createdAt);
+      // Only use paymentDate, exclude records without proper payment dates
+      if (!payment.paymentDate) return false;
+      const paymentDate = new Date(payment.paymentDate);
       return paymentDate >= statsDateRange.startDate && paymentDate <= statsDateRange.endDate;
     });
   }, [payments, statsDateRange]);
@@ -222,7 +275,9 @@ const DashboardContent = () => {
   const filteredCosts = useMemo(() => {
     if (!costs || costs.length === 0) return [];
     return costs.filter((cost: any) => {
-      const costDate = new Date(cost.createdAt || cost.date);
+      // Only use cost date, exclude records without proper cost dates
+      if (!cost.date) return false;
+      const costDate = new Date(cost.date);
       return costDate >= statsDateRange.startDate && costDate <= statsDateRange.endDate;
     });
   }, [costs, statsDateRange]);
@@ -282,6 +337,32 @@ const DashboardContent = () => {
     }
   };
 
+  // Navigation handlers for stats cards
+  const handlePaymentsNavigation = (dateRange: { startDate: string; endDate: string }) => {
+    const params = new URLSearchParams({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    });
+    router.push(`/payments?${params.toString()}`);
+  };
+
+  const handleCostsNavigation = (dateRange: { startDate: string; endDate: string }) => {
+    const params = new URLSearchParams({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    });
+    router.push(`/costs?${params.toString()}`);
+  };
+
+  const handleUpcomingPaymentsNavigation = (dateRange: { startDate: string; endDate: string }) => {
+    const params = new URLSearchParams({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+      dateColumn: 'weddingDate', // Filter by wedding date for upcoming payments
+    });
+    router.push(`/reservations?${params.toString()}`);
+  };
+
   // Update custom date range when custom dates change
   useEffect(() => {
     if (activeStatsRange === 'Custom') {
@@ -293,14 +374,22 @@ const DashboardContent = () => {
   const renderWidget = (widget: { id: string; width: string }) => {
     switch (widget.id) {
       case 'stats':
+        // Hide stats widget for employee role
+        if (currentUser?.role === 'employee') {
+          return null;
+        }
         return (
           <StatsWidget
             customers={filteredCustomers}
             items={items}
-            reservations={filteredReservations}
+            reservations={reservations}
             payments={filteredPayments}
             costs={filteredCosts}
             currencySettings={currencySettings || {}}
+            onPaymentsClick={handlePaymentsNavigation}
+            onCostsClick={handleCostsNavigation}
+            onUpcomingPaymentsClick={handleUpcomingPaymentsNavigation}
+            dateRange={statsDateRange}
           />
         );
       case 'pickups':
@@ -422,81 +511,97 @@ const DashboardContent = () => {
   return (
     <div className="space-y-6">
       {/* Header with Widget Manager */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
           <p className="text-sm sm:text-base text-gray-300">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          {/* Stats Date Range Filter */}
-          <div className="relative w-full sm:w-auto">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-300" />
-                <span className="text-xs sm:text-sm text-gray-300">Stats Period:</span>
-                <div className="relative">
-                  <select
-                    value={activeStatsRange}
-                    onChange={(e) => {
-                      if (e.target.value === 'Custom') {
-                        handleCustomRangeSelect();
-                        setActiveStatsRange('Custom');
-                        setShowCustomDatePicker(true);
-                      } else {
-                        const selectedRange = PREDEFINED_RANGES[e.target.value];
-                        if (selectedRange) {
-                          handleStatsDateRangeChange(selectedRange, e.target.value);
-                        }
+        
+        {/* Controls Section */}
+        {currentUser?.role !== 'employee' && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+            {/* Stats Date Range Filter */}
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Stats Period
+              </label>
+              <div className="flex items-center gap-3 w-full">
+                <select
+                  value={activeStatsRange}
+                  onChange={(e) => {
+                    if (e.target.value === 'Custom') {
+                      handleCustomRangeSelect();
+                      setActiveStatsRange('Custom');
+                      setShowCustomDatePicker(true);
+                    } else {
+                      const selectedRange = PREDEFINED_RANGES[e.target.value];
+                      if (selectedRange) {
+                        handleStatsDateRangeChange(selectedRange, e.target.value);
                       }
-                    }}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[100px] sm:min-w-[120px]"
-                  >
-                    {PREDEFINED_RANGE_OPTIONS.map((range) => (
-                      <option key={range} value={range} className="bg-gray-800 text-white">
-                        {range}
-                      </option>
-                    ))}
-                  </select>
+                    }
+                  }}
+                  className="w-1/2 h-8 px-3 py-1 bg-white/10 border border-white/20 rounded-md text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer backdrop-blur-lg hover:bg-white/15 transition-all duration-200"
+                >
+                  {PREDEFINED_RANGE_OPTIONS.map((range) => (
+                    <option key={range} value={range} className="bg-gray-800 text-white">
+                      {range}
+                    </option>
+                  ))}
+                </select>
+                
+                <div className="w-1/2">
+                  <WidgetManager
+                    availableWidgets={availableWidgets}
+                    visibleWidgets={visibleWidgets}
+                    onToggleWidget={toggleWidget}
+                  />
                 </div>
               </div>
               
               {/* Custom Date Range Inputs */}
               {showCustomDatePicker && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:ml-2">
+                <div className="flex items-center gap-2 mt-2">
                   <input
                     type="date"
                     value={customStartDate}
                     onChange={(e) => setCustomStartDate(e.target.value)}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="h-8 px-2 py-1 bg-white/10 border border-white/20 rounded-md text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-lg hover:bg-white/15 transition-all duration-200 w-32"
                     max={customEndDate || undefined}
                     title="Start Date"
                   />
-                  <span className="text-gray-400 text-xs">to</span>
+                  <span className="text-gray-400 text-xs font-medium">to</span>
                   <input
                     type="date"
                     value={customEndDate}
                     onChange={(e) => setCustomEndDate(e.target.value)}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="h-8 px-2 py-1 bg-white/10 border border-white/20 rounded-md text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-lg hover:bg-white/15 transition-all duration-200 w-32"
                     min={customStartDate || undefined}
                     title="End Date"
                   />
+                  
+                  {(filteredCustomers.length !== customers.length || filteredPayments.length !== payments.length || filteredReservations.length !== reservations.length || filteredCosts.length !== costs.length) && (
+                    <div className="flex items-center justify-center h-8 px-2 bg-blue-500/20 border border-blue-500/30 rounded-md">
+                      <span className="text-xs font-medium text-blue-300">
+                        Filtered
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-              
-              {(filteredCustomers.length !== customers.length || filteredPayments.length !== payments.length || filteredReservations.length !== reservations.length || filteredCosts.length !== costs.length) && (
-                <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded whitespace-nowrap">
-                  Filtered
-                </span>
               )}
             </div>
           </div>
-          
-          <WidgetManager
-            availableWidgets={availableWidgets}
-            visibleWidgets={visibleWidgets}
-            onToggleWidget={toggleWidget}
-          />
-        </div>
+        )}
+
+        {/* Widget Manager for Employees */}
+        {currentUser?.role === 'employee' && (
+          <div className="flex justify-end">
+            <WidgetManager
+              availableWidgets={availableWidgets}
+              visibleWidgets={visibleWidgets}
+              onToggleWidget={toggleWidget}
+            />
+          </div>
+        )}
       </div>
 
       {/* Widgets */}

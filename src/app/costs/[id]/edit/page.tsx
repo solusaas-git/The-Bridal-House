@@ -369,13 +369,13 @@ export default function EditCostPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
-            <button
-              onClick={() => router.back()}
-              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            >
+          <button
+            onClick={() => router.back()}
+            className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+          >
               <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </button>
-            <div>
+          </button>
+          <div>
               <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Cost</h1>
               <p className="text-sm sm:text-base text-gray-300">Update cost information</p>
             </div>

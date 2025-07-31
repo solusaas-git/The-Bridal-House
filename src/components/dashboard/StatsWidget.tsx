@@ -25,6 +25,13 @@ interface Reservation {
   status: string;
   createdAt?: string;
   pickupDate?: string;
+  total?: number;
+  client?: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    weddingDate?: string;
+  };
 }
 
 interface Payment {
@@ -60,6 +67,10 @@ interface StatsWidgetProps {
   payments: Payment[];
   costs: Cost[];
   currencySettings: CurrencySettings;
+  onPaymentsClick?: (dateRange: { startDate: string; endDate: string }) => void;
+  onCostsClick?: (dateRange: { startDate: string; endDate: string }) => void;
+  onUpcomingPaymentsClick?: (dateRange: { startDate: string; endDate: string }) => void;
+  dateRange?: { startDate: Date; endDate: Date };
 }
 
 const StatsWidget: React.FC<StatsWidgetProps> = ({
@@ -69,6 +80,10 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   payments,
   costs,
   currencySettings,
+  onPaymentsClick,
+  onCostsClick,
+  onUpcomingPaymentsClick,
+  dateRange,
 }) => {
   // Get complete unfiltered data from Redux store for accurate month-over-month calculations
   const allCustomers = useSelector((state: any) => (state.customer as { customers: Customer[] })?.customers || []);
@@ -101,13 +116,16 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
 
   // Filter ALL data for current month (not just filtered props)
   const currentMonthCosts = allCosts?.filter(cost => {
-    const costDate = new Date(cost.createdAt || cost.date);
+    // Only use cost date, exclude records without proper cost dates
+    if (!cost.date) return false;
+    const costDate = new Date(cost.date);
     return costDate >= currentMonthStart && costDate <= currentMonthEnd;
   }) || [];
 
   const currentMonthPayments = allPayments?.filter(payment => {
-    // Use paymentDate primarily, then fall back to createdAt
-    const paymentDate = new Date(payment.paymentDate || payment.createdAt || '');
+    // Only use paymentDate, exclude records without proper payment dates
+    if (!payment.paymentDate) return false;
+    const paymentDate = new Date(payment.paymentDate);
     return paymentDate >= currentMonthStart && paymentDate <= currentMonthEnd;
   }) || [];
 
@@ -118,13 +136,16 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
 
   // Filter ALL data for last month (not just filtered props)
   const lastMonthCosts = allCosts?.filter(cost => {
-    const costDate = new Date(cost.createdAt || cost.date);
+    // Only use cost date, exclude records without proper cost dates
+    if (!cost.date) return false;
+    const costDate = new Date(cost.date);
     return costDate >= lastMonthStart && costDate <= lastMonthEnd;
   }) || [];
 
   const lastMonthPayments = allPayments?.filter(payment => {
-    // Use paymentDate primarily, then fall back to createdAt
-    const paymentDate = new Date(payment.paymentDate || payment.createdAt || '');
+    // Only use paymentDate, exclude records without proper payment dates
+    if (!payment.paymentDate) return false;
+    const paymentDate = new Date(payment.paymentDate);
     return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;
   }) || [];
 
@@ -136,24 +157,84 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   // Calculate current month totals from ALL data
   const currentTotalCosts = currentMonthCosts.reduce((total, cost) => total + (Number(cost.amount) || 0), 0);
   const currentTotalPayments = currentMonthPayments.reduce((total, payment) => total + (Number(payment.amount) || 0), 0);
-  const currentActiveReservations = currentMonthReservations.length;
+  
+  // Calculate current month upcoming payments (reservations with wedding dates in current month)
+  const currentMonthUpcomingPayments = allReservations?.filter(reservation => {
+    if (!reservation.client?.weddingDate) return false;
+    const weddingDate = new Date(reservation.client.weddingDate);
+    return weddingDate >= currentMonthStart && weddingDate <= currentMonthEnd;
+  }).reduce((total, reservation) => {
+    const reservationTotal = Number(reservation.total) || 0;
+    const reservationPayments = allPayments?.filter(
+      (payment) => payment.reservation?._id === reservation._id
+    ) || [];
+    const totalPaid = reservationPayments.reduce(
+      (sum, payment) => sum + (Number(payment.amount) || 0), 0
+    );
+    const remainingBalance = reservationTotal - totalPaid;
+    return total + (remainingBalance > 0 ? remainingBalance : 0);
+  }, 0) || 0;
+  
   const currentMargin = currentTotalPayments - currentTotalCosts;
 
   // Calculate last month totals from ALL data
   const lastTotalCosts = lastMonthCosts.reduce((total, cost) => total + (Number(cost.amount) || 0), 0);
   const lastTotalPayments = lastMonthPayments.reduce((total, payment) => total + (Number(payment.amount) || 0), 0);
-  const lastActiveReservations = lastMonthReservations.length;
+  
+  // Calculate last month upcoming payments (reservations with wedding dates in last month)
+  const lastMonthUpcomingPayments = allReservations?.filter(reservation => {
+    if (!reservation.client?.weddingDate) return false;
+    const weddingDate = new Date(reservation.client.weddingDate);
+    return weddingDate >= lastMonthStart && weddingDate <= lastMonthEnd;
+  }).reduce((total, reservation) => {
+    const reservationTotal = Number(reservation.total) || 0;
+    const reservationPayments = allPayments?.filter(
+      (payment) => payment.reservation?._id === reservation._id
+    ) || [];
+    const totalPaid = reservationPayments.reduce(
+      (sum, payment) => sum + (Number(payment.amount) || 0), 0
+    );
+    const remainingBalance = reservationTotal - totalPaid;
+    return total + (remainingBalance > 0 ? remainingBalance : 0);
+  }, 0) || 0;
+  
   const lastMargin = lastTotalPayments - lastTotalCosts;
 
   // Calculate percentage changes using complete data
   const costsChange = calculatePercentageChange(currentTotalCosts, lastTotalCosts);
   const paymentsChange = calculatePercentageChange(currentTotalPayments, lastTotalPayments);
-  const reservationsChange = calculatePercentageChange(currentActiveReservations, lastActiveReservations);
+  const upcomingPaymentsChange = calculatePercentageChange(currentMonthUpcomingPayments, lastMonthUpcomingPayments);
   const marginChange = calculatePercentageChange(currentMargin, lastMargin);
 
   // For display, use the filtered data passed from parent (which respects date range filter)
-  const activeReservations = reservations?.filter(
-    (reservation) => new Date(reservation.availabilityDate || '') > new Date()
+  const upcomingPayments = reservations?.filter((reservation) => {
+    // Filter by client's wedding date within the selected date range
+    if (!reservation.client?.weddingDate || !dateRange) return false;
+    const weddingDate = new Date(reservation.client.weddingDate);
+    return weddingDate >= dateRange.startDate && weddingDate <= dateRange.endDate;
+  }).map((reservation) => {
+    // Calculate remaining balance (total - payments made for this reservation)
+    const reservationTotal = Number(reservation.total) || 0;
+    const reservationPayments = allPayments?.filter(
+      (payment) => payment.reservation?._id === reservation._id
+    ) || [];
+    const totalPaid = reservationPayments.reduce(
+      (sum, payment) => sum + (Number(payment.amount) || 0), 0
+    );
+    const remainingBalance = reservationTotal - totalPaid;
+    
+    return {
+      reservationId: reservation._id,
+      clientName: `${reservation.client?.firstName || ''} ${reservation.client?.lastName || ''}`.trim(),
+      weddingDate: reservation.client?.weddingDate,
+      total: reservationTotal,
+      paid: totalPaid,
+      remaining: remainingBalance
+    };
+  }).filter((item) => item.remaining > 0) || []; // Only show reservations with remaining balance
+  
+  const totalUpcomingPayments = upcomingPayments.reduce(
+    (total, item) => total + item.remaining, 0
   );
   
   const totalPayments = payments?.reduce(
@@ -198,24 +279,50 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       iconColor: margin >= 0 ? 'text-green-400' : 'text-orange-400',
     },
     {
-      title: 'Active Reservations',
-      value: activeReservations?.length || 0,
-      change: reservationsChange.change,
-      trend: reservationsChange.trend,
+      title: 'Upcoming Payments',
+      value: formatCurrency(totalUpcomingPayments || 0, currencySettings),
+      change: upcomingPaymentsChange.change,
+      trend: upcomingPaymentsChange.trend,
       icon: Calendar,
       iconBg: 'bg-purple-500/10',
       iconColor: 'text-purple-400',
     },
   ];
 
+  const handleStatClick = (statTitle: string) => {
+    if (!dateRange) return;
+    
+    const dateRangeFormatted = {
+      startDate: dateRange.startDate.toISOString().split('T')[0],
+      endDate: dateRange.endDate.toISOString().split('T')[0],
+    };
+
+    if (statTitle === 'Total Payments' && onPaymentsClick) {
+      onPaymentsClick(dateRangeFormatted);
+    } else if (statTitle === 'Total Costs' && onCostsClick) {
+      onCostsClick(dateRangeFormatted);
+    } else if (statTitle === 'Upcoming Payments' && onUpcomingPaymentsClick) {
+      onUpcomingPaymentsClick(dateRangeFormatted);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats?.map((stat) => {
         const Icon = stat.icon;
+        const isClickable = (stat.title === 'Total Payments' && onPaymentsClick) || 
+                           (stat.title === 'Total Costs' && onCostsClick) ||
+                           (stat.title === 'Upcoming Payments' && onUpcomingPaymentsClick);
+        
         return (
           <div
             key={stat.title}
-            className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6 space-y-4"
+            onClick={() => isClickable ? handleStatClick(stat.title) : undefined}
+            className={`bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6 space-y-4 transition-all duration-200 ${
+              isClickable 
+                ? 'cursor-pointer hover:bg-white/15 hover:border-white/20 hover:scale-105' 
+                : ''
+            }`}
           >
             <div className="flex items-center justify-between">
               <div className={`p-2 ${stat.iconBg} rounded-lg`}>
@@ -235,7 +342,7 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
             <div>
               <p className="text-sm text-gray-400">{stat.title}</p>
               <p className="text-2xl font-semibold text-white">
-                {typeof stat.value === 'string' ? stat.value : stat.value.toLocaleString()}
+                {stat.value}
               </p>
             </div>
           </div>

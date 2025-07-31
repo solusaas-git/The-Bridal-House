@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Reservation } from '@/models';
+import { updateReservationPaymentStatus } from '@/utils/reservation';
 
 // GET - Get a single reservation by ID
 export async function GET(
@@ -69,6 +70,14 @@ export async function PUT(
         { success: false, message: 'Reservation not found' },
         { status: 404 }
       );
+    }
+
+    // Update payment status if total amount changed
+    try {
+      await updateReservationPaymentStatus(params.id);
+    } catch (error) {
+      console.error('Error updating reservation payment status after update:', error);
+      // Don't fail the update if payment status update fails
     }
 
     return NextResponse.json({

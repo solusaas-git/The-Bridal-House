@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import {
@@ -29,10 +29,13 @@ import Layout from '@/components/Layout';
 import Pagination from '@/components/ui/Pagination';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import DateFilter from '@/components/shared/DateFilter';
 
-const PaymentsPage = () => {
+// Component that uses useSearchParams
+const PaymentsContent = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
 
   // Redux state
   const paymentState = useSelector((state: RootState) => state.payment);
@@ -50,13 +53,13 @@ const PaymentsPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [savingPreferences, setSavingPreferences] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isProcessingUrlParams, setIsProcessingUrlParams] = useState(false);
   
-  // Date filter state
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [hasActiveFilter, setHasActiveFilter] = useState(false);
+  // Date filter state - unified format
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({
@@ -78,25 +81,171 @@ const PaymentsPage = () => {
   useEffect(() => {
     const loadColumnPreferences = async () => {
       try {
-        const response = await axios.get('/api/user-preferences/columns/payments');
-        if (response.data.success) {
-          setColumnVisibility(response.data.columnPreferences);
+        const response = await axios.get('/api/user-preferences/columns/payments', {
+          withCredentials: true,
+        });
+        
+        if (response.data.success && response.data.preferences) {
+          setColumnVisibility(response.data.preferences);
         }
       } catch (error) {
-        console.error('Failed to load column preferences:', error);
-        // Use default preferences if loading fails
+        console.error('Error loading column preferences:', error);
       }
     };
-    loadColumnPreferences();
-  }, []);
 
-  useEffect(() => {
+    loadColumnPreferences();
     setMounted(true);
   }, []);
+
+  // Read URL parameters on mount
+  useEffect(() => {
+    const urlStartDate = searchParams.get('startDate');
+    const urlEndDate = searchParams.get('endDate');
+    
+    // Check if we have URL parameters to process
+    if (urlStartDate || urlEndDate) {
+      setIsProcessingUrlParams(true);
+    }
+    
+    let shouldFetch = false;
+    let newStartDate = startDate;
+    let newEndDate = endDate;
+    
+    if (urlStartDate && urlStartDate !== startDate) {
+      setStartDate(urlStartDate);
+      newStartDate = urlStartDate;
+      shouldFetch = true;
+    }
+    if (urlEndDate && urlEndDate !== endDate) {
+      setEndDate(urlEndDate);
+      newEndDate = urlEndDate;
+      shouldFetch = true;
+    }
+    
+    // Trigger fetch immediately if dates were set from URL
+    if (shouldFetch) {
+      const fetchWithUrlDates = async () => {
+        try {
+          dispatch(setLoading(true));
+          dispatch(setError(null));
+          
+          const params = new URLSearchParams({
+            page: currentPage.toString(),
+            limit: pageSize.toString(),
+            search: searchTerm,
+          });
+
+          // Use the URL date values
+          if (newStartDate) {
+            params.append('dateFrom', newStartDate);
+          }
+          if (newEndDate) {
+            params.append('dateTo', newEndDate);
+          }
+
+          const response = await axios.get(`/api/payments?${params}`);
+          
+          if (response.data.success) {
+            dispatch(setPayments({
+              payments: response.data.payments,
+              totalCount: response.data.totalCount,
+              currentPage: response.data.currentPage,
+              pageSize: response.data.itemsPerPage,
+              totalPages: response.data.totalPages,
+            }));
+          } else {
+            dispatch(setError('Failed to fetch payments'));
+          }
+        } catch (error) {
+          console.error('Error fetching payments:', error);
+          dispatch(setError('Failed to fetch payments'));
+          toast.error('Failed to fetch payments');
+        } finally {
+          dispatch(setLoading(false));
+          setIsProcessingUrlParams(false); // Clear the flag when done
+        }
+      };
+      
+      fetchWithUrlDates();
+    } else {
+      setIsProcessingUrlParams(false); // Clear the flag if no URL params to process
+    }
+  }, [searchParams]);
+
+  // Handle date filter changes
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    
+    // Trigger fetch immediately with new date values to avoid timing issues
+    const fetchWithNewDates = async () => {
+      try {
+        dispatch(setLoading(true));
+        dispatch(setError(null));
+        
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: pageSize.toString(),
+          search: searchTerm,
+        });
+
+        // Use the new date values directly
+        if (newStartDate) {
+          params.append('dateFrom', newStartDate);
+        }
+        if (newEndDate) {
+          params.append('dateTo', newEndDate);
+        }
+
+        const response = await axios.get(`/api/payments?${params}`);
+        
+        if (response.data.success) {
+          dispatch(setPayments({
+            payments: response.data.payments,
+            totalCount: response.data.totalCount,
+            currentPage: response.data.currentPage,
+            pageSize: response.data.itemsPerPage,
+            totalPages: response.data.totalPages,
+          }));
+        } else {
+          dispatch(setError('Failed to fetch payments'));
+        }
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+        dispatch(setError('Failed to fetch payments'));
+        toast.error('Failed to fetch payments');
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+    
+    fetchWithNewDates();
+  };
+
+  // Update button position when dropdown opens or window resizes/scrolls
+  useEffect(() => {
+    const updatePosition = () => {
+      if (isDropdownOpen && buttonRef.current) {
+        setButtonRect(buttonRef.current.getBoundingClientRect());
+      }
+    };
+
+    if (isDropdownOpen) {
+      updatePosition();
+      window.addEventListener('scroll', updatePosition);
+      window.addEventListener('resize', updatePosition);
+      
+      return () => {
+        window.removeEventListener('scroll', updatePosition);
+        window.removeEventListener('resize', updatePosition);
+      };
+    }
+  }, [isDropdownOpen]);
 
   // Fetch payments on component mount and when dependencies change
   const fetchPaymentsData = useCallback(async () => {
     try {
+      
       dispatch(setLoading(true));
       dispatch(setError(null));
       
@@ -107,11 +256,11 @@ const PaymentsPage = () => {
       });
 
       // Add date filters if they exist
-      if (dateFrom) {
-        params.append('dateFrom', dateFrom);
+      if (startDate) {
+        params.append('dateFrom', startDate);
       }
-      if (dateTo) {
-        params.append('dateTo', dateTo);
+      if (endDate) {
+        params.append('dateTo', endDate);
       }
 
       const response = await axios.get(`/api/payments?${params}`);
@@ -134,21 +283,26 @@ const PaymentsPage = () => {
     } finally {
       dispatch(setLoading(false));
     }
-  }, [dispatch, currentPage, pageSize, searchTerm, dateFrom, dateTo]);
+  }, [dispatch, currentPage, pageSize, searchTerm, startDate, endDate]);
 
   useEffect(() => {
-    fetchPaymentsData();
-  }, [fetchPaymentsData]);
+    // Don't fetch if we're processing URL parameters to avoid race conditions
+    if (!isProcessingUrlParams) {
+      const urlStartDate = searchParams.get('startDate');
+      const urlEndDate = searchParams.get('endDate');
+      
+      // Only fetch if there are no URL parameters at all
+      if (!urlStartDate && !urlEndDate) {
+        fetchPaymentsData();
+      }
+    }
+  }, [fetchPaymentsData, isProcessingUrlParams]); // Removed searchParams to prevent loops
 
   // Event handlers
   const handleDropdownToggle = useCallback((event?: React.MouseEvent) => {
     if (event) {
       const button = event.currentTarget as HTMLElement;
-      const rect = button.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY + 8,
-        right: window.innerWidth - rect.right + window.scrollX,
-      });
+      setButtonRect(button.getBoundingClientRect());
     }
     setIsDropdownOpen(!isDropdownOpen);
   }, [isDropdownOpen]);
@@ -187,15 +341,15 @@ const PaymentsPage = () => {
 
   const handleDateFilterApply = () => {
     // Update active filter status
-    setHasActiveFilter(Boolean(dateFrom || dateTo));
+    // setHasActiveFilter(Boolean(dateFrom || dateTo)); // This state is removed
     // Trigger data refetch (handled by useEffect on dateFrom/dateTo change)
   };
 
   const handleDateFilterClear = () => {
-    setDateFrom('');
-    setDateTo('');
-    setHasActiveFilter(false);
-    setShowDateFilter(false);
+    setStartDate('');
+    setEndDate('');
+    // setHasActiveFilter(false); // This state is removed
+    // setShowDateFilter(false); // This state is removed
   };
 
   const handleQuickDateRange = (days: number) => {
@@ -203,15 +357,15 @@ const PaymentsPage = () => {
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - days);
     
-    setDateFrom(formatDateForInput(startDate));
-    setDateTo(formatDateForInput(today));
-    setHasActiveFilter(true);
+    setStartDate(formatDateForInput(startDate));
+    setEndDate(formatDateForInput(today));
+    // setHasActiveFilter(true); // This state is removed
   };
 
   // Update active filter status when date values change
   useEffect(() => {
-    setHasActiveFilter(Boolean(dateFrom || dateTo));
-  }, [dateFrom, dateTo]);
+    // setHasActiveFilter(Boolean(dateFrom || dateTo)); // This state is removed
+  }, [startDate, endDate]);
 
   const handleDelete = async (paymentId: string) => {
     if (!confirm('Are you sure you want to delete this payment?')) {
@@ -293,75 +447,20 @@ const PaymentsPage = () => {
 
             {/* Controls */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-              {/* Date Filter - Compact Style */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-                <div className="flex items-center gap-2">
-                  <svg className="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-300">Date:</span>
-                  <select
-                    value={hasActiveFilter ? 'Custom' : 'All Time'}
-                    onChange={(e) => {
-                      if (e.target.value === 'Custom') {
-                        setShowDateFilter(true);
-                        if (!dateFrom && !dateTo) {
-                          handleQuickDateRange(30); // Default to last 30 days
-                        }
-                      } else if (e.target.value === 'All Time') {
-                        handleDateFilterClear();
-                      } else {
-                        // Handle predefined ranges
-                        const days = parseInt(e.target.value);
-                        handleQuickDateRange(days);
-                      }
-                    }}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[100px] sm:min-w-[120px]"
-                  >
-                    <option value="All Time" className="bg-gray-800 text-white">All Time</option>
-                    <option value="7" className="bg-gray-800 text-white">Last 7 days</option>
-                    <option value="30" className="bg-gray-800 text-white">Last 30 days</option>
-                    <option value="90" className="bg-gray-800 text-white">Last 90 days</option>
-                    <option value="365" className="bg-gray-800 text-white">Last year</option>
-                    <option value="Custom" className="bg-gray-800 text-white">Custom</option>
-                  </select>
-                </div>
-                
-                {/* Custom Date Range Inputs */}
-                {showDateFilter && hasActiveFilter && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      max={dateTo || undefined}
-                      title="Start Date"
-                    />
-                    <span className="text-gray-400 text-xs">to</span>
-                    <input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      min={dateFrom || undefined}
-                      title="End Date"
-                    />
-                  </div>
-                )}
-                
-                {/* Active Filter Indicator */}
-                {hasActiveFilter && (
-                  <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded whitespace-nowrap">
-                    Filtered
-                  </span>
-                )}
-              </div>
+              {/* Date Filter */}
+              <DateFilter
+                startDate={startDate}
+                endDate={endDate}
+                onDateChange={handleDateChange}
+                label="Date Filter"
+                className="w-full sm:w-auto"
+              />
 
-              {/* Column Toggle */}
+              {/* Items Per Page Selector */}
               <div className="relative dropdown-container w-full sm:w-auto">
                 <button
                   onClick={handleDropdownToggle}
+                  ref={buttonRef}
                   className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
                 >
                   <GearIcon className="h-4 w-4" />
@@ -373,7 +472,7 @@ const PaymentsPage = () => {
         </div>
 
         {/* Portal-rendered dropdown */}
-        {mounted && isDropdownOpen && createPortal(
+        {mounted && isDropdownOpen && buttonRect && createPortal(
           <>
             {/* Backdrop */}
             <div 
@@ -385,8 +484,8 @@ const PaymentsPage = () => {
             <div 
               className="fixed w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-[9999]"
               style={{
-                top: `${dropdownPosition.top}px`,
-                right: `${dropdownPosition.right}px`,
+                top: buttonRect.bottom + 2, // Stick close to button bottom
+                left: Math.max(8, Math.min(buttonRect.right - 256, window.innerWidth - 256 - 8)), // Right-align but keep within viewport
               }}
             >
               <div className="p-4">
@@ -435,20 +534,25 @@ const PaymentsPage = () => {
         )}
 
         {/* Table */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-visible">
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
               <p className="text-gray-300 text-sm sm:text-base">Loading payments...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-visible">
               <table className="w-full min-w-full">
                 <thead className="bg-white/5 border-b border-white/10">
                   <tr className="border-b border-white/20">
                     {columnVisibility.id && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Id
+                      </th>
+                    )}
+                    {columnVisibility.paymentDate && (
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        Payment Date
                       </th>
                     )}
                     {columnVisibility.customer && (
@@ -464,11 +568,6 @@ const PaymentsPage = () => {
                     {columnVisibility.amount && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Amount
-                      </th>
-                    )}
-                    {columnVisibility.paymentDate && (
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Payment Date
                       </th>
                     )}
                     {columnVisibility.paymentMethod && (
@@ -520,6 +619,11 @@ const PaymentsPage = () => {
                           {startIndex + index + 1}
                         </td>
                       )}
+                      {columnVisibility.paymentDate && (
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy') : '-'}
+                        </td>
+                      )}
                       {columnVisibility.customer && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                           {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : 'N/A'}
@@ -533,11 +637,6 @@ const PaymentsPage = () => {
                       {columnVisibility.amount && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.amount ? formatCurrency(payment.amount, currencySettings) : '-'}
-                        </td>
-                      )}
-                      {columnVisibility.paymentDate && (
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy') : '-'}
                         </td>
                       )}
                       {columnVisibility.paymentMethod && (
@@ -654,6 +753,23 @@ const PaymentsPage = () => {
         )}
       </div>
     </Layout>
+  );
+};
+
+// Main page component with Suspense boundary
+const PaymentsPage = () => {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="min-h-screen bg-gray-900 text-white">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <PaymentsContent />
+    </Suspense>
   );
 };
 

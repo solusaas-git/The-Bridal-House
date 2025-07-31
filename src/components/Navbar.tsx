@@ -83,36 +83,36 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
         transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         w-64 lg:w-56
-        top-0 lg:top-0
+        top-0 lg:top-16
       `}>
         <div className="flex flex-col h-full">
-          {/* Navigation */}
-          <nav className="flex-1 space-y-1 p-4 pt-20 lg:pt-4 overflow-y-auto">
-            {tabs?.map((tab) => {
-              const IconComponent = tab.icon;
-              const isApprovals = tab.name === 'Approvals';
-              
-              return (
-                <button
-                  key={tab.name}
+        {/* Navigation */}
+          <nav className="flex-1 space-y-1 p-4 pt-20 lg:pt-6 overflow-y-auto">
+          {tabs?.map((tab) => {
+            const IconComponent = tab.icon;
+            const isApprovals = tab.name === 'Approvals';
+            
+            return (
+              <button
+                key={tab.name}
                   onClick={() => handleNavigation(tab.name, tab.path)}
                   className={`group flex w-full items-center rounded-lg px-3 py-3 lg:py-2 text-sm font-medium transition-colors ${
-                    activeTab === tab.name
-                      ? 'bg-white/20 text-white'
-                      : 'text-gray-300 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
+                  activeTab === tab.name
+                    ? 'bg-white/20 text-white'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
                   <IconComponent className="mr-3 h-4 w-4 flex-shrink-0" />
-                  <span className="flex-1 text-left">{tab.name}</span>
-                  {isApprovals && pendingCount > 0 && (
-                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
-                      {pendingCount > 99 ? '99+' : pendingCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+                <span className="flex-1 text-left">{tab.name}</span>
+                {isApprovals && pendingCount > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
+                    {pendingCount > 99 ? '99+' : pendingCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
         </div>
       </div>
     </>

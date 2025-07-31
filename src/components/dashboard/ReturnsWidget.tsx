@@ -10,8 +10,10 @@ interface Reservation {
   type: string;
   returnDate: string;
   client?: {
-    firstName: string;
-    lastName: string;
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    weddingDate?: string;
   };
   items?: Array<{
     name: string;
@@ -103,6 +105,10 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
   }, [activeRange, customStartDate, customEndDate]);
 
   const availableRanges = { ...predefinedRanges, Custom: { startDate: new Date(), endDate: new Date() } };
+
+  const handleReservationClick = (reservationId: string) => {
+    window.open(`/reservations/${reservationId}`, '_blank');
+  };
 
   return (
     <div>
@@ -212,7 +218,8 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
           upcomingReturns.slice(0, 5).map((reservation) => (
             <div
               key={reservation._id}
-              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+              onClick={() => handleReservationClick(reservation._id)}
+              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
             >
               <div className="p-1.5 bg-orange-500/10 rounded-full">
                 <Undo2 className="h-3 w-3 text-orange-400" />
@@ -221,7 +228,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">
                   {reservation.client 
-                    ? `${reservation.client.firstName} ${reservation.client.lastName}`
+                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
                     : 'Unknown Customer'
                   }
                 </p>
@@ -280,7 +287,8 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                 {upcomingReturns.map((reservation) => (
                   <div
                     key={reservation._id}
-                    className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+                    onClick={() => handleReservationClick(reservation._id)}
+                    className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
                   >
                     <div className="p-1.5 bg-orange-500/10 rounded-full">
                       <Undo2 className="h-3 w-3 text-orange-400" />
@@ -289,7 +297,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">
                         {reservation.client 
-                          ? `${reservation.client.firstName} ${reservation.client.lastName}`
+                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
                           : 'Unknown Customer'
                         }
                       </p>

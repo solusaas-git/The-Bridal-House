@@ -10,8 +10,10 @@ interface Reservation {
   type: string;
   pickupDate: string;
   client?: {
-    firstName: string;
-    lastName: string;
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    weddingDate?: string;
   };
   items?: Array<{
     name: string;
@@ -103,6 +105,10 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
   }, [activeRange, customStartDate, customEndDate]);
 
   const availableRanges = { ...predefinedRanges, Custom: { startDate: new Date(), endDate: new Date() } };
+
+  const handleReservationClick = (reservationId: string) => {
+    window.open(`/reservations/${reservationId}`, '_blank');
+  };
 
   return (
     <div>
@@ -212,7 +218,8 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
           upcomingPickups.slice(0, 5).map((reservation) => (
             <div
               key={reservation._id}
-              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+              onClick={() => handleReservationClick(reservation._id)}
+              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
             >
               <div className="p-1.5 bg-green-500/10 rounded-full">
                 <Truck className="h-3 w-3 text-green-400" />
@@ -221,7 +228,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">
                   {reservation.client 
-                    ? `${reservation.client.firstName} ${reservation.client.lastName}`
+                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
                     : 'Unknown Customer'
                   }
                 </p>
@@ -280,7 +287,8 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                 {upcomingPickups.map((reservation) => (
                   <div
                     key={reservation._id}
-                    className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+                    onClick={() => handleReservationClick(reservation._id)}
+                    className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
                   >
                     <div className="p-1.5 bg-green-500/10 rounded-full">
                       <Truck className="h-3 w-3 text-green-400" />
@@ -289,7 +297,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">
                         {reservation.client 
-                          ? `${reservation.client.firstName} ${reservation.client.lastName}`
+                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
                           : 'Unknown Customer'
                         }
                       </p>

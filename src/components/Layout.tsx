@@ -71,8 +71,8 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
       <TopBar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
-      <main className="pt-16 lg:pt-0 lg:ml-56 transition-all duration-300">
-        <div className="py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <main className="pt-16 lg:pt-24 lg:ml-56 transition-all duration-300">
+        <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {children}
         </div>
       </main>

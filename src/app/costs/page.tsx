@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -28,9 +28,12 @@ import {
 } from '@/store/reducers/costSlice';
 import { canCreate, canEdit, canDelete } from '@/utils/permissions';
 import { formatCurrency } from '@/utils/currency';
+import DateFilter from '@/components/shared/DateFilter';
 
-export default function CostsPage() {
+// Component that uses useSearchParams
+function CostsContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { costs, costCategories, loading, pagination, filters } = useSelector(
     (state: RootState) => state.cost
@@ -38,30 +41,111 @@ export default function CostsPage() {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const currencySettings = useSelector((state: RootState) => state.settings);
 
-  const [showFilters, setShowFilters] = useState(false);
+  // Local state
   const [searchTerm, setSearchTerm] = useState(filters.search);
   const [selectedCategory, setSelectedCategory] = useState(filters.category);
   const [startDate, setStartDate] = useState(filters.startDate);
   const [endDate, setEndDate] = useState(filters.endDate);
+  const [isProcessingUrlParams, setIsProcessingUrlParams] = useState(false);
 
   // Permission checks
   const userCanCreate = canCreate(currentUser, 'costs');
   const userCanEdit = canEdit(currentUser, 'costs');
   const userCanDelete = canDelete(currentUser, 'costs');
 
+  // Read URL parameters on mount
   useEffect(() => {
-    fetchCosts();
+    const urlStartDate = searchParams.get('startDate');
+    const urlEndDate = searchParams.get('endDate');
+    
+    // Check if we have URL parameters to process
+    if (urlStartDate || urlEndDate) {
+      setIsProcessingUrlParams(true);
+    }
+    
+    let shouldFetch = false;
+    let newStartDate = startDate;
+    let newEndDate = endDate;
+    
+    if (urlStartDate && urlStartDate !== startDate) {
+      setStartDate(urlStartDate);
+      newStartDate = urlStartDate;
+      shouldFetch = true;
+    }
+    if (urlEndDate && urlEndDate !== endDate) {
+      setEndDate(urlEndDate);
+      newEndDate = urlEndDate;
+      shouldFetch = true;
+    }
+    
+    // Trigger fetch immediately if dates were set from URL
+    if (shouldFetch) {
+      const newFilters = {
+        search: searchTerm,
+        category: selectedCategory,
+        startDate: newStartDate,
+        endDate: newEndDate,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder
+      };
+      
+      dispatch(setFilters(newFilters));
+      fetchCosts(newFilters).finally(() => {
+        setIsProcessingUrlParams(false); // Clear the flag when done
+      });
+    } else {
+      setIsProcessingUrlParams(false); // Clear the flag if no URL params to process
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Always fetch cost categories on mount
     fetchCostCategories();
   }, []);
 
   useEffect(() => {
-    // Apply filters when they change
-    const timeoutId = setTimeout(() => {
-      handleApplyFilters();
-    }, 300);
+    // Only fetch costs on mount if we're not processing URL parameters
+    if (!isProcessingUrlParams) {
+      const urlStartDate = searchParams.get('startDate');
+      const urlEndDate = searchParams.get('endDate');
+      
+      // Only fetch if there are no URL parameters at all
+      if (!urlStartDate && !urlEndDate) {
+        fetchCosts();
+      }
+    }
+  }, [isProcessingUrlParams]);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, selectedCategory, startDate, endDate]);
+  // Handle date filter changes
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    
+    // Apply filters immediately with the new date values
+    const newFilters = {
+      search: searchTerm,
+      category: selectedCategory,
+      startDate: newStartDate,
+      endDate: newEndDate,
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder
+    };
+    
+    dispatch(setFilters(newFilters));
+    fetchCosts(newFilters);
+  };
+
+  useEffect(() => {
+    // Apply filters when search term or category changes (not dates - they use manual submit)
+    // Don't run if we're processing URL parameters to avoid overriding filtered data
+    if (!isProcessingUrlParams) {
+      const timeoutId = setTimeout(() => {
+        handleApplyFilters();
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchTerm, selectedCategory, isProcessingUrlParams]);
 
   const fetchCosts = async (customFilters?: Record<string, string>) => {
     try {
@@ -208,29 +292,13 @@ export default function CostsPage() {
               </div>
 
               {/* Date Range */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-                {/* Start Date */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                  />
-                </div>
-
-                {/* End Date */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                  />
-                </div>
-              </div>
+              <DateFilter
+                startDate={startDate}
+                endDate={endDate}
+                onDateChange={handleDateChange}
+                label="Date Range"
+                className="w-full sm:w-auto"
+              />
 
               {/* Clear Filters */}
               {(startDate || endDate || selectedCategory) && (
@@ -280,7 +348,7 @@ export default function CostsPage() {
         )}
 
         {/* Table */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden">
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 overflow-visible">
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -288,7 +356,7 @@ export default function CostsPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto overflow-y-visible">
                 <table className="w-full min-w-full">
                   <thead className="bg-white/5 border-b border-white/10">
                     <tr>
@@ -320,7 +388,7 @@ export default function CostsPage() {
                         onClick={() => router.push(`/costs/${cost._id}`)}
                       >
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {format(new Date(cost.date), 'MMM dd, yyyy')}
+                          {format(new Date(cost.date), 'dd/MM/yyyy')}
                         </td>
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           <div className="flex items-center gap-2">
@@ -470,5 +538,22 @@ export default function CostsPage() {
         </div>
       </div>
     </Layout>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function CostsPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="min-h-screen bg-gray-900 text-white">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <CostsContent />
+    </Suspense>
   );
 } 

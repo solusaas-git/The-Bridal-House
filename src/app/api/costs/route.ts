@@ -44,10 +44,14 @@ export async function GET(request: NextRequest) {
     if (startDate || endDate) {
       filter.date = {};
       if (startDate) {
-        (filter.date as Record<string, unknown>).$gte = new Date(startDate);
+        const startDateObj = new Date(startDate);
+        startDateObj.setHours(0, 0, 0, 0); // Start of day
+        (filter.date as Record<string, unknown>).$gte = startDateObj;
       }
       if (endDate) {
-        (filter.date as Record<string, unknown>).$lte = new Date(endDate);
+        const endDateObj = new Date(endDate);
+        endDateObj.setHours(23, 59, 59, 999); // End of day
+        (filter.date as Record<string, unknown>).$lte = endDateObj;
       }
     }
 
@@ -157,14 +161,11 @@ export async function POST(request: NextRequest) {
 
     // Handle file uploads
     const attachments = [];
-    console.log('Files to upload:', files.length);
     
     if (files && files.length > 0) {
       for (const file of files) {
         try {
-          console.log('Uploading file:', file.name, file.size, file.type);
           const uploadResult = await handleSingleFileUpload(file, 'uploads/costs');
-          console.log('Upload result:', uploadResult);
           attachments.push({
             name: file.name,
             url: uploadResult.url,
@@ -177,8 +178,6 @@ export async function POST(request: NextRequest) {
         }
       }
     }
-
-    console.log('Final attachments array:', attachments);
 
     // Create cost with minimal data first
     const costDataToSave: any = {
@@ -197,8 +196,6 @@ export async function POST(request: NextRequest) {
     if (costData.relatedProduct) {
       costDataToSave.relatedProduct = costData.relatedProduct;
     }
-
-    console.log('Cost data to save:', JSON.stringify(costDataToSave, null, 2));
 
     const cost = new Cost(costDataToSave);
     

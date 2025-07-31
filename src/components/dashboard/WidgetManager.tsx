@@ -26,7 +26,7 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-300 hover:text-white bg-white/10 border border-white/20 rounded-md hover:bg-white/20 transition-colors backdrop-blur-lg"
+        className="flex items-center justify-center gap-2 h-8 px-3 py-1 text-xs font-medium text-white bg-white/10 border border-white/20 rounded-md hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 backdrop-blur-lg w-full"
       >
         <Settings className="h-4 w-4" />
         Customize
@@ -41,7 +41,7 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
           />
           
           {/* Dropdown */}
-          <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-20">
+          <div className="absolute left-0 sm:right-0 sm:left-auto top-full mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-20">
             <div className="p-4">
               <h3 className="text-sm font-medium text-white mb-3">
                 Dashboard Widgets

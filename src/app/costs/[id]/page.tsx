@@ -483,16 +483,12 @@ export default function ViewCostPage() {
                     <div className="grid grid-cols-1 gap-4">
                       <div>
                         <p className="text-sm text-gray-400">Created</p>
-                        <p className="text-white text-sm">
-                          {format(new Date(cost.createdAt), 'MMM dd, yyyy HH:mm')}
-                        </p>
+                        <p className="text-gray-400 text-sm">Created: {format(new Date(cost.createdAt), 'dd/MM/yyyy HH:mm')}</p>
                       </div>
                       
                       <div>
                         <p className="text-sm text-gray-400">Last Updated</p>
-                        <p className="text-white text-sm">
-                          {format(new Date(cost.updatedAt), 'MMM dd, yyyy HH:mm')}
-                        </p>
+                        <p className="text-gray-400 text-sm">Updated: {format(new Date(cost.updatedAt), 'dd/MM/yyyy HH:mm')}</p>
                       </div>
 
                       <div>

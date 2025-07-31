@@ -307,92 +307,92 @@ export default function ProductsPage() {
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
-              {/* Category Filter */}
+            {/* Category Filter */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
-                <select
-                  value={filters.category}
-                  onChange={(e) => handleCategoryChange(e.target.value)}
+              <select
+                value={filters.category}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((category: any) => (
+                  <option key={category._id} value={category._id} className="bg-gray-800">
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subcategory Filter - Only show when category is selected */}
+            {filters.category !== 'all' && (
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Subcategory:</label>
+                <select
+                  value={filters.subCategory}
+                  onChange={(e) => setFilters(prev => ({ ...prev, subCategory: e.target.value }))}
+                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
                 >
-                  <option value="all">All Categories</option>
-                  {categories.map((category: any) => (
-                    <option key={category._id} value={category._id} className="bg-gray-800">
-                      {category.name}
+                  <option value="all">All Subcategories</option>
+                  {subCategories.map((subcat) => (
+                    <option key={subcat._id} value={subcat._id}>
+                      {subcat.name}
                     </option>
                   ))}
                 </select>
               </div>
+            )}
 
-              {/* Subcategory Filter - Only show when category is selected */}
-              {filters.category !== 'all' && (
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Subcategory:</label>
-                  <select
-                    value={filters.subCategory}
-                    onChange={(e) => setFilters(prev => ({ ...prev, subCategory: e.target.value }))}
-                    className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                  >
-                    <option value="all">All Subcategories</option>
-                    {subCategories.map((subcat) => (
-                      <option key={subcat._id} value={subcat._id}>
-                        {subcat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* View Mode Toggle */}
+            {/* View Mode Toggle */}
               <div className="flex items-center gap-1 bg-white/5 rounded-md p-1 w-full sm:w-auto">
-                <button
-                  onClick={() => setViewMode('grid')}
+              <button
+                onClick={() => setViewMode('grid')}
                   className={`p-2 rounded transition-colors flex-1 sm:flex-none ${
-                    viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <GridIcon className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('table')}
+                  viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <GridIcon className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
                   className={`p-2 rounded transition-colors flex-1 sm:flex-none ${
-                    viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <RowsIcon className="h-4 w-4" />
-                </button>
-              </div>
+                  viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <RowsIcon className="h-4 w-4" />
+              </button>
+            </div>
 
-              {/* Items Per Page */}
+            {/* Items Per Page */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Per page:</label>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value));
-                    setCurrentPage(1); // Reset to first page when changing page size
-                  }}
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1); // Reset to first page when changing page size
+                }}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-                >
-                  <option value="12" className="bg-gray-800">12</option>
-                  <option value="24" className="bg-gray-800">24</option>
-                  <option value="48" className="bg-gray-800">48</option>
-                  <option value="96" className="bg-gray-800">96</option>
-                </select>
-              </div>
+              >
+                <option value="12" className="bg-gray-800">12</option>
+                <option value="24" className="bg-gray-800">24</option>
+                <option value="48" className="bg-gray-800">48</option>
+                <option value="96" className="bg-gray-800">96</option>
+              </select>
+            </div>
 
-              {/* Column Visibility Toggle (only for table view) */}
-              {viewMode === 'table' && (
+            {/* Column Visibility Toggle (only for table view) */}
+            {viewMode === 'table' && (
                 <div className="relative w-full sm:w-auto">
-                  <button
-                    onClick={handleDropdownToggle}
+                <button
+                  onClick={handleDropdownToggle}
                     className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
-                  >
-                    <GearIcon className="h-4 w-4" />
+                >
+                  <GearIcon className="h-4 w-4" />
                     <span className="text-sm">Columns</span>
-                  </button>
-                </div>
-              )}
+                </button>
+              </div>
+            )}
             </div>
           </div>
         </div>
