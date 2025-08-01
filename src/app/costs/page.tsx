@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
+import Pagination from '@/components/ui/Pagination';
 import { RootState } from '@/store/store';
 import {
   setCosts,
@@ -148,13 +149,13 @@ function CostsContent() {
     }
   }, [searchTerm, selectedCategory, isProcessingUrlParams]);
 
-  const fetchCosts = async (customFilters?: Record<string, string>) => {
+  const fetchCosts = async (customFilters?: Record<string, string>, customPagination?: { page?: number; limit?: number }) => {
     try {
       dispatch(setLoading(true));
       
       const queryParams = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
+        page: (customPagination?.page ?? pagination.page).toString(),
+        limit: (customPagination?.limit ?? pagination.limit).toString(),
         search: customFilters?.search ?? filters.search,
         category: customFilters?.category ?? filters.category,
         startDate: customFilters?.startDate ?? filters.startDate,
@@ -204,7 +205,12 @@ function CostsContent() {
 
   const handlePageChange = (page: number) => {
     dispatch(setPagination({ ...pagination, page }));
-    fetchCosts();
+    fetchCosts(undefined, { page });
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    dispatch(setPagination({ ...pagination, limit: pageSize, page: 1 }));
+    fetchCosts(undefined, { limit: pageSize, page: 1 });
   };
 
   const getTotalCosts = () => {
@@ -483,54 +489,17 @@ function CostsContent() {
 
               {/* Pagination */}
               {pagination.pages > 1 && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-6 py-4 bg-white/5 border-t border-white/10 gap-4">
-                  <div className="text-xs sm:text-sm text-gray-300">
-                    Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                    {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                    {pagination.total} entries
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handlePageChange(pagination.page - 1)}
-                      disabled={pagination.page === 1}
-                      className="px-3 py-1 text-gray-300 hover:text-white border border-white/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Previous
-                    </button>
-                    
-                    {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
-                      const page = pagination.page <= 3 
-                        ? i + 1
-                        : pagination.page >= pagination.pages - 2
-                          ? pagination.pages - 4 + i
-                          : pagination.page - 2 + i;
-                      
-                      if (page < 1 || page > pagination.pages) return null;
-                      
-                      return (
-                        <button
-                          key={page}
-                          onClick={() => handlePageChange(page)}
-                          className={`px-3 py-1 border border-white/20 rounded transition-colors ${
-                            pagination.page === page
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'text-gray-300 hover:text-white hover:bg-white/10'
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      );
-                    })}
-                    
-                    <button
-                      onClick={() => handlePageChange(pagination.page + 1)}
-                      disabled={pagination.page === pagination.pages}
-                      className="px-3 py-1 text-gray-300 hover:text-white border border-white/20 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next
-                    </button>
-                  </div>
+                <div className="px-3 sm:px-6 py-4 bg-white/5 border-t border-white/10">
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.pages}
+                    pageSize={pagination.limit}
+                    totalCount={pagination.total}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                    showPageSizeSelector={true}
+                    pageSizeOptions={[10, 25, 50, 100]}
+                  />
                 </div>
               )}
             </>
