@@ -38,6 +38,7 @@ interface Reservation {
     rentalCost: number;
     category: string;
     primaryPhoto?: string;
+    size?: number;
   }>;
   pickupDate: string;
   returnDate: string;
@@ -457,7 +458,12 @@ export default function ViewReservationPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h5 className="font-medium text-white truncate">{item.name}</h5>
+                              <h5 className="font-medium text-white truncate">
+                                {item.name}
+                                {item.size && (
+                                  <span className="text-gray-400 ml-2">({item.size})</span>
+                                )}
+                              </h5>
                               <p className="text-sm text-gray-400">{item.category}</p>
                             </div>
                             <span className="text-sm font-medium text-white ml-4 flex-shrink-0">

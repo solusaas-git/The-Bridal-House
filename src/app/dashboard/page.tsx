@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
-import { subDays, addDays, addWeeks, addMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { subDays, addDays, addWeeks, addMonths, subMonths, subWeeks, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import axios from 'axios';
 import { setCustomers } from '@/store/reducers/customerSlice';
@@ -85,11 +85,26 @@ const PREDEFINED_RANGES: Record<string, DateRange> = {
       return date;
     })(),
   },
+  'Last Week': {
+    startDate: (() => {
+      const today = new Date();
+      const lastWeekStart = startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }); // Monday start
+      lastWeekStart.setHours(0, 0, 0, 0);
+      return lastWeekStart;
+    })(),
+    endDate: (() => {
+      const today = new Date();
+      const lastWeekEnd = endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }); // Sunday end
+      lastWeekEnd.setHours(23, 59, 59, 999);
+      return lastWeekEnd;
+    })(),
+  },
   'This Week': {
     startDate: (() => {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return today;
+      const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday start
+      thisWeekStart.setHours(0, 0, 0, 0);
+      return thisWeekStart;
     })(),
     endDate: (() => {
       const today = new Date();
@@ -112,9 +127,29 @@ const PREDEFINED_RANGES: Record<string, DateRange> = {
       return nextWeekEnd;
     })(),
   },
+  'Last Month': {
+    startDate: (() => {
+      const lastMonthStart = startOfMonth(subMonths(new Date(), 1));
+      lastMonthStart.setHours(0, 0, 0, 0);
+      return lastMonthStart;
+    })(),
+    endDate: (() => {
+      const lastMonthEnd = endOfMonth(subMonths(new Date(), 1));
+      lastMonthEnd.setHours(23, 59, 59, 999);
+      return lastMonthEnd;
+    })(),
+  },
   'This Month': {
-    startDate: subDays(new Date(), 30),
-    endDate: new Date(),
+    startDate: (() => {
+      const thisMonthStart = startOfMonth(new Date());
+      thisMonthStart.setHours(0, 0, 0, 0);
+      return thisMonthStart;
+    })(),
+    endDate: (() => {
+      const thisMonthEnd = endOfMonth(new Date());
+      thisMonthEnd.setHours(23, 59, 59, 999);
+      return thisMonthEnd;
+    })(),
   },
   'Next Month': {
     startDate: (() => {
@@ -127,10 +162,6 @@ const PREDEFINED_RANGES: Record<string, DateRange> = {
       nextMonthEnd.setHours(23, 59, 59, 999);
       return nextMonthEnd;
     })(),
-  },
-  'Last Month': {
-    startDate: subDays(new Date(), 60),
-    endDate: subDays(new Date(), 30),
   },
   'This Year': {
     startDate: subDays(new Date(), 365),

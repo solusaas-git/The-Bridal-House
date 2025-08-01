@@ -14,7 +14,7 @@ export async function GET(
     const params = await context.params;
     const reservation = await Reservation.findById(params.id)
       .populate('client', 'firstName lastName email phone weddingDate idNumber')
-      .populate('items', 'name rentalCost category primaryPhoto')
+      .populate('items', 'name rentalCost category primaryPhoto size')
       .populate('createdBy', 'name email');
 
     if (!reservation) {

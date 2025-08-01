@@ -358,7 +358,34 @@ export default function EditReservationPage() {
   };
 
   const calculateFinancials = () => {
-    const calculatedItemsTotal = selectedItems.reduce((sum, item) => sum + (item.rentalCost || 0), 0);
+    // Check if items have been changed from original reservation
+    const originalItemIds = reservation?.items?.map((item: any) => item._id).sort() || [];
+    const currentItemIds = selectedItems.map(item => item._id).sort();
+    const itemsChanged = JSON.stringify(originalItemIds) !== JSON.stringify(currentItemIds);
+
+    if (reservation && !itemsChanged) {
+      // Items haven't changed - use original DB financial data
+      return {
+        calculatedItemsTotal: reservation.itemsTotal || 0,
+        itemsTotal: reservation.itemsTotal || 0,
+        additionalCost: Number(formData.additionalCost) || reservation.additionalCost || 0,
+        subtotal: reservation.subtotal || 0,
+        securityDeposit: Number(formData.securityDepositAmount) || reservation.securityDepositAmount || 0,
+        advance: Number(formData.advanceAmount) || reservation.advanceAmount || 0,
+        total: reservation.total || 0,
+      };
+    }
+
+    // Items have changed - recalculate using only main category items (677ee9fdd52d692ac0ea6339)
+    const mainCategoryItems = selectedItems.filter(item => {
+      // Handle both populated and non-populated category references
+      const categoryId = typeof item.category === 'object' && item.category?._id 
+        ? item.category._id 
+        : item.category;
+      return categoryId === '677ee9fdd52d692ac0ea6339';
+    });
+    
+    const calculatedItemsTotal = mainCategoryItems.reduce((sum, item) => sum + (item.rentalCost || 0), 0);
     const itemsTotal = customItemsTotal ?? calculatedItemsTotal;
     const additionalCost = Number(formData.additionalCost) || 0;
     const subtotal = itemsTotal + additionalCost;
@@ -911,7 +938,12 @@ export default function EditReservationPage() {
                             )}
                           </div>
                           <div className="p-3">
-                            <h3 className="text-white font-medium text-sm truncate">{product.name}</h3>
+                            <h3 className="text-white font-medium text-sm truncate">
+                              {product.name}
+                              {product.size && (
+                                <span className="text-gray-400 ml-2">({product.size})</span>
+                              )}
+                            </h3>
                             <p className="text-xs text-gray-400 truncate">
                               {typeof product.category === 'object' && (product.category as any)?.name 
                                 ? (product.category as any).name 

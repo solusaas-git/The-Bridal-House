@@ -292,9 +292,16 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   const handleStatClick = (statTitle: string) => {
     if (!dateRange) return;
     
+    const formatDateForURL = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
     const dateRangeFormatted = {
-      startDate: dateRange.startDate.toISOString().split('T')[0],
-      endDate: dateRange.endDate.toISOString().split('T')[0],
+      startDate: formatDateForURL(dateRange.startDate),
+      endDate: formatDateForURL(dateRange.endDate),
     };
 
     if (statTitle === 'Total Payments' && onPaymentsClick) {

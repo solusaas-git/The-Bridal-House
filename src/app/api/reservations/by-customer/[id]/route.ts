@@ -23,7 +23,7 @@ export async function GET(
     // Fetch reservations for the specified customer
     const reservations = await Reservation.find({ client: customerId })
       .populate('client', 'firstName lastName email phone weddingDate idNumber')
-      .populate('items', 'name rentalCost category primaryPhoto')
+      .populate('items', 'name rentalCost category primaryPhoto size')
       .populate('createdBy', 'name email')
       .sort({ createdAt: -1 })
       .exec();

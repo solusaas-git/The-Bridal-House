@@ -371,7 +371,16 @@ export default function AddReservationPage() {
 
   // Calculate financial details
   const calculateFinancials = () => {
-    const calculatedItemsTotal = selectedItems.reduce(
+    // Only count items from the main category (677ee9fdd52d692ac0ea6339) in totals
+    const mainCategoryItems = selectedItems.filter(item => {
+      // Handle both populated and non-populated category references
+      const categoryId = typeof item.category === 'object' && item.category?._id 
+        ? item.category._id 
+        : item.category;
+      return categoryId === '677ee9fdd52d692ac0ea6339';
+    });
+    
+    const calculatedItemsTotal = mainCategoryItems.reduce(
       (sum, item) => sum + (item.rentalCost || 0),
       0
     );
@@ -902,7 +911,12 @@ export default function AddReservationPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
                                  <div className="p-4">
-                   <h3 className="text-white font-medium">{product.name}</h3>
+                   <h3 className="text-white font-medium">
+                     {product.name}
+                     {product.size && (
+                       <span className="text-gray-400 ml-2">({product.size})</span>
+                     )}
+                   </h3>
                    <p className="text-sm text-gray-400">
                      {typeof product.category === 'object' && (product.category as any)?.name 
                        ? (product.category as any).name 

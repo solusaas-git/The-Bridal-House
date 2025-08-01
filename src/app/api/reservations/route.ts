@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     // Get reservations with pagination
     let reservations = await Reservation.find(query)
       .populate('client', 'firstName lastName email phone weddingDate idNumber')
-      .populate('items', 'name rentalCost category primaryPhoto')
+      .populate('items', 'name rentalCost category primaryPhoto size')
       .populate('createdBy', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
              // For wedding date filtering, we need to count after population
        const allReservations = await Reservation.find(query)
          .populate('client', 'firstName lastName email phone weddingDate idNumber')
-         .populate('items', 'name rentalCost category primaryPhoto');
+         .populate('items', 'name rentalCost category primaryPhoto size');
       
       const filteredAll = allReservations.filter(reservation => {
         const client = reservation.client as any;
@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
     // Populate the saved reservation
     const reservationData = await Reservation.findById(savedReservation._id)
       .populate('client', 'firstName lastName email phone weddingDate')
-      .populate('items', 'name rentalCost category')
+      .populate('items', 'name rentalCost category size')
       .populate('createdBy', 'name email');
 
     return NextResponse.json({

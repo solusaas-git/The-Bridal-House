@@ -432,6 +432,9 @@ function ReservationsContent() {
           <div className="flex flex-col">
             <span className="text-white text-sm">
               {mainItem.name}
+              {mainItem.size && (
+                <span className="text-gray-400 ml-2">({mainItem.size})</span>
+              )}
             </span>
             {items.length > 1 && (
               <span className="text-gray-400 text-xs">
@@ -472,6 +475,9 @@ function ReservationsContent() {
         <div className="flex flex-col">
           <span className="text-white text-sm">
             {mainDress.name}
+            {mainDress.size && (
+              <span className="text-gray-400 ml-2">({mainDress.size})</span>
+            )}
           </span>
           {dressItems.length > 1 && (
             <span className="text-gray-400 text-xs">
