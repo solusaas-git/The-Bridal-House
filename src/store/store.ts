@@ -9,6 +9,7 @@ import customerReducer from './reducers/customerSlice';
 import itemReducer from './reducers/itemSlice';
 import reservationReducer from './reducers/reservationSlice';
 import paymentReducer from './reducers/paymentSlice';
+import languageReducer from './reducers/languageSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     item: itemReducer,
     reservation: reservationReducer,
     payment: paymentReducer,
+    language: languageReducer,
   },
 });
 

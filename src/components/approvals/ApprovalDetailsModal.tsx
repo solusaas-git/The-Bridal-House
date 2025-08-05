@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { toast } from 'react-toastify';
 import { XIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Approval {
   _id: string;
@@ -66,6 +67,8 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
   });
   const { currentUser } = useSelector((state: RootState) => state.auth);
   const userIsEmployee = currentUser?.role?.toLowerCase() === 'employee';
+  const { t } = useTranslation('approvals');
+  const { t: tCommon } = useTranslation('common');
 
   if (!isOpen || !approval) return null;
 
@@ -119,7 +122,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
   const formatValue = (value: any, fieldName?: string, originalData?: any): React.ReactNode => {
     if (value === null || value === undefined) {
-      return 'N/A';
+      return tCommon('notAvailable');
     }
 
     // Handle attachments specially
@@ -130,14 +133,14 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
     // Handle product images with thumbnails
     if (fieldName === 'primaryPhoto' && value) {
       if (value === 'New file uploaded') {
-        return <span className="text-green-400">New primary photo uploaded</span>;
+        return <span className="text-green-400">{t('modal.newPrimaryPhotoUploaded')}</span>;
       }
       return renderProductImageThumbnail(value, 'Primary Photo');
     }
 
     if (fieldName === 'secondaryImages' && value) {
       if (value === 'New files uploaded') {
-        return <span className="text-green-400">New secondary photos uploaded</span>;
+        return <span className="text-green-400">{t('modal.newSecondaryPhotosUploaded')}</span>;
       }
       if (Array.isArray(value)) {
         return (
@@ -154,7 +157,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
     if (fieldName === 'videoUrls' && value) {
       if (value === 'New files uploaded') {
-        return <span className="text-green-400">New videos uploaded</span>;
+        return <span className="text-green-400">{t('modal.newVideosUploaded')}</span>;
       }
       if (Array.isArray(value)) {
         return (
@@ -171,19 +174,19 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
     // Handle file indicators for products - show thumbnails for new uploads
     if (fieldName === 'hasNewPrimaryPhoto' && value === true) {
-      return <span className="text-green-400">New primary photo uploaded</span>;
+      return <span className="text-green-400">{t('modal.newPrimaryPhotoUploaded')}</span>;
     }
     if (fieldName === 'hasNewSecondaryPhotos' && value === true) {
-      return <span className="text-green-400">New secondary photos uploaded</span>;
+      return <span className="text-green-400">{t('modal.newSecondaryPhotosUploaded')}</span>;
     }
     if (fieldName === 'hasNewVideos' && value === true) {
-      return <span className="text-green-400">New videos uploaded</span>;
+      return <span className="text-green-400">{t('modal.newVideosUploaded')}</span>;
     }
 
     // Handle arrays
     if (Array.isArray(value)) {
       if (value.length === 0) {
-        return 'None';
+        return tCommon('none');
       }
       
       // For items array, use the special renderer
@@ -540,7 +543,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   }
                 }}
                 className="p-1 hover:bg-white/10 rounded transition-colors"
-                title={isImage ? "Preview Image" : "Preview Document"}
+                title={isImage ? t('modal.previewImage') : t('modal.previewDocument')}
                 disabled={!imageUrl}
               >
                 <Eye className="h-4 w-4 text-blue-400" />
@@ -572,14 +575,14 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
   const getActionDescription = (actionType: string, resourceType: string) => {
     const actionMap = {
-      edit: 'Edit',
-      delete: 'Delete',
+      edit: t('actionTypes.edit'),
+      delete: t('actionTypes.delete'),
     };
     const resourceMap = {
-      customer: 'Customer',
-      item: 'Product',
-      payment: 'Payment',
-      reservation: 'Reservation',
+      customer: t('resourceTypes.customer'),
+      item: t('resourceTypes.product'),
+      payment: t('resourceTypes.payment'),
+      reservation: t('resourceTypes.reservation'),
     };
     return `${actionMap[actionType as keyof typeof actionMap]} ${resourceMap[resourceType as keyof typeof resourceMap]}`;
   };
@@ -587,15 +590,15 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
   const getResourceDisplayName = (resourceType: string, originalData: any) => {
     switch (resourceType) {
       case 'customer':
-        return `${originalData?.firstName || ''} ${originalData?.lastName || ''}`.trim() || 'Unknown Customer';
+        return `${originalData?.firstName || ''} ${originalData?.lastName || ''}`.trim() || tCommon('unknownCustomer');
       case 'item':
-        return originalData?.name || 'Unknown Product';
+        return originalData?.name || tCommon('unknownProduct');
       case 'payment':
-        return `Payment #${originalData?.paymentNumber || originalData?._id || 'Unknown'}`;
+        return `${t('resourceTypes.payment')} #${originalData?.paymentNumber || originalData?._id || tCommon('unknown')}`;
       case 'reservation':
-        return `Reservation #${originalData?.reservationNumber || originalData?._id || 'Unknown'}`;
+        return `${t('resourceTypes.reservation')} #${originalData?.reservationNumber || originalData?._id || tCommon('unknown')}`;
       default:
-        return 'Unknown Resource';
+        return tCommon('unknownResource');
     }
   };
 
@@ -603,7 +606,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
     if (approval.actionType === 'delete') {
       return (
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Data to be deleted:</h3>
+          <h3 className="text-lg font-medium text-white">{t('modal.dataToBeDeleted')}</h3>
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 max-h-96 overflow-y-auto">
             <div className="space-y-3">
               {Object.entries(approval.originalData || {})
@@ -639,7 +642,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
       return (
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-white">
-            Proposed Changes ({changes.length} field{changes.length !== 1 ? 's' : ''}):
+            {t('modal.proposedChanges')} ({changes.length} {changes.length !== 1 ? tCommon('fields') : tCommon('field')}):
           </h3>
           
           {changes.length > 0 ? (
@@ -651,7 +654,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs text-gray-400 mb-2">Current Value:</div>
+                      <div className="text-xs text-gray-400 mb-2">{t('modal.currentValue')}</div>
                       <div className="bg-red-500/10 border border-red-500/20 rounded p-3 text-sm text-white min-h-[3rem] overflow-auto">
                         {change.field === 'items' 
                           ? renderItemsWithImages(change.from, originalData)
@@ -660,7 +663,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-400 mb-2">New Value:</div>
+                      <div className="text-xs text-gray-400 mb-2">{t('modal.newValue')}</div>
                       <div className="bg-green-500/10 border border-green-500/20 rounded p-3 text-sm text-white min-h-[3rem] overflow-auto">
                         {change.field === 'items' 
                           ? renderItemsWithImages(change.to, originalData)
@@ -674,7 +677,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
             </div>
           ) : (
             <div className="text-gray-400 text-center py-8 bg-white/5 rounded-lg">
-              No changes detected in the approval request
+              {t('modal.noChangesDetected')}
             </div>
           )}
         </div>
@@ -686,9 +689,9 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { color: 'bg-yellow-500/20 text-yellow-400', label: 'Pending' },
-      approved: { color: 'bg-green-500/20 text-green-400', label: 'Approved' },
-      rejected: { color: 'bg-red-500/20 text-red-400', label: 'Rejected' },
+      pending: { color: 'bg-yellow-500/20 text-yellow-400', label: t('statuses.pending') },
+      approved: { color: 'bg-green-500/20 text-green-400', label: t('statuses.approved') },
+      rejected: { color: 'bg-red-500/20 text-red-400', label: t('statuses.rejected') },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
@@ -705,7 +708,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
           <h2 className="text-lg sm:text-xl font-semibold text-white">
-            Approval Request Details
+            {t('modal.title')}
           </h2>
           <button
             onClick={onClose}
@@ -722,23 +725,23 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="text-xs sm:text-sm text-gray-400">Request Type</label>
+                  <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestType')}</label>
                   <div className="text-white font-medium text-sm sm:text-base">
                     {getActionDescription(approval.actionType, approval.resourceType)}
                   </div>
                 </div>
                 
                 <div>
-                  <label className="text-xs sm:text-sm text-gray-400">Requested By</label>
+                  <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestedBy')}</label>
                   <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                     <User className="h-3 w-3 sm:h-4 sm:w-4" />
-                    {approval.requestedBy?.name || 'Unknown User'}
+                    {approval.requestedBy?.name || t('modal.unknownUser')}
                     <span className="text-gray-400 text-xs sm:text-sm">({approval.requestedBy?.email})</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs sm:text-sm text-gray-400">Request Date</label>
+                  <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestDate')}</label>
                   <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                     {new Date(approval.createdAt).toLocaleString()}
@@ -746,7 +749,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs sm:text-sm text-gray-400">Status</label>
+                  <label className="text-xs sm:text-sm text-gray-400">{t('modal.status')}</label>
                   <div>{getStatusBadge(approval.status)}</div>
                 </div>
               </div>
@@ -755,14 +758,14 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                 {approval.reviewedBy && (
                   <>
                     <div>
-                      <label className="text-xs sm:text-sm text-gray-400">Reviewed By</label>
+                      <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewedBy')}</label>
                       <div className="text-white text-sm sm:text-base">
                         {approval.reviewedBy.name}
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs sm:text-sm text-gray-400">Review Date</label>
+                      <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewDate')}</label>
                       <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                         <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                         {new Date(approval.reviewedAt!).toLocaleString()}
@@ -771,7 +774,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
 
                     {approval.reviewComment && (
                       <div>
-                        <label className="text-xs sm:text-sm text-gray-400">Review Comment</label>
+                        <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewComment')}</label>
                         <div className="text-white bg-white/5 border border-white/10 rounded p-2 sm:p-3 text-sm">
                           {approval.reviewComment}
                         </div>
@@ -787,7 +790,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h3 className="text-base sm:text-lg font-medium text-white mb-2">
-                    Related Resource
+                    {t('modal.relatedResource')}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-400">
                     {getResourceDisplayName(approval.resourceType, approval.originalData)}
@@ -799,7 +802,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                 >
                   <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="text-sm">
-                    {approval.resourceType === 'customer' ? 'View Customer' : `View ${approval.resourceType}`}
+                    {approval.resourceType === 'customer' ? t('modal.viewCustomer') : t('modal.viewResource', { resourceType: approval.resourceType })}
                   </span>
                 </button>
               </div>
@@ -812,24 +815,24 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
             {showReviewForm && approval.status === 'pending' && (
               <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4">
                 <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                  {reviewAction === 'approve' ? 'Approve' : 'Reject'} Request
+                  {reviewAction === 'approve' ? t('modal.approveRequest') : t('modal.rejectRequest')}
                 </h3>
                 
                 <div className="space-y-3 sm:space-y-4">
                   <div>
                     <label className="block text-xs sm:text-sm text-gray-400 mb-2">
-                      Comment (optional)
+                      {t('modal.commentOptional')}
                     </label>
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder="Add a comment about your decision..."
+                      placeholder={t('modal.addCommentDecision')}
                       className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
                       rows={3}
                       maxLength={500}
                     />
                     <div className="text-xs text-gray-400 mt-1">
-                      {reviewComment.length}/500 characters
+                      {t('modal.charactersRemaining', { count: reviewComment.length })}
                     </div>
                   </div>
                   
@@ -843,14 +846,14 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                           : 'bg-red-600 hover:bg-red-700 text-white'
                       }`}
                     >
-                      {reviewingId === approval._id ? 'Processing...' : 
-                       reviewAction === 'approve' ? 'Approve' : 'Reject'}
+                      {reviewingId === approval._id ? t('modal.processing') : 
+                       reviewAction === 'approve' ? t('modal.approve') : t('modal.reject')}
                     </button>
                     <button
                       onClick={() => setShowReviewForm(false)}
                       className="px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors text-sm"
                     >
-                      Cancel
+                      {t('modal.cancel')}
                     </button>
                   </div>
                 </div>
@@ -867,14 +870,14 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
               className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <X className="h-3 w-3 sm:h-4 sm:w-4" />
-              Reject
+              {t('modal.reject')}
             </button>
             <button
               onClick={() => startReview('approve')}
               className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <Check className="h-3 w-3 sm:h-4 sm:w-4" />
-              Approve
+              {t('modal.approve')}
             </button>
           </div>
         )}
@@ -942,13 +945,13 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   <div className="text-center">
                     <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <p className="text-white text-lg mb-4">{imagePopup.alt}</p>
-                    <p className="text-gray-400 mb-4">Document preview not available</p>
+                    <p className="text-gray-400 mb-4">{t('modal.documentPreviewNotAvailable')}</p>
                     <button
                       onClick={() => window.open(imagePopup.src, '_blank')}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 mx-auto"
                     >
                       <ExternalLink className="h-4 w-4" />
-                      Open Document
+                      {t('modal.openDocument')}
                     </button>
                   </div>
                 </div>

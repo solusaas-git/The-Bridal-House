@@ -1,0 +1,83 @@
+{
+  "title": "Dashboard",
+  "subtitle": "Overview of your business operations",
+  "welcome": "Welcome back! Here's what's happening with your business today.",
+  "loadingData": "Loading dashboard data...",
+  "dateRanges": {
+    "today": "Today",
+    "lastWeek": "Last Week",
+    "thisWeek": "This Week", 
+    "nextWeek": "Next Week",
+    "lastMonth": "Last Month",
+    "thisMonth": "This Month",
+    "nextMonth": "Next Month",
+    "thisYear": "This Year",
+    "custom": "Custom"
+  },
+  "widgets": {
+    "pickups": {
+      "title": "Upcoming Pickups",
+      "noPickups": "No pickups scheduled for this period",
+      "unknownCustomer": "Unknown Customer",
+      "items": "item(s)",
+      "viewAll": "View all {{count}} pickups",
+      "customRangeActive": "Custom Range Active",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "to": "to"
+    },
+    "returns": {
+      "title": "Upcoming Returns",
+      "noReturns": "No returns scheduled for this period",
+      "unknownCustomer": "Unknown Customer",
+      "items": "item(s)",
+      "viewAll": "View all {{count}} returns",
+      "customRangeActive": "Custom Range Active",
+      "startDate": "Start Date", 
+      "endDate": "End Date",
+      "to": "to"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "addCustomer": {
+        "name": "Add Customer",
+        "description": "Create a new customer profile"
+      },
+      "addProduct": {
+        "name": "Add Product", 
+        "description": "Add new product to inventory"
+      },
+      "newReservation": {
+        "name": "New Reservation",
+        "description": "Create a new booking"
+      },
+      "recordPayment": {
+        "name": "Record Payment",
+        "description": "Add payment record"
+      }
+    },
+    "stats": {
+      "totalCustomers": "Total Customers",
+      "publishedProducts": "Published Products",
+      "activeReservations": "Active Reservations",
+      "totalPayments": "Total Payments",
+      "totalCosts": "Total Costs",
+      "margin": "Margin",
+      "upcomingPayments": "Upcoming Payments"
+    },
+    "systemHealth": {
+      "title": "System Health",
+      "customersWithoutEmail": "Customers without email",
+      "customersWithoutPhone": "Customers without phone",
+      "draftProducts": "Draft products",
+      "pendingReservations": "Pending reservations",
+      "lowValuePayments": "Low value payments"
+    },
+    "widgetManager": {
+      "title": "Manage Widgets",
+      "show": "Show",
+      "hide": "Hide",
+      "customize": "Customize"
+    }
+  }
+}

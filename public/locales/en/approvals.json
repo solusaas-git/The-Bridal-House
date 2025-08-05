@@ -1,0 +1,131 @@
+{
+  "title": "Approvals",
+  "subtitle": "Manage pending approval requests",
+  "myRequestsTitle": "My Approval Requests",
+  "myRequestsSubtitle": "View your submitted approval requests",
+  "search": {
+    "placeholder": "Search approvals...",
+    "filters": "Filters",
+    "actionType": "Action Type",
+    "resourceType": "Resource Type",
+    "status": "Status",
+    "requestedBy": "Requested By",
+    "allActionTypes": "All Action Types",
+    "allResourceTypes": "All Resource Types",
+    "allStatuses": "All Statuses",
+    "allUsers": "All Users"
+  },
+  "table": {
+    "resource": "Resource",
+    "requestedBy": "Requested By",
+    "actionType": "Action Type",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions"
+  },
+  "actionTypes": {
+    "create": "Create",
+    "edit": "Edit", 
+    "delete": "Delete"
+  },
+  "resourceTypes": {
+    "customer": "Customer",
+    "item": "Item",
+    "product": "Product",
+    "payment": "Payment",
+    "reservation": "Reservation",
+    "cost": "Cost"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "actions": {
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject",
+    "viewDetails": "View Details"
+  },
+  "badges": {
+    "pending": "Pending",
+    "approved": "Approved", 
+    "rejected": "Rejected"
+  },
+  "summary": {
+    "showingApprovals": "Showing {{count}} of {{total}} approvals",
+    "noApprovals": "No approvals found",
+    "emptyState": "No pending approvals at this time"
+  },
+  "messages": {
+    "loading": "Loading approvals...",
+    "loadFailed": "Failed to load approvals",
+    "approveSuccess": "Request approved successfully",
+    "approveFailed": "Failed to approve request",
+    "rejectSuccess": "Request rejected successfully",
+    "rejectFailed": "Failed to reject request",
+    "deleteSuccess": "Approval deleted successfully",
+    "deleteFailed": "Failed to delete approval",
+    "confirmDelete": "Are you sure you want to delete this approval request? This action cannot be undone."
+  },
+  "modal": {
+    "title": "Approval Details",
+    "requestInfo": "Request Information",
+    "resourceInfo": "Resource Information",
+    "changes": "Changes",
+    "originalData": "Original Data",
+    "newData": "New Data",
+    "reason": "Reason",
+    "status": "Status",
+    "requestedBy": "Requested By",
+    "requestedAt": "Requested At",
+    "reviewedBy": "Reviewed By",
+    "reviewedAt": "Reviewed At",
+    "reviewComment": "Review Comment",
+    "close": "Close",
+    "approve": "Approve",
+    "reject": "Reject",
+    "addComment": "Add Comment",
+    "commentPlaceholder": "Add a comment about this review...",
+    "newPrimaryPhotoUploaded": "New primary photo uploaded",
+    "newSecondaryPhotosUploaded": "New secondary photos uploaded", 
+    "newVideosUploaded": "New videos uploaded",
+    "dataToBeDeleted": "Data to be deleted:",
+    "proposedChanges": "Proposed Changes",
+    "currentValue": "Current Value:",
+    "newValue": "New Value:",
+    "noChangesDetected": "No changes detected in the approval request",
+    "requestType": "Request Type",
+    "requestDate": "Request Date",
+    "reviewDate": "Review Date",
+    "allUpcomingApprovals": "All Upcoming Approvals",
+    "relatedResource": "Related Resource",
+    "viewCustomer": "View Customer",
+    "viewResource": "View {{resourceType}}",
+    "approveRequest": "Approve Request",
+    "rejectRequest": "Reject Request",
+    "commentOptional": "Comment (optional)",
+    "addCommentDecision": "Add a comment about your decision...",
+    "charactersRemaining": "{{count}}/500 characters",
+    "processing": "Processing...",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel": "Cancel",
+    "unknownUser": "Unknown User",
+    "previewImage": "Preview Image",
+    "previewDocument": "Preview Document",
+    "documentPreviewNotAvailable": "Document preview not available",
+    "openDocument": "Open Document"
+  },
+  "handler": {
+    "requestSubmittedSuccess": "Approval request submitted successfully. Changes will be applied once approved."
+  },
+  "requestModal": {
+    "title": "Request Approval",
+    "description": "You are requesting permission to {{action}} the {{resourceType}}: {{resourceName}}",
+    "reviewNote": "An admin will review your request and you'll be notified of the decision.",
+    "cancel": "Cancel",
+    "submitRequest": "Submit Request",
+    "submitting": "Submitting..."
+  }
+}

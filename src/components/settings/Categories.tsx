@@ -7,6 +7,7 @@ import { RootState } from "@/store/store";
 import { setCategories, addCategory, removeCategory, updateCategory } from "@/store/reducers/categorySlice";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTranslation } from 'react-i18next';
 
 interface Category {
   _id: string;
@@ -18,6 +19,8 @@ interface Category {
 const Categories = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.category.categories);
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -41,7 +44,7 @@ const Categories = () => {
       dispatch(setCategories(response.data));
     } catch (error) {
       console.error('Error fetching categories:', error);
-      toast.error('Failed to load categories');
+      toast.error(t('sections.categories.errorLoading'));
     }
   }, [dispatch]);
 
@@ -59,10 +62,10 @@ const Categories = () => {
       dispatch(addCategory(response.data));
       setShowAddModal(false);
       setFormData({ name: '', description: '' });
-      toast.success('Category added successfully');
+      toast.success(t('sections.categories.categoryAdded'));
     } catch (error) {
       console.error('Error adding category:', error);
-      toast.error('Failed to add category');
+      toast.error(t('sections.categories.errorAdding'));
     } finally {
       setLoading(false);
     }
@@ -78,10 +81,10 @@ const Categories = () => {
       setShowEditModal(false);
       setEditingCategory(null);
       setFormData({ name: '', description: '' });
-      toast.success('Category updated successfully');
+      toast.success(t('sections.categories.categoryUpdated'));
     } catch (error) {
       console.error('Error updating category:', error);
-      toast.error('Failed to update category');
+      toast.error(t('sections.categories.errorUpdating'));
     } finally {
       setLoading(false);
     }
@@ -100,10 +103,10 @@ const Categories = () => {
       setShowAddModal(false);
       setSelectedCategory(null);
       setFormData({ name: '', description: '' });
-      toast.success('Subcategory added successfully');
+      toast.success(t('sections.categories.subcategoryAdded'));
     } catch (error) {
       console.error('Error adding subcategory:', error);
-      toast.error('Failed to add subcategory');
+      toast.error(t('sections.categories.errorAddingSubcategory'));
     } finally {
       setLoading(false);
     }
@@ -122,10 +125,10 @@ const Categories = () => {
       setShowEditModal(false);
       setEditingSubcategory(null);
       setFormData({ name: '', description: '' });
-      toast.success('Subcategory updated successfully');
+      toast.success(t('sections.categories.subcategoryUpdated'));
     } catch (error) {
       console.error('Error updating subcategory:', error);
-      toast.error('Failed to update subcategory');
+      toast.error(t('sections.categories.errorUpdatingSubcategory'));
     } finally {
       setLoading(false);
     }
@@ -160,17 +163,17 @@ const Categories = () => {
       if (itemToDelete.type === "category") {
         await axios.delete(`/api/categories/${itemToDelete.id}`);
                  dispatch(removeCategory(itemToDelete.id));
-        toast.success('Category deleted successfully');
+        toast.success(t('sections.categories.categoryDeleted'));
       } else {
         const response = await axios.delete(
           `/api/categories/${itemToDelete.id}/subcategories/${itemToDelete.name}`
         );
         dispatch(updateCategory(response.data));
-        toast.success('Subcategory deleted successfully');
+        toast.success(t('sections.categories.subcategoryDeleted'));
       }
     } catch (error) {
       console.error('Error deleting:', error);
-      toast.error('Failed to delete');
+      toast.error(t('sections.categories.errorDeleting'));
     } finally {
       setLoading(false);
       setShowDeleteModal(false);
@@ -208,13 +211,13 @@ const Categories = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-white">Categories</h2>
+        <h2 className="text-xl font-semibold text-white">{t('sections.categories.title')}</h2>
         <button
           onClick={() => openAddModal()}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Add Category
+          {t('sections.categories.addCategory')}
         </button>
       </div>
 
@@ -280,7 +283,7 @@ const Categories = () => {
                 onClick={() => openAddModal(category._id)}
                 className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-full text-sm text-white/60 hover:text-white transition-colors"
               >
-                + Add Subcategory
+                + {t('sections.categories.addSubcategory')}
               </button>
             </div>
           </div>
@@ -295,11 +298,11 @@ const Categories = () => {
               <h3 className="text-lg font-semibold text-white">
                 {showAddModal 
                   ? selectedCategory 
-                    ? "Add Subcategory" 
-                    : "Add Category"
+                    ? t('sections.categories.addSubcategory')
+                    : t('sections.categories.addCategory')
                   : editingSubcategory 
-                    ? "Edit Subcategory" 
-                    : "Edit Category"
+                    ? t('sections.categories.editSubcategory')
+                    : t('sections.categories.editCategory')
                 }
               </h3>
               <button
@@ -317,14 +320,14 @@ const Categories = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Name *
+                  {t('sections.categories.name')} *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter name"
+                  placeholder={t('sections.categories.enterName')}
                   required
                 />
               </div>
@@ -332,13 +335,13 @@ const Categories = () => {
               {!selectedCategory && !editingSubcategory && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Description
+                    {t('sections.categories.description')}
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    placeholder="Enter description"
+                    placeholder={t('sections.categories.enterDescription')}
                     rows={3}
                   />
                 </div>
@@ -353,7 +356,7 @@ const Categories = () => {
                   }}
                   className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-md text-white text-sm font-medium transition-colors"
                 >
-                  Cancel
+                  {tCommon('cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -366,7 +369,7 @@ const Categories = () => {
                   disabled={loading || !formData.name.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md text-white text-sm font-medium transition-colors"
                 >
-                  {loading ? 'Saving...' : 'Save'}
+                  {loading ? tCommon('saving') : tCommon('save')}
                 </button>
               </div>
             </div>
@@ -379,7 +382,7 @@ const Categories = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-white">Confirm Delete</h3>
+              <h3 className="text-lg font-semibold text-white">{t('sections.categories.confirmDelete')}</h3>
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
@@ -393,10 +396,13 @@ const Categories = () => {
 
             <div className="space-y-4">
               <p className="text-gray-300">
-                Are you sure you want to delete {itemToDelete?.type} "{itemToDelete?.name}"
-                {itemToDelete?.parentName && ` from ${itemToDelete.parentName}`}?
+                {t('sections.categories.deleteConfirmMessage', { 
+                  type: itemToDelete?.type, 
+                  name: itemToDelete?.name,
+                  parentName: itemToDelete?.parentName 
+                })}
               </p>
-              <p className="text-sm text-red-400">This action cannot be undone.</p>
+              <p className="text-sm text-red-400">{t('sections.categories.cannotBeUndone')}</p>
 
               <div className="flex gap-3 pt-4">
                 <button
@@ -406,14 +412,14 @@ const Categories = () => {
                   }}
                   className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-md text-white text-sm font-medium transition-colors"
                 >
-                  Cancel
+                  {tCommon('cancel')}
                 </button>
                 <button
                   onClick={handleConfirmDelete}
                   disabled={loading}
                   className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md text-white text-sm font-medium transition-colors"
                 >
-                  {loading ? 'Deleting...' : 'Delete'}
+                  {loading ? t('sections.categories.deleting') : tCommon('delete')}
                 </button>
               </div>
             </div>

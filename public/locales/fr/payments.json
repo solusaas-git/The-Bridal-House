@@ -1,0 +1,268 @@
+{
+  "title": "Paiements",
+  "subtitle": "Gérer les paiements clients et les transactions",
+  "addPayment": "Ajouter un Paiement",
+  "searchPlaceholder": "Rechercher des paiements, clients, références...",
+  "dateFilter": "Filtre de Date",
+  "columns": {
+    "columns": "Colonnes",
+    "showHideColumns": "Afficher/Masquer les Colonnes",
+    "saving": "Enregistrement...",
+    "id": "ID",
+    "paymentDate": "Date de Paiement",
+    "customer": "Client",
+    "reservation": "Réservation",
+    "amount": "Montant",
+    "paymentMethod": "Méthode de Paiement",
+    "paymentType": "Type de Paiement",
+    "reference": "Référence",
+    "note": "Note",
+    "attachments": "Pièces Jointes",
+    "createdBy": "Créé par",
+    "actions": "Actions"
+  },
+  "table": {
+    "noPayments": "Aucun paiement trouvé",
+    "adjustCriteria": "Essayez d'ajuster vos critères de recherche",
+    "loadingPayments": "Chargement des paiements..."
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "retry": "Réessayer"
+  },
+  "messages": {
+    "loadFailed": "Échec de la récupération des paiements",
+    "deleteSuccess": "Paiement supprimé avec succès",
+    "deleteFailed": "Échec de la suppression du paiement",
+    "errorLoading": "Erreur lors du chargement des paiements",
+    "columnPreferencesSaved": "Préférences de colonnes enregistrées avec succès",
+    "columnPreferencesFailed": "Échec de l'enregistrement des préférences de colonnes"
+  },
+  "paymentMethods": {
+    "cash": "Espèces",
+    "bankTransfer": "Virement Bancaire",
+    "creditCard": "Carte de Crédit",
+    "check": "Chèque"
+  },
+  "paymentTypes": {
+    "advance": "Avance",
+    "security": "Dépôt de Garantie",
+    "final": "Paiement Final",
+    "refund": "Remboursement",
+    "other": "Autre"
+  },
+  "details": {
+    "title": "Détails du Paiement",
+    "backToPayments": "Retour aux Paiements",
+    "paymentNumber": "Paiement n°",
+    "unknownCustomer": "Client Inconnu",
+    "loadingPayment": "Chargement des données de paiement...",
+    "paymentNotFound": "Paiement non trouvé",
+    "tabs": {
+      "details": "Détails",
+      "attachments": "Pièces Jointes"
+    },
+    "header": {
+      "amount": "Montant",
+      "method": "Méthode",
+      "type": "Type",
+      "editPayment": "Modifier le Paiement",
+      "deletePayment": "Supprimer le Paiement"
+    },
+    "info": {
+      "paymentInfo": "Informations de Paiement",
+      "paymentDate": "Date de Paiement",
+      "paymentMethod": "Méthode de Paiement",
+      "paymentType": "Type de Paiement",
+      "amount": "Montant",
+      "reference": "Référence",
+      "note": "Note",
+      "createdAt": "Créé le",
+      "lastUpdated": "Dernière Mise à Jour"
+    },
+    "customer": {
+      "customerInfo": "Informations Client",
+      "name": "Nom",
+      "phone": "Téléphone",
+      "email": "Email"
+    },
+    "reservation": {
+      "reservationInfo": "Réservation Associée",
+      "reservationNumber": "Réservation n°",
+      "eventDate": "Date de l'Événement",
+      "eventTime": "Heure de l'Événement",
+      "eventLocation": "Lieu de l'Événement",
+      "total": "Total",
+      "paid": "Payé",
+      "remaining": "Restant",
+      "pickupDate": "Date de Retrait",
+      "returnDate": "Date de Retour",
+      "viewReservation": "Voir la Réservation"
+    },
+    "attachments": {
+      "title": "Pièces Jointes",
+      "noAttachments": "Aucune pièce jointe trouvée",
+      "cannotAccess": "Pièces jointes trouvées mais inaccessibles",
+      "incompleteData": "pièce(s) jointe(s) existent mais ont des données d'URL incomplètes",
+      "fileReference": "Référence de fichier existante mais URL manquante",
+      "images": "Images",
+      "documents": "Documents",
+      "downloadFile": "Télécharger le Fichier",
+      "previewNotAvailable": "Aperçu non disponible pour ce type de fichier",
+      "viewFile": "Voir le Fichier",
+      "downloadError": "Échec du téléchargement du fichier",
+      "imageLoadError": "Échec du chargement de l'image"
+    },
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce paiement ? Cette action ne peut pas être annulée.",
+    "messages": {
+      "deleteSuccess": "Paiement supprimé avec succès",
+      "deleteFailed": "Échec de la suppression du paiement",
+      "loadFailed": "Échec du chargement des détails du paiement"
+    }
+  },
+  "edit": {
+    "title": "Modifier le Paiement",
+    "subtitle": "Mettre à jour les informations de paiement",
+    "backToPayment": "Retour au Paiement",
+    "loading": "Chargement des détails du paiement...",
+    "loadingPayment": "Chargement des données de paiement...",
+    "paymentNotFound": "Paiement non trouvé",
+    "form": {
+      "paymentInfo": "Informations de Paiement",
+      "customerInfo": "Informations Client",
+      "reservationInfo": "Informations de Réservation",
+      "customer": "Client",
+      "customerSearchPlaceholder": "Rechercher des clients par nom, téléphone ou email...",
+      "searching": "Recherche...",
+      "noCustomersFound": "Aucun client trouvé",
+      "reservation": "Réservation",
+      "dateNotSet": "Date non définie",
+      "type": "Type",
+      "wedding": "Mariage",
+      "amount": "Montant",
+      "amountRequired": "Le montant est requis",
+      "paymentMethod": "Méthode de Paiement",
+      "paymentDate": "Date de Paiement",
+      "paymentTime": "Heure de Paiement",
+      "paymentType": "Type de Paiement",
+      "reference": "Référence",
+      "referencePlaceholder": "Référence de paiement ou ID de transaction",
+      "notes": "Notes",
+      "notesPlaceholder": "Notes supplémentaires sur ce paiement",
+      "attachments": "Pièces Jointes",
+      "cancel": "Annuler",
+      "update": "Mettre à Jour le Paiement",
+      "updatePayment": "Mettre à Jour le Paiement",
+      "updating": "Mise à jour...",
+      "paymentMethods": {
+        "cash": "Espèces",
+        "bankTransfer": "Virement Bancaire",
+        "creditCard": "Carte de Crédit",
+        "check": "Chèque"
+      },
+      "paymentTypes": {
+        "advance": "Avance",
+        "security": "Sécurité",
+        "final": "Final",
+        "other": "Autre"
+      }
+    },
+    "reservation": {
+      "noReservation": "Aucune réservation associée",
+      "selectReservation": "Sélectionner une Réservation",
+      "reservationDetails": "Détails de la Réservation",
+      "eventDate": "Date de l'Événement",
+      "pickupDate": "Date de Retrait",
+      "total": "Total",
+      "paid": "Payé",
+      "remaining": "Restant",
+      "loading": "Chargement...",
+      "itemsCount": "{{count}} articles",
+      "noReservationsFound": "Aucune réservation trouvée pour ce client.",
+      "selectCustomerFirst": "Veuillez d'abord sélectionner un client pour voir ses réservations.",
+      "paymentStatus": {
+        "paid": "Payé",
+        "partial": "Partiel",
+        "unpaid": "Non Payé",
+        "refunded": "Remboursé"
+      }
+    },
+    "messages": {
+      "updateSuccess": "Paiement mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du paiement",
+      "loadError": "Erreur lors du chargement des données de paiement",
+      "validationError": "Veuillez remplir tous les champs obligatoires"
+    }
+  },
+  "add": {
+    "title": "Ajouter un Paiement",
+    "subtitle": "Créer un nouvel enregistrement de paiement",
+    "backToPayments": "Retour aux Paiements",
+    "form": {
+      "customer": "Client",
+      "customerSearchPlaceholder": "Rechercher des clients par nom, téléphone ou email...",
+      "searching": "Recherche...",
+      "noCustomersFound": "Aucun client trouvé",
+      "reservation": "Réservation",
+      "dateNotSet": "Date non définie",
+      "type": "Type",
+      "wedding": "Mariage",
+      "paymentMethods": {
+        "cash": "Espèces",
+        "bankTransfer": "Virement Bancaire",
+        "creditCard": "Carte de Crédit",
+        "check": "Chèque"
+      },
+      "paymentTypes": {
+        "advance": "Avance",
+        "security": "Sécurité",
+        "final": "Final",
+        "other": "Autre"
+      },
+      "customerInfo": "Informations Client",
+      "selectCustomer": "Sélectionner un Client",
+      "noCustomerSelected": "Aucun client sélectionné",
+      "reservationInfo": "Informations de Réservation",
+      "selectReservation": "Sélectionner une Réservation (Optionnel)",
+      "noReservation": "Aucune réservation sélectionnée",
+      "paymentInfo": "Informations de Paiement",
+      "amountRequired": "Le montant est requis",
+      "paymentTime": "Heure de Paiement",
+      "paymentMethod": "Méthode de Paiement",
+      "paymentType": "Type de Paiement",
+      "reference": "Référence",
+      "referencePlaceholder": "Référence de paiement ou ID de transaction",
+      "notes": "Notes",
+      "notesPlaceholder": "Notes de paiement supplémentaires...",
+      "attachments": "Pièces Jointes",
+      "cancel": "Annuler",
+      "createPayment": "Créer le Paiement",
+      "creating": "Création..."
+    },
+    "customer": {
+      "loadingCustomers": "Chargement des clients...",
+      "noCustomersFound": "Aucun client trouvé",
+      "searchMinLength": "Tapez au moins 2 caractères pour rechercher"
+    },
+    "reservation": {
+      "loadingReservations": "Chargement des réservations...",
+      "noReservationsFound": "Aucune réservation trouvée pour ce client",
+      "selectCustomerFirst": "Veuillez d'abord sélectionner un client pour voir ses réservations",
+      "eventDate": "Date de l'Événement",
+      "pickupDate": "Date de Retrait",
+      "total": "Total",
+      "paid": "Payé",
+      "remaining": "Restant",
+      "loading": "Chargement...",
+      "itemsCount": "{{count}} articles"
+    },
+    "messages": {
+      "createSuccess": "Paiement créé avec succès",
+      "createError": "Échec de la création du paiement",
+      "validationError": "Veuillez remplir tous les champs obligatoires",
+      "customerRequired": "Veuillez sélectionner un client"
+    }
+  }
+}

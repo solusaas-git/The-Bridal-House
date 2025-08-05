@@ -22,6 +22,7 @@ import {
 import Layout from '@/components/Layout';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 // Types
 interface Customer {
@@ -72,6 +73,8 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
   onDelete: () => Promise<void>; 
   currencySettings: any;
 }) => {
+  const { t } = useTranslation('payments');
+  const { t: tCommon } = useTranslation('common');
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
       <div className="flex items-start justify-between">
@@ -81,26 +84,26 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
               <span className="text-white font-bold text-lg">P</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Payment #{payment._id.slice(-6).toUpperCase()}</h1>
+              <h1 className="text-2xl font-bold text-white">{t('details.paymentNumber')}{payment._id.slice(-6).toUpperCase()}</h1>
               <p className="text-gray-300">
-                {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : 'Unknown Customer'}
+                {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : t('details.unknownCustomer')}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-1">Amount</h3>
+              <h3 className="text-sm font-medium text-gray-400 mb-1">{t('details.header.amount')}</h3>
               <p className="text-xl font-semibold text-white">
-                {payment.amount ? formatCurrency(payment.amount, currencySettings) : 'N/A'}
+                {payment.amount ? formatCurrency(payment.amount, currencySettings) : tCommon('notAvailable')}
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-1">Method</h3>
-              <p className="text-lg text-white capitalize">{payment.paymentMethod || 'N/A'}</p>
+              <h3 className="text-sm font-medium text-gray-400 mb-1">{t('details.header.method')}</h3>
+              <p className="text-lg text-white capitalize">{payment.paymentMethod || tCommon('notAvailable')}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-1">Status</h3>
+              <h3 className="text-sm font-medium text-gray-400 mb-1">{t('details.header.type')}</h3>
               <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
                 payment.paymentType === 'Final' ? 'bg-green-100 text-green-800' :
                 payment.paymentType === 'Advance' ? 'bg-yellow-100 text-yellow-800' :
@@ -119,7 +122,7 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             <Pencil1Icon className="h-4 w-4 mr-2" />
-            Edit
+            {t('details.header.editPayment')}
           </button>
           <ApprovalHandler
             actionType="delete"
@@ -137,7 +140,7 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
               className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
             >
               <TrashIcon className="h-4 w-4 mr-2" />
-              Delete
+              {t('details.header.deletePayment')}
             </button>
           </ApprovalHandler>
         </div>
@@ -175,87 +178,92 @@ const PaymentTabs = ({
 }: { 
   activeTab: string; 
   onTabChange: (tab: string) => void; 
-}) => (
-  <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-    <div className="flex space-x-2">
-      <TabButton active={activeTab === 'details'} onClick={() => onTabChange('details')}>
-        Details
-      </TabButton>
-      <TabButton active={activeTab === 'attachments'} onClick={() => onTabChange('attachments')}>
-        Attachments
-      </TabButton>
+}) => {
+  const { t } = useTranslation('payments');
+  return (
+    <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
+      <div className="flex space-x-2">
+        <TabButton active={activeTab === 'details'} onClick={() => onTabChange('details')}>
+          {t('details.tabs.details')}
+        </TabButton>
+        <TabButton active={activeTab === 'attachments'} onClick={() => onTabChange('attachments')}>
+          {t('details.tabs.attachments')}
+        </TabButton>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Payment Details Component
 const PaymentDetails = ({ payment }: { payment: Payment }) => {
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('payments');
+  const { t: tCommon } = useTranslation('common');
   
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
-      <h3 className="text-lg font-semibold text-white mb-6">Payment Details</h3>
+      <h3 className="text-lg font-semibold text-white mb-6">{t('details.info.paymentInfo')}</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-400">Customer</label>
+            <label className="text-sm font-medium text-gray-400">{t('details.customer.name')}</label>
             <p className="text-white mt-1">
-              {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : 'N/A'}
+              {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : tCommon('notAvailable')}
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Amount</label>
-            <p className="text-white mt-1">{payment.amount ? formatCurrency(payment.amount, currencySettings) : 'N/A'}</p>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.amount')}</label>
+            <p className="text-white mt-1">{payment.amount ? formatCurrency(payment.amount, currencySettings) : tCommon('notAvailable')}</p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Payment Method</label>
-            <p className="text-white mt-1 capitalize">{payment.paymentMethod || 'N/A'}</p>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.paymentMethod')}</label>
+            <p className="text-white mt-1 capitalize">{payment.paymentMethod || tCommon('notAvailable')}</p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Payment Type</label>
-            <p className="text-white mt-1 capitalize">{payment.paymentType || 'N/A'}</p>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.paymentType')}</label>
+            <p className="text-white mt-1 capitalize">{payment.paymentType || tCommon('notAvailable')}</p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Reference</label>
-            <p className="text-white mt-1">{payment.reference || 'No reference provided'}</p>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.reference')}</label>
+            <p className="text-white mt-1">{payment.reference || tCommon('notAvailable')}</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-400">Payment Date</label>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.paymentDate')}</label>
             <p className="text-white mt-1">
-              {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm') : 'N/A'}
+              {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm') : tCommon('notAvailable')}
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Description</label>
-            <p className="text-white mt-1">{payment.note || 'No description provided'}</p>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.note')}</label>
+            <p className="text-white mt-1">{payment.note || tCommon('notAvailable')}</p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Created At</label>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.createdAt')}</label>
             <p className="text-white mt-1">
               {/* Assuming payment object has createdAt and updatedAt */}
               {/* For now, using a placeholder or removing if not available */}
               {/* {format(new Date(payment.createdAt), 'dd/MM/yyyy HH:mm')} */}
-              N/A
+              {tCommon('notAvailable')}
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-400">Last Updated</label>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.lastUpdated')}</label>
             <p className="text-white mt-1">
               {/* Assuming payment object has createdAt and updatedAt */}
               {/* For now, using a placeholder or removing if not available */}
               {/* {format(new Date(payment.updatedAt), 'dd/MM/yyyy HH:mm')} */}
-              N/A
+              {tCommon('notAvailable')}
             </p>
           </div>
 
@@ -269,11 +277,11 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
 
           {/* Reservation Details */}
           <div className="space-y-1">
-            <p className="text-sm text-gray-400">Reservation</p>
+            <p className="text-sm text-gray-400">{t('details.reservation.reservationInfo')}</p>
             <div className="flex items-center space-x-2">
               <CalendarIcon className="h-4 w-4 text-white/60" />
               <p className="text-white">
-                {payment.reservation ? `#${payment.reservation.reservationNumber || payment.reservation._id.slice(-6)}` : 'No reservation'}
+                {payment.reservation ? `#${payment.reservation.reservationNumber || payment.reservation._id.slice(-6)}` : tCommon('notAvailable')}
               </p>
             </div>
             {payment.reservation && (
@@ -287,16 +295,16 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
                 )}
                 <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <div className="text-gray-400">Total</div>
-                    <div className="text-white">{payment.reservation.total ? formatCurrency(payment.reservation.total, currencySettings) : 'N/A'}</div>
+                    <div className="text-gray-400">{t('details.reservation.total')}</div>
+                    <div className="text-white">{payment.reservation.total ? formatCurrency(payment.reservation.total, currencySettings) : tCommon('notAvailable')}</div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Paid</div>
+                    <div className="text-gray-400">{t('details.reservation.paid')}</div>
                     <div className="text-green-500">{formatCurrency(payment.reservation.paid || 0, currencySettings)}</div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Remaining</div>
-                    <div className="text-yellow-500">{payment.reservation.remaining ? formatCurrency(payment.reservation.remaining, currencySettings) : 'N/A'}</div>
+                    <div className="text-gray-400">{t('details.reservation.remaining')}</div>
+                    <div className="text-yellow-500">{payment.reservation.remaining ? formatCurrency(payment.reservation.remaining, currencySettings) : tCommon('notAvailable')}</div>
                   </div>
                 </div>
                 {payment.reservation.pickupDate && payment.reservation.returnDate && (
@@ -682,6 +690,8 @@ const PaymentViewPage = () => {
   const router = useRouter();
   const currencySettings = useSelector((state: RootState) => state.settings);
   const paymentId = params.id as string;
+  const { t } = useTranslation('payments');
+  const { t: tCommon } = useTranslation('common');
 
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -695,12 +705,12 @@ const PaymentViewPage = () => {
         
         setPayment(response.data.payment);
       } else {
-        toast.error('Payment not found');
+        toast.error(t('details.paymentNotFound'));
         router.push('/payments');
       }
     } catch (error) {
       console.error('Failed to fetch payment:', error);
-      toast.error('Failed to load payment details');
+      toast.error(t('details.messages.loadFailed'));
       router.push('/payments');
     } finally {
       setLoading(false);
@@ -718,7 +728,7 @@ const PaymentViewPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this payment? This action cannot be undone.')) {
+    if (!confirm(t('details.confirmDelete'))) {
       return;
     }
 
@@ -728,7 +738,7 @@ const PaymentViewPage = () => {
       router.push('/payments');
     } catch (error) {
       console.error('Failed to delete payment:', error);
-      toast.error('Failed to delete payment');
+      toast.error(t('details.messages.deleteFailed'));
     }
   };
 
@@ -740,7 +750,7 @@ const PaymentViewPage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-white text-lg">Loading payment data...</div>
+          <div className="text-white text-lg">{t('details.loadingPayment')}</div>
         </div>
       </Layout>
     );
@@ -750,7 +760,7 @@ const PaymentViewPage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-400 text-lg">Payment not found</div>
+          <div className="text-gray-400 text-lg">{t('details.paymentNotFound')}</div>
         </div>
       </Layout>
     );
@@ -766,7 +776,7 @@ const PaymentViewPage = () => {
             className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Payments
+            {t('details.backToPayments')}
           </button>
         </div>
 

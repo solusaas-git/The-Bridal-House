@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, PlusIcon } from '@radix-ui/react-icons';
+import { useTranslation } from 'react-i18next';
 
 interface Country {
   code: string;
@@ -78,6 +79,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   className = '',
   ...props 
 }) => {
+  const { t } = useTranslation('shared');
   const [selectedCountry, setSelectedCountry] = useState<Country>(COUNTRIES[0]); // Morocco as default
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -297,8 +299,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                 >
                   <PlusIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 sm:mr-3" />
                   <div className="flex-1">
-                    <div className="font-medium text-xs sm:text-sm">Other Country</div>
-                    <div className="text-xs sm:text-sm text-gray-400">Enter custom prefix</div>
+                    <div className="font-medium text-xs sm:text-sm">{t('phoneInput.otherCountry')}</div>
+                    <div className="text-xs sm:text-sm text-gray-400">{t('phoneInput.enterCustomPrefix')}</div>
                   </div>
                 </button>
               </div>
@@ -311,7 +313,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           type="tel"
           value={phoneNumber}
           onChange={handlePhoneChange}
-          placeholder={isManualMode ? "Enter phone number" : selectedCountry.placeholder}
+          placeholder={isManualMode ? t('phoneInput.enterPhoneNumber') : selectedCountry.placeholder}
           required={required}
           className="flex-1 h-10 sm:h-11 rounded-r-md border border-white/20 bg-white/10 px-3 py-2 text-xs sm:text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...props}

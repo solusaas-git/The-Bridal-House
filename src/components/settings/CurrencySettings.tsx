@@ -7,10 +7,13 @@ import { RootState } from '@/store/store';
 import { updateCurrencySettings } from '@/store/reducers/settingsSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 const CurrencySettings = () => {
   const dispatch = useDispatch();
   const currentSettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
   
   const [formData, setFormData] = useState({
     symbol: currentSettings.settings.currency,
@@ -155,7 +158,7 @@ const CurrencySettings = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
-              Currency Code
+              {t('sections.currency.currencyCode')}
             </label>
             <input
               type="text"

@@ -9,6 +9,7 @@ import { setCurrentUser } from "@/store/reducers/authSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { isAdmin } from "@/utils/permissions";
+import { useTranslation } from 'react-i18next';
 
 interface User {
   _id: string;
@@ -25,6 +26,8 @@ const Users = () => {
   const dispatch = useDispatch();
   const users = useSelector((state: RootState) => state.user.users);
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -153,7 +156,7 @@ const Users = () => {
       setShowEditModal(false);
       setEditingUser(null);
       resetForm();
-      toast.success('User updated successfully');
+      toast.success(t('sections.users.userUpdated'));
     } catch (error: any) {
       console.error('Error updating user:', error);
       toast.error(error.response?.data?.message || 'Failed to update user');
@@ -178,7 +181,7 @@ const Users = () => {
     try {
       await axios.delete(`/api/users/${itemToDelete.id}`);
       dispatch(removeUser(itemToDelete.id));
-      toast.success('User deleted successfully');
+      toast.success(t('sections.users.userDeleted'));
     } catch (error: any) {
       console.error('Error deleting user:', error);
       toast.error(error.response?.data?.message || 'Failed to delete user');
@@ -263,7 +266,7 @@ const Users = () => {
           className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Add User
+          {t('sections.users.addUser')}
         </button>
       </div>
 
@@ -350,7 +353,7 @@ const Users = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Name *
+                  {t('sections.users.userName')} *
                 </label>
                 <input
                   type="text"
@@ -370,7 +373,7 @@ const Users = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Email *
+                  {t('sections.users.userEmail')} *
                 </label>
                 <input
                   type="email"
@@ -428,7 +431,7 @@ const Users = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Role
+                  {t('sections.users.userRole')}
                 </label>
                 <select
                   name="role"
@@ -446,7 +449,7 @@ const Users = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Status
+                  {t('sections.users.userStatus')}
                 </label>
                 <select
                   name="status"
@@ -454,8 +457,8 @@ const Users = () => {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="Active">{t('sections.users.active')}</option>
+                  <option value="Inactive">{t('sections.users.inactive')}</option>
                 </select>
               </div>
 

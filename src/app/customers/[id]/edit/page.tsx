@@ -12,6 +12,7 @@ import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import type { IAttachment } from '@/models';
+import { useTranslation } from 'react-i18next';
 
 interface Customer {
   _id: string;
@@ -35,6 +36,7 @@ const EditCustomerPage = () => {
   const params = useParams();
   const customerId = params.id as string;
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const { t } = useTranslation('customers');
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,12 +86,12 @@ const EditCustomerPage = () => {
           setOriginalData(customerData);
           setFormData(customerData);
         } else {
-          toast.error('Customer not found');
+          toast.error(t('edit.messages.customerNotFound'));
           router.push('/customers');
         }
       } catch (error) {
         console.error('Error fetching customer:', error);
-        toast.error('Failed to load customer');
+        toast.error(t('edit.messages.loadFailed'));
         router.push('/customers');
       } finally {
         setLoading(false);
@@ -265,8 +267,8 @@ const EditCustomerPage = () => {
             <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Customer</h1>
-            <p className="text-sm sm:text-base text-gray-300">Update customer information</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('edit.title')}</h1>
+            <p className="text-sm sm:text-base text-gray-300">{t('edit.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -278,7 +280,7 @@ const EditCustomerPage = () => {
             {/* Left Column */}
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">First Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.firstName')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="firstName"
@@ -290,7 +292,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Last Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.lastName')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="lastName"
@@ -302,7 +304,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Address *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.address')} {t('edit.form.required')}</label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -314,7 +316,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">CIN/PASSPORT ID *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.cinPassport')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="idNumber"
@@ -326,7 +328,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Email</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.email')}</label>
                 <input
                   type="email"
                   name="email"
@@ -340,7 +342,7 @@ const EditCustomerPage = () => {
             {/* Right Column */}
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Phone *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.phone')} {t('edit.form.required')}</label>
                 <PhoneInput
                   name="phone"
                   value={formData.phone}
@@ -350,7 +352,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">WhatsApp</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.whatsapp')}</label>
                 <PhoneInput
                   name="whatsapp"
                   value={formData.whatsapp}
@@ -360,7 +362,7 @@ const EditCustomerPage = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Date</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingDate')}</label>
                   <input
                     type="date"
                     name="weddingDate"
@@ -371,7 +373,7 @@ const EditCustomerPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Time</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingTime')}</label>
                   <input
                     type="time"
                     name="weddingTime"
@@ -383,7 +385,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Location</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingLocation')}</label>
                 <input
                   type="text"
                   name="weddingLocation"
@@ -394,7 +396,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding City *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingCity')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="weddingCity"
@@ -406,7 +408,7 @@ const EditCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Type *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.type')} {t('edit.form.required')}</label>
                 <select
                   name="type"
                   value={formData.type}
@@ -414,8 +416,8 @@ const EditCustomerPage = () => {
                   required
                   className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Client">Client</option>
-                  <option value="Prospect">Prospect</option>
+                  <option value="Client">{t('edit.types.client')}</option>
+                  <option value="Prospect">{t('edit.types.prospect')}</option>
                 </select>
               </div>
             </div>
@@ -437,7 +439,7 @@ const EditCustomerPage = () => {
               onClick={handleBack}
               className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors text-sm w-full sm:w-auto"
             >
-              Cancel
+{t('edit.buttons.cancel')}
             </button>
             
             <ApprovalHandler
@@ -452,7 +454,7 @@ const EditCustomerPage = () => {
               }}
               onDirectAction={handleDirectUpdate}
               onSuccess={() => {
-                toast.success('Customer updated successfully!');
+                toast.success(t('edit.messages.updateSuccess'));
                 router.push(`/customers/${customerId}`);
               }}
             >
@@ -461,7 +463,7 @@ const EditCustomerPage = () => {
                 disabled={saving}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+{saving ? t('edit.buttons.saving') : t('edit.buttons.saveChanges')}
               </button>
             </ApprovalHandler>
           </div>

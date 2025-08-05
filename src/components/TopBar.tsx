@@ -8,6 +8,7 @@ import { clearAuth } from '@/store/reducers/authSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { LogOut, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TopBarProps {
   isMobileMenuOpen: boolean;
@@ -18,13 +19,14 @@ const TopBar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: TopBarProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: RootState) => state.auth);
+  const { t } = useTranslation('auth');
 
   const handleLogout = async () => {
     try {
       await axios.post('/api/auth/logout', {}, { withCredentials: true });
       localStorage.removeItem('isAuthenticated');
       dispatch(clearAuth());
-      toast.success('Logged out successfully');
+      toast.success(t('logoutSuccess'));
       router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
@@ -72,7 +74,7 @@ const TopBar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: TopBarProps) => {
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden sm:inline">{t('logout')}</span>
           </button>
         </div>
       </div>

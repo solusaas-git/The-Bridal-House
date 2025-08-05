@@ -24,6 +24,7 @@ import Layout from '@/components/Layout';
 import { RootState } from '@/store/store';
 import { setCostCategories, updateCost } from '@/store/reducers/costSlice';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 interface CostFormData {
   date: string;
@@ -72,6 +73,8 @@ export default function EditCostPage() {
   const params = useParams();
   const costId = params.id as string;
   const { costCategories } = useSelector((state: RootState) => state.cost);
+  const { t } = useTranslation('costs');
+  const { t: tCommon } = useTranslation('common');
 
   const [originalData, setOriginalData] = useState<Record<string, unknown> | null>(null);
   const [formData, setFormData] = useState<CostFormData>({
@@ -423,11 +426,11 @@ export default function EditCostPage() {
       });
 
       dispatch(updateCost(response.data.cost));
-      toast.success('Cost updated successfully');
+      toast.success(t('edit.messages.updateSuccess'));
       router.push(`/costs/${costId}`);
     } catch (error: any) {
       console.error('Error updating cost:', error);
-      toast.error(error.response?.data?.error || 'Failed to update cost');
+      toast.error(error.response?.data?.error || t('edit.messages.updateError'));
       throw error;
     } finally {
       setSaving(false);
@@ -483,8 +486,8 @@ export default function EditCostPage() {
               <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Cost</h1>
-              <p className="text-sm sm:text-base text-gray-300">Update cost information</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">{t('edit.title')}</h1>
+              <p className="text-sm sm:text-base text-gray-300">{t('edit.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -497,7 +500,7 @@ export default function EditCostPage() {
                 {/* Date */}
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                    Date *
+                    {t('edit.form.date')} *
                   </label>
                   <div className="relative">
                     <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -515,7 +518,7 @@ export default function EditCostPage() {
                 {/* Category */}
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                    Category *
+                    {t('edit.form.category')} *
                   </label>
                   <select
                     name="category"
@@ -524,7 +527,7 @@ export default function EditCostPage() {
                     required
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
-                    <option value="">Select a category</option>
+                    <option value="">{t('edit.form.selectCategory')}</option>
                     {costCategories.map((category) => (
                       <option key={category._id} value={category._id} className="bg-gray-800">
                         {category.name}
@@ -536,7 +539,7 @@ export default function EditCostPage() {
                 {/* Amount */}
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                    Amount *
+                    {t('edit.form.amount')} *
                   </label>
                   <div className="relative">
                     <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -558,7 +561,7 @@ export default function EditCostPage() {
               {/* Related Items Section */}
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-300">
-                  Related Item (Optional)
+                  {t('edit.form.relatedItems')}
                 </label>
                 
                 {/* Type Selection */}
@@ -572,7 +575,7 @@ export default function EditCostPage() {
                         : 'bg-white/10 border border-white/20 text-gray-300 hover:text-white hover:bg-white/20'
                     }`}
                   >
-                    None
+                    {t('edit.relatedTypes.none')}
                   </button>
                   <button
                     type="button"
@@ -583,7 +586,7 @@ export default function EditCostPage() {
                         : 'bg-white/10 border border-white/20 text-gray-300 hover:text-white hover:bg-white/20'
                     }`}
                   >
-                    Related Reservation
+                    {t('edit.relatedTypes.reservation')}
                   </button>
                   <button
                     type="button"
@@ -594,7 +597,7 @@ export default function EditCostPage() {
                         : 'bg-white/10 border border-white/20 text-gray-300 hover:text-white hover:bg-white/20'
                     }`}
                   >
-                    Related Product
+                    {t('edit.relatedTypes.product')}
                   </button>
                 </div>
 
@@ -606,7 +609,7 @@ export default function EditCostPage() {
                         <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
                           type="text"
-                          placeholder={`Search for ${formData.relatedType}...`}
+                          placeholder={formData.relatedType === 'reservation' ? t('edit.form.searchReservations') : t('edit.form.searchProducts')}
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -631,11 +634,11 @@ export default function EditCostPage() {
                                   <h3 className="text-white font-medium">
                                     {selectedItem.client ? 
                                       `${selectedItem.client.firstName} ${selectedItem.client.lastName}` : 
-                                      'Unknown Customer'
+                                      tCommon('unknownCustomer')
                                     }
                                   </h3>
                                   <div className="text-sm text-gray-400">
-                                    {selectedItem.client?.weddingDate ? format(new Date(selectedItem.client.weddingDate), 'dd/MM/yyyy') : 'No date set'}
+                                    {selectedItem.client?.weddingDate ? format(new Date(selectedItem.client.weddingDate), 'dd/MM/yyyy') : tCommon('noDateSet')}
                                   </div>
                                 </div>
                               </>
@@ -663,7 +666,7 @@ export default function EditCostPage() {
                                 )}
                                 <div>
                                   <h3 className="text-white font-medium">{selectedItem.name}</h3>
-                                  <div className="text-sm text-gray-400">Product</div>
+                                  <div className="text-sm text-gray-400">{tCommon('product')}</div>
                                 </div>
                               </>
                             )}
@@ -680,7 +683,7 @@ export default function EditCostPage() {
                         {/* Show reservation items if it's a reservation */}
                         {formData.relatedType === 'reservation' && selectedItem.items && selectedItem.items.length > 0 && (
                           <div>
-                            <p className="text-sm text-gray-400 mb-2">Reserved Items ({selectedItem.items.length})</p>
+                            <p className="text-sm text-gray-400 mb-2">{t('details.related.items')} ({selectedItem.items.length})</p>
                             <div className="space-y-2 max-h-40 overflow-y-auto">
                               {selectedItem.items.map((item, index) => (
                                 <div key={index} className="flex items-center gap-3 p-2 bg-white/5 rounded-lg">
@@ -704,7 +707,7 @@ export default function EditCostPage() {
                                      />
                                   )}
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-white text-sm font-medium truncate">{item.name || 'Unknown Product'}</p>
+                                    <p className="text-white text-sm font-medium truncate">{item.name || tCommon('unknownProduct')}</p>
                                   </div>
                                 </div>
                               ))}
@@ -732,10 +735,10 @@ export default function EditCostPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="text-white font-medium">
-                                    {item.client ? `${item.client.firstName} ${item.client.lastName}` : 'Unknown Customer'}
+                                    {item.client ? `${item.client.firstName} ${item.client.lastName}` : tCommon('unknownCustomer')}
                                   </div>
                                   <div className="text-sm text-gray-400">
-                                    {item.client?.weddingDate ? format(new Date(item.client.weddingDate), 'dd/MM/yyyy') : 'No date set'}
+                                    {item.client?.weddingDate ? format(new Date(item.client.weddingDate), 'dd/MM/yyyy') : tCommon('noDateSet')}
                                   </div>
                                   {item.items && item.items.length > 0 && (
                                     <div className="text-xs text-gray-500 mt-1">
@@ -759,7 +762,7 @@ export default function EditCostPage() {
                                 )}
                                 <div className="flex-1 min-w-0">
                                   <div className="text-white font-medium truncate">{item.name}</div>
-                                  <div className="text-sm text-gray-400">Product</div>
+                                  <div className="text-sm text-gray-400">{tCommon('product')}</div>
                                 </div>
                               </>
                             )}
@@ -774,7 +777,7 @@ export default function EditCostPage() {
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Notes
+                  {t('edit.form.notes')}
                 </label>
                 <div className="relative">
                   <DocumentTextIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -783,7 +786,7 @@ export default function EditCostPage() {
                     value={formData.notes}
                     onChange={handleInputChange}
                     rows={4}
-                    placeholder="Add any additional notes about this expense..."
+                    placeholder={t('edit.form.notesPlaceholder')}
                     className="pl-10 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
                 </div>
@@ -792,13 +795,13 @@ export default function EditCostPage() {
               {/* Attachments */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-4">
-                  Attachments (Receipts)
+                  {t('edit.form.attachments')}
                 </label>
                 
                 {/* Existing Attachments */}
                 {existingAttachments.length > 0 && (
                   <div className="mb-6">
-                    <h4 className="text-sm font-medium text-gray-400 mb-3">Current Attachments</h4>
+                    <h4 className="text-sm font-medium text-gray-400 mb-3">{t('edit.attachments.currentFiles')}</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {existingAttachments.map((attachment) => (
                         <div key={attachment._id} className="relative group">
@@ -827,7 +830,7 @@ export default function EditCostPage() {
                                 type="button"
                                 onClick={() => handleFilePreview(attachment, true)}
                                 className="p-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-                                title="Preview"
+                                title={t('details.attachments.preview')}
                               >
                                 <EyeIcon className="h-3 w-3" />
                               </button>
@@ -840,7 +843,7 @@ export default function EditCostPage() {
                                   link.click();
                                 }}
                                 className="p-1 bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
-                                title="Download"
+                                title={t('details.attachments.download')}
                               >
                                 <ArrowDownTrayIcon className="h-3 w-3" />
                               </button>
@@ -864,7 +867,7 @@ export default function EditCostPage() {
                 <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
                   <PaperClipIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
                   <div className="text-gray-300 mb-2">
-                    Add new attachments
+                    {t('edit.attachments.uploadFiles')}
                   </div>
                   <input
                     type="file"
@@ -878,17 +881,17 @@ export default function EditCostPage() {
                     htmlFor="file-upload"
                     className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors"
                   >
-                    Choose Files
+                    {tCommon('chooseFiles')}
                   </label>
                   <p className="text-xs text-gray-400 mt-2">
-                    Supported: Images, PDF, DOC, DOCX (Max 10MB per file)
+                    {t('edit.attachments.supportedFormats')}
                   </p>
                 </div>
 
                 {/* New Attachment Previews */}
                 {attachments.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="text-sm font-medium text-green-400 mb-3">New Attachments</h4>
+                    <h4 className="text-sm font-medium text-green-400 mb-3">{t('edit.attachments.newFiles')}</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {attachments.map((attachment, index) => (
                         <div key={index} className="relative group">
@@ -945,7 +948,7 @@ export default function EditCostPage() {
                   onClick={() => router.back()}
                   className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white transition-colors text-sm w-full sm:w-auto"
                 >
-                  Cancel
+                  {t('edit.form.cancel')}
                 </button>
                 <ApprovalHandler
                   actionType="edit"
@@ -965,10 +968,10 @@ export default function EditCostPage() {
                     {saving ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Saving...
+                        {t('edit.form.updating')}
                       </>
                     ) : (
-                      'Save Changes'
+                      t('edit.form.updateCost')
                     )}
                   </button>
                 </ApprovalHandler>
@@ -991,7 +994,7 @@ export default function EditCostPage() {
                     <FileIcon className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">{previewFile.file.name || 'Unknown file'}</p>
+                    <p className="text-white text-sm font-medium">{previewFile.file.name || tCommon('unknownFile')}</p>
                     <p className="text-gray-300 text-xs">
                       {previewFile.file.size ? `${(previewFile.file.size / 1024 / 1024).toFixed(2)} MB • ` : ''}{previewFile.type.toUpperCase()}
                     </p>

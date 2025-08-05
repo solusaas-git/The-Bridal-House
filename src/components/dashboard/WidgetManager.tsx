@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Settings, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Widget {
   id: string;
@@ -21,6 +22,7 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
   onToggleWidget,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation('dashboard');
 
   return (
     <div className="relative">
@@ -29,7 +31,7 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
         className="flex items-center justify-center gap-2 h-8 px-3 py-1 text-xs font-medium text-white bg-white/10 border border-white/20 rounded-md hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 backdrop-blur-lg w-full"
       >
         <Settings className="h-4 w-4" />
-        Customize
+        {t('widgets.widgetManager.customize')}
       </button>
 
       {isOpen && (

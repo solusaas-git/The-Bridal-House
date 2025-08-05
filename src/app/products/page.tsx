@@ -23,6 +23,7 @@ import { formatCurrency } from '@/utils/currency';
 import Pagination from '@/components/ui/Pagination';
 import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductsPage() {
   const dispatch = useDispatch();
@@ -30,6 +31,8 @@ export default function ProductsPage() {
   const items = useSelector((state: RootState) => state.item.items);
   const categories = useSelector((state: RootState) => state.category.categories);
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('products');
+  const { t: tCommon } = useTranslation('common');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -160,16 +163,16 @@ export default function ProductsPage() {
         dispatch(setItems(response.data.products));
         setTotalCount(response.data.pagination?.total || response.data.products.length);
       } else {
-        setError('Failed to fetch products');
-        toast.error('Failed to load products');
+        setError(t('messages.loadFailed'));
+        toast.error(t('messages.loadFailed'));
       }
     } catch (error) {
-      setError('Failed to fetch products');
+      setError(t('messages.loadFailed'));
       console.error('Error fetching products:', error);
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Failed to load products: ${error.response.data.message || error.message}`);
+        toast.error(`${t('messages.loadFailed')}: ${error.response.data.message || error.message}`);
       } else {
-        toast.error('Failed to load products: Network error');
+        toast.error(`${t('messages.loadFailed')}: ${t('messages.networkError')}`);
       }
     } finally {
       setLoading(false);
@@ -251,7 +254,7 @@ export default function ProductsPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-300">Loading products...</p>
+            <p className="text-gray-300">{t('table.loadingProducts')}</p>
           </div>
         </div>
       </Layout>
@@ -282,7 +285,7 @@ export default function ProductsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Products</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
             <p className="text-sm sm:text-base text-gray-300">Manage your product inventory</p>
           </div>
           <Link
@@ -290,7 +293,7 @@ export default function ProductsPage() {
             className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
-            Add Product
+            {t('addProduct')}
           </Link>
         </div>
 
@@ -302,7 +305,7 @@ export default function ProductsPage() {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
@@ -313,7 +316,7 @@ export default function ProductsPage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
             {/* Category Filter */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.category')}:</label>
               <select
                 value={filters.category}
                 onChange={(e) => handleCategoryChange(e.target.value)}
@@ -331,7 +334,7 @@ export default function ProductsPage() {
             {/* Subcategory Filter - Only show when category is selected */}
             {filters.category !== 'all' && (
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Subcategory:</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.subCategory')}:</label>
                 <select
                   value={filters.subCategory}
                   onChange={(e) => setFilters(prev => ({ ...prev, subCategory: e.target.value }))}
@@ -411,7 +414,7 @@ export default function ProductsPage() {
               </div>
             ) : filteredItems.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-400">No products found</p>
+                <p className="text-gray-400">{t('table.noProducts')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
@@ -439,21 +442,21 @@ export default function ProductsPage() {
                     <div className="p-4">
                       <h3 className="font-medium text-white text-sm mb-2 truncate">{item.name}</h3>
                       <p className="text-xs text-gray-400 mb-2">
-                        {item.category?.name || 'No Category'}
+                        {item.category?.name || t('productInfo.noCategory')}
                         {item.subCategory && ` - ${item.subCategory}`}
                       </p>
                       
                       {/* Pricing Info */}
                       <div className="space-y-1 mb-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-400">Rental/Day:</span>
+                          <span className="text-xs text-gray-400">{t('productInfo.rentalPerDay')}:</span>
                           <span className="text-sm font-medium text-green-400">
                             {formatCurrency(item.rentalCost, currencySettings)}
                           </span>
                         </div>
                         {Number(item.buyCost) > 0 && (
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-400">Buy Cost:</span>
+                            <span className="text-xs text-gray-400">{t('productInfo.buyCost')}:</span>
                             <span className="text-xs text-gray-300">
                               {formatCurrency(item.buyCost, currencySettings)}
                             </span>
@@ -461,7 +464,7 @@ export default function ProductsPage() {
                         )}
                         {Number(item.sellPrice) > 0 && (
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-400">Sell Price:</span>
+                            <span className="text-xs text-gray-400">{t('productInfo.sellPrice')}:</span>
                             <span className="text-xs text-gray-300">
                               {formatCurrency(item.sellPrice, currencySettings)}
                             </span>
@@ -474,12 +477,12 @@ export default function ProductsPage() {
                         <div className="flex items-center gap-3">
                           {Number(item.size) > 0 && (
                             <span className="text-xs text-gray-400">
-                              Size: <span className="text-white">{item.size}</span>
+                              {t('productInfo.size')}: <span className="text-white">{item.size}</span>
                             </span>
                           )}
                           {Number(item.quantity) > 0 && (
                             <span className="text-xs text-gray-400">
-                              Stock: <span className="text-white">{item.quantity}</span>
+                              {t('productInfo.stock')}: <span className="text-white">{item.quantity}</span>
                             </span>
                           )}
                         </div>
@@ -539,7 +542,7 @@ export default function ProductsPage() {
             {loading ? (
               <div className="p-4 sm:p-8 text-center">
                 <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-300 text-sm sm:text-base">Loading products...</p>
+                <p className="text-gray-300 text-sm sm:text-base">{t('table.loadingProducts')}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -553,37 +556,37 @@ export default function ProductsPage() {
                       )}
                       {columnVisibility.name && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Name
+                          {t('columns.name')}
                         </th>
                       )}
                       {columnVisibility.category && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Category
+                          {t('columns.category')}
                         </th>
                       )}
                       {columnVisibility.subCategory && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Sub Category
+                          {t('columns.subCategory')}
                         </th>
                       )}
                       {columnVisibility.rentalCost && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Rental Cost/Day
+                          {t('columns.rentalCost')}/Day
                         </th>
                       )}
                       {columnVisibility.buyCost && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Buy Cost
+                          {t('columns.buyCost')}
                         </th>
                       )}
                       {columnVisibility.sellPrice && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Sell Price
+                          {t('columns.sellPrice')}
                         </th>
                       )}
                       {columnVisibility.size && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Size
+                          {t('columns.size')}
                         </th>
                       )}
                       {columnVisibility.quantity && (
@@ -593,17 +596,17 @@ export default function ProductsPage() {
                       )}
                       {columnVisibility.status && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Status
+                          {t('columns.status')}
                         </th>
                       )}
                       {columnVisibility.createdAt && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Created
+                          {t('columns.createdAt')}
                         </th>
                       )}
                       {columnVisibility.actions && (
                         <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                          Actions
+                          {t('columns.actions')}
                         </th>
                       )}
                     </tr>
@@ -637,12 +640,12 @@ export default function ProductsPage() {
                         )}
                         {columnVisibility.category && (
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {item.category?.name || 'N/A'}
+                            {item.category?.name || tCommon('notAvailable')}
                           </td>
                         )}
                         {columnVisibility.subCategory && (
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {item.subCategory || 'N/A'}
+                            {item.subCategory || tCommon('notAvailable')}
                           </td>
                         )}
                         {columnVisibility.rentalCost && (
@@ -652,17 +655,17 @@ export default function ProductsPage() {
                         )}
                         {columnVisibility.buyCost && (
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {item.buyCost ? formatCurrency(item.buyCost, currencySettings) : 'N/A'}
+                            {item.buyCost ? formatCurrency(item.buyCost, currencySettings) : tCommon('notAvailable')}
                           </td>
                         )}
                         {columnVisibility.sellPrice && (
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {item.sellPrice ? formatCurrency(item.sellPrice, currencySettings) : 'N/A'}
+                            {item.sellPrice ? formatCurrency(item.sellPrice, currencySettings) : tCommon('notAvailable')}
                           </td>
                         )}
                         {columnVisibility.size && (
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {item.size || 'N/A'}
+                            {item.size || tCommon('notAvailable')}
                           </td>
                         )}
                         {columnVisibility.quantity && (

@@ -14,6 +14,7 @@ import { formatCurrency, getCurrencySymbol } from '@/utils/currency';
 import Layout from '@/components/Layout';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   type: string;
@@ -39,6 +40,8 @@ interface FormData {
 export default function AddReservationPage() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
   
   const customers = useSelector((state: RootState) => state.customer.customers);
   const products = useSelector((state: RootState) => state.item.items);
@@ -83,9 +86,9 @@ export default function AddReservationPage() {
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
 
   const steps = [
-    { number: 1, title: 'Client Selection' },
-    { number: 2, title: 'Items & Dates' },
-    { number: 3, title: 'Financial Details' },
+    { number: 1, title: t('edit.steps.clientSelection') },
+    { number: 2, title: t('edit.steps.itemsAndDates') },
+    { number: 3, title: t('edit.steps.financialDetails') },
   ];
 
   // Fetch initial data
@@ -539,14 +542,14 @@ export default function AddReservationPage() {
       
       if (data.success) {
         dispatch(addReservation(data.reservation));
-        toast.success('Reservation created successfully');
+        toast.success(t('add.messages.createSuccess'));
         router.push('/reservations');
       } else {
-        toast.error(data.message || 'Failed to create reservation');
+        toast.error(data.message || t('add.messages.createError'));
       }
     } catch (error) {
       console.error('Error creating reservation:', error);
-      toast.error('Failed to create reservation');
+      toast.error(t('add.messages.createError'));
     } finally {
       setLoading(false);
     }
@@ -1109,7 +1112,7 @@ export default function AddReservationPage() {
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-            <h1 className="text-xl sm:text-3xl font-bold text-white">New Reservation</h1>
+            <h1 className="text-xl sm:text-3xl font-bold text-white">{t('add.title')}</h1>
             <Link
               href="/reservations"
               className="p-2 hover:bg-white/10 rounded-lg transition-colors self-start sm:self-auto"
@@ -1170,7 +1173,7 @@ export default function AddReservationPage() {
                   step === 1 ? 'invisible' : 'bg-white/10 hover:bg-white/20'
                 }`}
               >
-                Previous
+                {t('add.navigation.previous')}
               </button>
 
               {step === 3 ? (
@@ -1183,7 +1186,7 @@ export default function AddReservationPage() {
                       : 'bg-blue-500/50 cursor-not-allowed'
                   }`}
                 >
-                  {loading ? 'Creating...' : 'Create Reservation'}
+                  {loading ? t('add.navigation.creating') : t('add.navigation.createReservation')}
                 </button>
               ) : (
                 <button
@@ -1195,7 +1198,7 @@ export default function AddReservationPage() {
                       : 'bg-blue-500/50 cursor-not-allowed'
                   }`}
                 >
-                  Next
+                  {t('add.navigation.next')}
                 </button>
               )}
             </div>

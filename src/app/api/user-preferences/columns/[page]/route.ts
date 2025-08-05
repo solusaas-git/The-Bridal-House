@@ -31,6 +31,8 @@ const getDefaultPreferences = (page: string) => {
       paymentMethod: true,
       paymentType: true,
       reference: true,
+      note: true,
+      attachments: true,
       createdBy: false,
       actions: true,
     },

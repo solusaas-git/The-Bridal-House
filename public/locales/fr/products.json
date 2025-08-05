@@ -1,0 +1,191 @@
+{
+  "title": "Produits",
+  "subtitle": "Gérer l'inventaire et le catalogue des produits",
+  "addProduct": "Ajouter un Produit",
+  "searchPlaceholder": "Rechercher des produits...",
+  "viewMode": {
+    "grid": "Vue Grille",
+    "table": "Vue Tableau"
+  },
+  "filters": {
+    "category": "Catégorie",
+    "subCategory": "Sous-catégorie",
+    "allCategories": "Toutes les Catégories",
+    "allSubCategories": "Toutes les Sous-catégories"
+  },
+  "columns": {
+    "columns": "Colonnes",
+    "showHideColumns": "Afficher/Masquer les Colonnes",
+    "saving": "Enregistrement...",
+    "id": "ID",
+    "name": "Nom",
+    "category": "Catégorie",
+    "subCategory": "Sous-catégorie",
+    "rentalCost": "Coût de Location",
+    "buyCost": "Coût d'Achat",
+    "sellPrice": "Prix de Vente",
+    "size": "Taille",
+    "quantity": "Quantité",
+    "status": "Statut",
+    "createdAt": "Créé le",
+    "updatedAt": "Mis à jour le",
+    "createdBy": "Créé par",
+    "actions": "Actions"
+  },
+  "productInfo": {
+    "noImage": "Aucune Image",
+    "noCategory": "Aucune Catégorie",
+    "rentalPerDay": "Location/Jour",
+    "buyCost": "Coût d'Achat",
+    "sellPrice": "Prix de Vente",
+    "size": "Taille",
+    "stock": "Stock"
+  },
+  "status": {
+    "published": "Publié",
+    "draft": "Brouillon",
+    "archived": "Archivé"
+  },
+  "table": {
+    "noProducts": "Aucun produit trouvé",
+    "loadingProducts": "Chargement des produits...",
+    "retryLoading": "Réessayer le Chargement"
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "messages": {
+    "loadFailed": "Échec du chargement des produits",
+    "deleteFailed": "Échec de la suppression du produit",
+    "deleteSuccess": "Produit supprimé avec succès",
+    "columnPreferencesSaved": "Préférences de colonnes enregistrées avec succès",
+    "columnPreferencesFailed": "Échec de l'enregistrement des préférences de colonnes",
+    "networkError": "Erreur réseau"
+  },
+  "details": {
+    "title": "Détails du Produit",
+    "backToProducts": "Retour aux Produits",
+    "loadingProduct": "Chargement du produit...",
+    "productNotFound": "Produit non trouvé",
+    "tabs": {
+      "details": "Détails du Produit",
+      "availability": "Disponibilité"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "downloadImage": "Télécharger l'Image",
+      "downloadVideo": "Télécharger la Vidéo"
+    },
+    "sections": {
+      "videos": "Vidéos",
+      "basicInfo": "Informations de Base",
+      "pricing": "Tarification",
+      "metadata": "Métadonnées"
+    },
+    "fields": {
+      "name": "Nom",
+      "status": "Statut",
+      "category": "Catégorie",
+      "subCategory": "Sous-catégorie",
+      "size": "Taille",
+      "inStock": "En Stock",
+      "rentalCostPerDay": "Coût de Location/Jour",
+      "buyCost": "Coût d'Achat",
+      "sellPrice": "Prix de Vente",
+      "createdBy": "Créé par",
+      "createdAt": "Créé le",
+      "updatedAt": "Mis à jour le"
+    },
+    "availability": {
+      "reservationsFor": "Réservations pour",
+      "pickup": "Retrait",
+      "return": "Retour",
+      "wedding": "Mariage",
+      "currentUpcoming": "Réservations Actuelles et à Venir",
+      "noReservations": "Aucune réservation trouvée pour ce produit.",
+      "availableAllDates": "Ce produit est actuellement disponible pour toutes les dates.",
+      "moreUpcoming": "plus de réservations à venir"
+    },
+    "images": {
+      "noImageAvailable": "Aucune Image Disponible"
+    },
+    "messages": {
+      "loadFailed": "Échec du chargement des détails du produit",
+      "deleteSuccess": "Produit supprimé avec succès",
+      "deleteFailed": "Échec de la suppression du produit"
+    }
+  },
+  "edit": {
+    "title": "Modifier le Produit",
+    "subtitle": "Mettre à jour les informations du produit",
+    "backToProduct": "Retour au Produit",
+    "loadingProduct": "Chargement du produit...",
+    "productNotFound": "Produit non trouvé",
+    "form": {
+      "productName": "Nom du Produit",
+      "category": "Catégorie",
+      "subCategory": "Sous-catégorie",
+      "status": "Statut",
+      "rentalCost": "Coût de Location",
+      "buyCost": "Coût d'Achat",
+      "sellPrice": "Prix de Vente",
+      "size": "Taille",
+      "quantity": "Quantité",
+      "primaryPhoto": "Photo Principale",
+      "secondaryPhotos": "Photos Secondaires",
+      "videos": "Vidéos du Produit",
+      "selectCategory": "Sélectionner une catégorie",
+      "selectSubCategory": "Sélectionner une sous-catégorie",
+      "enterProductName": "Entrer le nom du produit",
+      "uploadPrimary": "Cliquer pour télécharger la photo principale",
+      "uploadSecondary": "Cliquer pour télécharger des photos supplémentaires",
+      "uploadVideos": "Cliquer pour télécharger des vidéos",
+      "supportedFormats": "PNG, JPG jusqu'à 10 MB chacun",
+      "videoFormats": "MP4, MOV jusqu'à 50 MB chacun",
+      "cancel": "Annuler",
+      "updateProduct": "Mettre à Jour le Produit",
+      "updating": "Mise à jour...",
+      "required": "Requis"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "published": "Publié"
+    },
+    "upload": {
+      "clickToUpload": "Cliquer pour télécharger",
+      "dragDrop": "ou glisser-déposer",
+      "removeFile": "Supprimer le fichier",
+      "primaryPhoto": "photo principale",
+      "additionalPhotos": "photos supplémentaires",
+      "videos": "vidéos"
+    },
+    "validation": {
+      "nameRequired": "Le nom du produit est requis",
+      "categoryRequired": "La catégorie est requise",
+      "rentalCostRequired": "Le coût de location est requis",
+      "quantityRequired": "La quantité est requise"
+    },
+    "messages": {
+      "updateSuccess": "Produit mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du produit",
+      "loadError": "Erreur lors du chargement des données du produit",
+      "uploadError": "Erreur lors du téléchargement des fichiers"
+    }
+  },
+  "add": {
+    "title": "Ajouter un Produit",
+    "subtitle": "Créer un nouveau produit",
+    "backToProducts": "Retour aux Produits",
+    "form": {
+      "createProduct": "Créer le Produit",
+      "creating": "Création..."
+    },
+    "messages": {
+      "createSuccess": "Produit créé avec succès",
+      "createError": "Échec de la création du produit"
+    }
+  }
+}

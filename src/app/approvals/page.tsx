@@ -21,6 +21,7 @@ import { reviewApproval } from '@/utils/approval';
 import Layout from '@/components/Layout';
 import { isAdmin, isManager } from '@/utils/permissions';
 import ApprovalDetailsModal from '@/components/approvals/ApprovalDetailsModal';
+import { useTranslation } from 'react-i18next';
 
 interface Approval {
   _id: string;
@@ -52,6 +53,8 @@ export default function ApprovalsPage() {
   const router = useRouter();
   const { approvals, loading } = useSelector((state: RootState) => state.approval);
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const { t } = useTranslation('approvals');
+  const { t: tCommon } = useTranslation('common');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -113,7 +116,7 @@ export default function ApprovalsPage() {
       }
     } catch (error) {
       console.error('Error loading approvals:', error);
-      toast.error('Failed to load approval requests');
+      toast.error(t('messages.loadFailed'));
     } finally {
       dispatch(setLoading(false));
     }
@@ -128,7 +131,7 @@ export default function ApprovalsPage() {
       // The count is automatically updated by the reviewApproval function
     } catch (error: any) {
       console.error('Error reviewing approval:', error);
-      toast.error(error.response?.data?.error || 'Failed to review approval');
+      toast.error(error.response?.data?.error || t('messages.approveFailed'));
     } finally {
       setReviewingId(null);
     }
@@ -140,19 +143,19 @@ export default function ApprovalsPage() {
   };
 
   const handleDelete = async (approvalId: string) => {
-    if (!confirm('Are you sure you want to delete this approval request? This action cannot be undone.')) {
+    if (!confirm(t('messages.confirmDelete'))) {
       return;
     }
 
     setDeletingId(approvalId);
     try {
       await axios.delete(`/api/approvals/${approvalId}`);
-      toast.success('Approval request deleted successfully');
+      toast.success(t('messages.deleteSuccess'));
       // Reload approvals to get updated list
       await loadApprovals();
     } catch (error: any) {
       console.error('Error deleting approval:', error);
-      toast.error(error.response?.data?.error || 'Failed to delete approval request');
+      toast.error(error.response?.data?.error || t('messages.deleteFailed'));
     } finally {
       setDeletingId(null);
     }
@@ -160,16 +163,16 @@ export default function ApprovalsPage() {
 
   const getActionDescription = (actionType: string, resourceType: string) => {
     const actionMap = {
-      edit: 'Edit',
-      delete: 'Delete',
-      create: 'Create',
+      edit: t('actionTypes.edit'),
+      delete: t('actionTypes.delete'),
+      create: t('actionTypes.create'),
     };
     const resourceMap = {
-      customer: 'Customer',
-      item: 'Product',
-      payment: 'Payment',
-      reservation: 'Reservation',
-      cost: 'Cost',
+      customer: t('resourceTypes.customer'),
+      item: t('resourceTypes.product'),
+      payment: t('resourceTypes.payment'),
+      reservation: t('resourceTypes.reservation'),
+      cost: t('resourceTypes.cost'),
     };
     return `${actionMap[actionType as keyof typeof actionMap]} ${resourceMap[resourceType as keyof typeof resourceMap]}`;
   };
@@ -179,32 +182,32 @@ export default function ApprovalsPage() {
       switch (type) {
         case 'customer': 
           return { 
-            label: 'Customer', 
+            label: t('resourceTypes.customer'), 
             color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' 
           };
         case 'item': 
           return { 
-            label: 'Product', 
+            label: t('resourceTypes.product'), 
             color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' 
           };
         case 'payment': 
           return { 
-            label: 'Payment', 
+            label: t('resourceTypes.payment'), 
             color: 'bg-green-500/20 text-green-400 border-green-500/30' 
           };
         case 'reservation': 
           return { 
-            label: 'Reservation', 
+            label: t('resourceTypes.reservation'), 
             color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
           };
         case 'cost': 
           return { 
-            label: 'Cost', 
+            label: t('resourceTypes.cost'), 
             color: 'bg-red-500/20 text-red-400 border-red-500/30' 
           };
         default: 
           return { 
-            label: 'Unknown', 
+            label: tCommon('unknown'), 
             color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' 
           };
       }
@@ -215,26 +218,26 @@ export default function ApprovalsPage() {
     let resourceName = '';
     switch (resourceType) {
       case 'customer':
-        resourceName = `${originalData?.firstName || ''} ${originalData?.lastName || ''}`.trim() || 'Unknown Customer';
+        resourceName = `${originalData?.firstName || ''} ${originalData?.lastName || ''}`.trim() || tCommon('unknownCustomer');
         break;
       case 'item':
-        resourceName = originalData?.name || 'Unknown Product';
+        resourceName = originalData?.name || tCommon('unknownProduct');
         break;
       case 'payment':
-        const paymentId = originalData?.paymentNumber || originalData?._id || 'Unknown';
+        const paymentId = originalData?.paymentNumber || originalData?._id || tCommon('unknown');
         resourceName = `#${paymentId}`;
         break;
       case 'reservation':
-        const reservationId = originalData?.reservationNumber || originalData?._id || 'Unknown';
+        const reservationId = originalData?.reservationNumber || originalData?._id || tCommon('unknown');
         resourceName = `#${reservationId}`;
         break;
       case 'cost':
         const costAmount = originalData?.amount ? `$${originalData.amount}` : '';
-        const costCategory = originalData?.category?.name || 'Unknown Category';
+        const costCategory = originalData?.category?.name || tCommon('unknownCategory');
         resourceName = `${costAmount} - ${costCategory}`;
         break;
       default:
-        resourceName = 'Unknown Resource';
+        resourceName = tCommon('unknownResource');
     }
 
     return (
@@ -269,9 +272,9 @@ export default function ApprovalsPage() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { color: 'bg-yellow-500/20 text-yellow-400', label: 'Pending' },
-      approved: { color: 'bg-green-500/20 text-green-400', label: 'Approved' },
-      rejected: { color: 'bg-red-500/20 text-red-400', label: 'Rejected' },
+      pending: { color: 'bg-yellow-500/20 text-yellow-400', label: t('statuses.pending') },
+      approved: { color: 'bg-green-500/20 text-green-400', label: t('statuses.approved') },
+      rejected: { color: 'bg-red-500/20 text-red-400', label: t('statuses.rejected') },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
@@ -284,8 +287,8 @@ export default function ApprovalsPage() {
 
   const getActionBadge = (actionType: string) => {
     const actionConfig = {
-      edit: { color: 'bg-blue-500/20 text-blue-400', label: 'Edit' },
-      delete: { color: 'bg-red-500/20 text-red-400', label: 'Delete' },
+      edit: { color: 'bg-blue-500/20 text-blue-400', label: t('actionTypes.edit') },
+      delete: { color: 'bg-red-500/20 text-red-400', label: t('actionTypes.delete') },
     };
 
     const config = actionConfig[actionType as keyof typeof actionConfig] || actionConfig.edit;
@@ -300,8 +303,8 @@ export default function ApprovalsPage() {
     return (
       <Layout>
         <div className="text-center text-gray-400">
-          <h1 className="text-2xl font-semibold text-white mb-4">Access Denied</h1>
-          <p>You don't have permission to view this page.</p>
+          <h1 className="text-2xl font-semibold text-white mb-4">{tCommon('accessDenied')}</h1>
+          <p>{tCommon('noPermissionViewPage')}</p>
         </div>
       </Layout>
     );
@@ -314,18 +317,18 @@ export default function ApprovalsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-3xl font-semibold text-white">
-              {userIsEmployee ? 'My Approval Requests' : 'Approvals'}
+              {userIsEmployee ? t('myRequestsTitle') : t('title')}
             </h1>
             {!userIsEmployee && lastUpdated && (
               <p className="text-sm text-gray-400 mt-1">
-                Last updated: {lastUpdated.toLocaleTimeString()}
+                {tCommon('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
                 {isAutoRefresh && (
                   <span className="ml-2 inline-flex items-center">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-1"></span>
-                    Auto-refresh active
+                    {tCommon('autoRefreshActive')}
                     {!reviewingId && !showDetailsModal && !deletingId && (
                       <span className="ml-2 text-xs bg-green-600/20 px-2 py-0.5 rounded">
-                        Next: {countdown}s
+                        {tCommon('next')}: {countdown}s
                       </span>
                     )}
                   </span>
@@ -344,7 +347,7 @@ export default function ApprovalsPage() {
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${isAutoRefresh ? 'bg-white' : 'bg-gray-400'}`}></span>
-                Auto-refresh
+                {tCommon('autoRefresh')}
               </button>
             )}
             <button
@@ -352,7 +355,7 @@ export default function ApprovalsPage() {
               disabled={loading}
               className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg text-white text-sm font-medium transition-colors"
             >
-              {loading ? 'Loading...' : 'Refresh'}
+              {loading ? t('messages.loading') : tCommon('refresh')}
             </button>
           </div>
         </div>
@@ -364,7 +367,7 @@ export default function ApprovalsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search approvals..."
+                placeholder={t('search.placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm sm:text-base"
@@ -377,10 +380,10 @@ export default function ApprovalsPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-3 sm:px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/30 text-sm flex-1 lg:flex-none"
             >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
+              <option value="all">{t('search.allStatuses')}</option>
+              <option value="pending">{t('statuses.pending')}</option>
+              <option value="approved">{t('statuses.approved')}</option>
+              <option value="rejected">{t('statuses.rejected')}</option>
             </select>
           </div>
         </div>
@@ -392,27 +395,27 @@ export default function ApprovalsPage() {
               <thead>
                 <tr className="border-b border-white/20">
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Request
+                    {tCommon('request')}
                   </th>
                   {!userIsEmployee && (
                     <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                      Requested By
+                      {t('table.requestedBy')}
                     </th>
                   )}
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Action
+                    {t('table.actionType')}
                   </th>
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Resource
+                    {t('table.resource')}
                   </th>
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Date
+                    {t('table.date')}
                   </th>
                   <th className="text-left text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Status
+                    {t('table.status')}
                   </th>
                   <th className="text-right text-xs font-medium text-gray-300 uppercase tracking-wider px-3 sm:px-6 py-3">
-                    Actions
+                    {t('table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -429,7 +432,7 @@ export default function ApprovalsPage() {
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-gray-400" />
                           <div className="text-sm text-white">
-                            {approval.requestedBy?.name || 'Unknown User'}
+                            {approval.requestedBy?.name || tCommon('unknownUser')}
                           </div>
                         </div>
                       </td>
@@ -456,7 +459,7 @@ export default function ApprovalsPage() {
                         <button
                           onClick={() => handleViewDetails(approval)}
                           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                          title="View Details"
+                          title={t('actions.viewDetails')}
                         >
                           <Eye className="h-4 w-4 text-blue-400" />
                         </button>
@@ -466,7 +469,7 @@ export default function ApprovalsPage() {
                               onClick={() => handleReview(approval._id, 'approve')}
                               disabled={reviewingId === approval._id}
                               className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
-                              title="Approve"
+                              title={t('actions.approve')}
                             >
                               <Check className="h-4 w-4 text-green-400" />
                             </button>
@@ -474,7 +477,7 @@ export default function ApprovalsPage() {
                               onClick={() => handleReview(approval._id, 'reject')}
                               disabled={reviewingId === approval._id}
                               className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
-                              title="Reject"
+                              title={t('actions.reject')}
                             >
                               <X className="h-4 w-4 text-red-400" />
                             </button>
@@ -485,7 +488,7 @@ export default function ApprovalsPage() {
                             onClick={() => handleDelete(approval._id)}
                             disabled={deletingId === approval._id}
                             className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
-                            title="Delete"
+                            title={tCommon('delete')}
                           >
                             {deletingId === approval._id ? (
                               <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
@@ -504,7 +507,7 @@ export default function ApprovalsPage() {
 
           {currentItems?.length === 0 && (
             <div className="text-center py-8 sm:py-12">
-              <p className="text-gray-400 text-sm sm:text-base">No approval requests found.</p>
+              <p className="text-gray-400 text-sm sm:text-base">{t('summary.noApprovals')}</p>
             </div>
           )}
         </div>
@@ -513,7 +516,10 @@ export default function ApprovalsPage() {
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="text-xs sm:text-sm text-gray-400">
-              Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredApprovals?.length || 0)} of {filteredApprovals?.length || 0} results
+              {t('summary.showingApprovals', { 
+                count: Math.min(indexOfLastItem, filteredApprovals?.length || 0),
+                total: filteredApprovals?.length || 0
+              })}
             </div>
             <div className="flex gap-2">
               <button
@@ -521,17 +527,17 @@ export default function ApprovalsPage() {
                 disabled={currentPage === 1}
                 className="px-3 py-1 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded text-white text-sm transition-colors"
               >
-                Previous
+                {tCommon('previous')}
               </button>
               <span className="px-3 py-1 text-white text-sm">
-                Page {currentPage} of {totalPages}
+                {tCommon('page')} {currentPage} {tCommon('of')} {totalPages}
               </span>
               <button
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded text-white text-sm transition-colors"
               >
-                Next
+                {tCommon('next')}
               </button>
             </div>
           </div>

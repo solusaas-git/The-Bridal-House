@@ -10,10 +10,13 @@ import CurrencySettings from '@/components/settings/CurrencySettings';
 import Roles from '@/components/settings/Roles';
 import { RootState } from '@/store/store';
 import { isAdmin } from '@/utils/permissions';
+import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const [activeTab, setActiveTab] = useState('categories');
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
 
   // Check permissions for different settings sections using utility functions
   const userIsAdmin = isAdmin(currentUser);
@@ -29,37 +32,37 @@ const Settings = () => {
         return canAccessCategories ? (
           <Categories />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
       case 'cost-categories':
         return canAccessCostCategories ? (
           <CostCategories />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
       case 'users':
         return canAccessUsers ? (
           <Users />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
       case 'currency':
         return canAccessCurrency ? (
           <CurrencySettings />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
       case 'roles':
         return canAccessRoles ? (
           <Roles />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
       default:
         return canAccessCategories ? (
           <Categories />
         ) : (
-          <div className="text-center py-8 text-gray-400">Access denied</div>
+          <div className="text-center py-8 text-gray-400">{t('messages.accessDenied')}</div>
         );
     }
   };
@@ -67,7 +70,7 @@ const Settings = () => {
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        <h1 className="text-xl sm:text-3xl font-semibold text-white">Settings</h1>
+        <h1 className="text-xl sm:text-3xl font-semibold text-white">{t('title')}</h1>
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 sm:gap-4 border-b border-white/10 pb-2 sm:pb-4">
@@ -80,7 +83,7 @@ const Settings = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              Categories
+              {t('tabs.categories')}
             </button>
           )}
           {canAccessCostCategories && (
@@ -92,7 +95,7 @@ const Settings = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              Cost Categories
+              {t('tabs.costCategories')}
             </button>
           )}
           {canAccessUsers && (
@@ -104,7 +107,7 @@ const Settings = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              Users
+              {t('tabs.users')}
             </button>
           )}
           {canAccessCurrency && (
@@ -116,7 +119,7 @@ const Settings = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              Currency
+              {t('tabs.currency')}
             </button>
           )}
           {canAccessRoles && (
@@ -128,7 +131,7 @@ const Settings = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              Roles
+              {t('tabs.roles')}
             </button>
           )}
         </div>

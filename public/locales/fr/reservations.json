@@ -1,0 +1,281 @@
+{
+  "title": "Réservations",
+  "subtitle": "Gérez vos réservations",
+  "addReservation": "Ajouter une Réservation",
+  "editReservation": "Modifier la Réservation",
+  "searchPlaceholder": "Rechercher des réservations, clients ou produits...",
+  "filters": {
+    "filterBy": "Filtrer par :",
+    "dateColumns": {
+      "pickupDate": "Date de retrait",
+      "returnDate": "Date de retour",
+      "weddingDate": "Date de mariage",
+      "availabilityDate": "Date de disponibilité",
+      "createdAt": "Date de création"
+    },
+    "from": "Du :",
+    "to": "Au :",
+    "clearDates": "Effacer les dates",
+    "allStatuses": "Tous les statuts",
+    "paymentStatuses": {
+      "notpaid": "Non Payé",
+      "partiallypaid": "Partiellement Payé",
+      "paid": "Payé",
+      "pending": "En Attente"
+    },
+    "apply": "Appliquer",
+    "cancel": "Annuler",
+    "clear": "Effacer"
+  },
+  "columns": {
+    "columns": "Colonnes",
+    "showHideColumns": "Afficher/Masquer les Colonnes",
+    "saving": "Enregistrement...",
+    "id": "ID",
+    "createdAt": "Créé le",
+    "clientName": "Client",
+    "weddingDate": "Date de mariage",
+    "items": "Articles",
+    "pickupDate": "Date de retrait",
+    "returnDate": "Date de retour",
+    "availabilityDate": "Date de disponibilité",
+    "total": "Total",
+    "remainingBalance": "Solde Restant",
+    "type": "Type",
+    "status": "Statut",
+    "paymentStatus": "Paiement",
+    "createdBy": "Créé par",
+    "actions": "Actions"
+  },
+  "table": {
+    "noItems": "Aucun article",
+    "imgPlaceholder": "IMG",
+    "moreItems": "articles de plus",
+    "moreDresses": "robes de plus",
+    "noClient": "Aucun client"
+  },
+  "messages": {
+    "loadFailed": "Échec du chargement des réservations",
+    "networkError": "Erreur réseau",
+    "columnPreferencesSaved": "Préférences de colonnes sauvegardées avec succès",
+    "columnPreferencesFailed": "Échec de la sauvegarde des préférences de colonnes",
+    "deleteSuccess": "Réservation supprimée avec succès",
+    "deleteFailed": "Échec de la suppression de la réservation",
+    "noReservationsFound": "Aucune réservation trouvée",
+    "adjustSearchCriteria": "Essayez d'ajuster vos critères de recherche",
+    "loadingReservations": "Chargement des réservations..."
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "details": {
+    "title": "Détails de la Réservation",
+    "editReservation": "Modifier la Réservation",
+    "backToReservations": "Retour aux Réservations",
+    "loadingReservation": "Chargement de la réservation...",
+    "reservationNotFound": "Réservation non trouvée",
+    "error": "Erreur",
+    "tabs": {
+      "general": "Informations Générales",
+      "items": "Articles Réservés",
+      "payments": "Paiements Associés"
+    },
+    "clientInfo": {
+      "title": "Informations Client",
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "weddingDate": "Date de Mariage",
+      "idNumber": "Numéro d'ID"
+    },
+    "reservationDetails": {
+      "title": "Détails de la Réservation",
+      "type": "Type",
+      "status": "Statut",
+      "pickupDate": "Date de Retrait",
+      "returnDate": "Date de Retour",
+      "availabilityDate": "Date de Disponibilité",
+      "createdAt": "Créé le",
+      "createdBy": "Créé par",
+      "notes": "Notes",
+      "noNotes": "Aucune note fournie"
+    },
+    "financialSummary": {
+      "title": "Résumé Financier",
+      "itemsTotal": "Total des Articles",
+      "additionalCosts": "Coûts Additionnels",
+      "subtotal": "Sous-total",
+      "securityDeposit": "Dépôt de Garantie",
+      "advance": "Avance",
+      "totalAmount": "Montant Total"
+    },
+    "itemsSection": {
+      "title": "Articles Réservés",
+      "noItems": "Aucun article trouvé",
+      "itemDetails": "Détails de l'Article",
+      "rentalCost": "Coût de Location",
+      "size": "Taille",
+      "category": "Catégorie"
+    },
+    "paymentsSection": {
+      "title": "Progression des Paiements",
+      "addPayment": "Ajouter un Paiement",
+      "totalPaid": "Total Payé",
+      "remaining": "Restant",
+      "paymentStatus": "Statut de Paiement",
+      "noPayments": "Aucun paiement trouvé",
+      "paymentDate": "Date de Paiement",
+      "paymentMethod": "Méthode de Paiement",
+      "paymentType": "Type de Paiement",
+      "amount": "Montant",
+      "reference": "Référence",
+      "note": "Note",
+      "attachments": "Pièces Jointes",
+      "viewDetails": "Voir les Détails"
+    },
+    "paymentModal": {
+      "addTitle": "Ajouter un Paiement",
+      "viewTitle": "Détails du Paiement",
+      "amount": "Montant",
+      "paymentMethod": "Méthode de Paiement",
+      "paymentType": "Type de Paiement",
+      "paymentDate": "Date de Paiement",
+      "reference": "Référence",
+      "note": "Note",
+      "attachments": "Pièces Jointes",
+      "methods": {
+        "cash": "Espèces",
+        "bankTransfer": "Virement Bancaire",
+        "creditCard": "Carte de Crédit",
+        "check": "Chèque"
+      },
+      "types": {
+        "advance": "Avance",
+        "security": "Dépôt de Garantie",
+        "final": "Paiement Final",
+        "other": "Autre"
+      },
+      "remove": "Supprimer",
+      "cancel": "Annuler",
+      "createPayment": "Créer le Paiement",
+      "creating": "Création...",
+      "close": "Fermer"
+    },
+    "statuses": {
+      "confirmed": "Confirmé",
+      "draft": "Brouillon",
+      "cancelled": "Annulé"
+    },
+    "paymentStatuses": {
+      "paid": "Payé",
+      "partial": "Partiel",
+      "unpaid": "Non Payé",
+      "partiallyPaid": "Partiellement Payé",
+      "notPaid": "Non Payé",
+      "pending": "En Attente"
+    },
+    "types": {
+      "final": "Final",
+      "fitting": "Essayage"
+    }
+  },
+  "edit": {
+    "title": "Modifier la Réservation",
+    "subtitle": "Mettre à jour les détails de la réservation",
+    "backToReservation": "Retour à la Réservation",
+    "steps": {
+      "clientSelection": "Sélection du Client",
+      "itemsAndDates": "Articles et Dates",
+      "financialDetails": "Détails Financiers"
+    },
+    "navigation": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "updateReservation": "Mettre à Jour la Réservation",
+      "updating": "Mise à jour..."
+    },
+    "clientSection": {
+      "title": "Sélectionner un Client",
+      "searchPlaceholder": "Rechercher un client par nom, email ou téléphone...",
+      "selectedClient": "Client Sélectionné",
+      "noClientSelected": "Aucun client sélectionné",
+      "noClientsFound": "Aucun client trouvé",
+      "loadingClients": "Chargement des clients...",
+      "clientRequired": "Veuillez sélectionner un client pour continuer"
+    },
+    "itemsSection": {
+      "title": "Configuration des Articles et Dates",
+      "selectItems": "Sélectionner des Articles",
+      "selectedItems": "Articles Sélectionnés",
+      "noItemsSelected": "Aucun article sélectionné",
+      "addItems": "Ajouter des Articles",
+      "searchItems": "Rechercher des articles...",
+      "categories": {
+        "all": "Toutes les Catégories",
+        "dresses": "Robes",
+        "accessories": "Accessoires"
+      },
+      "itemDetails": {
+        "size": "Taille",
+        "rentalCost": "Coût de Location",
+        "addToSelection": "Ajouter à la Sélection",
+        "removeFromSelection": "Retirer de la Sélection"
+      }
+    },
+    "datesSection": {
+      "title": "Configuration des Dates",
+      "weddingDate": "Date de Mariage",
+      "pickupDate": "Date de Retrait",
+      "pickupTime": "Heure de Retrait",
+      "returnDate": "Date de Retour",
+      "returnTime": "Heure de Retour",
+      "availabilityDate": "Date de Disponibilité",
+      "availabilityTime": "Heure de Disponibilité",
+      "bufferSettings": "Paramètres de Marge",
+      "bufferBefore": "Marge Avant (jours)",
+      "bufferAfter": "Marge Après (jours)",
+      "availability": "Disponibilité (jours)"
+    },
+    "financialSection": {
+      "title": "Configuration Financière",
+      "itemsTotal": "Total des Articles",
+      "customItemsTotal": "Total Personnalisé des Articles",
+      "useCustomTotal": "Utiliser le Total Personnalisé",
+      "additionalCost": "Coût Supplémentaire",
+      "subtotal": "Sous-total",
+      "securityDeposit": "Montant du Dépôt de Garantie",
+      "advance": "Montant de l'Avance",
+      "totalAmount": "Montant Total"
+    },
+    "generalSettings": {
+      "title": "Paramètres Généraux",
+      "reservationType": "Type de Réservation",
+      "status": "Statut",
+      "notes": "Notes",
+      "notesPlaceholder": "Ajoutez des notes spéciales ou des instructions..."
+    },
+    "messages": {
+      "loadingReservation": "Chargement de la réservation...",
+      "updateSuccess": "Réservation mise à jour avec succès",
+      "updateError": "Échec de la mise à jour de la réservation",
+      "fetchError": "Échec de la récupération des données",
+      "validationError": "Veuillez remplir tous les champs obligatoires"
+    }
+  },
+  "add": {
+    "title": "Nouvelle Réservation",
+    "subtitle": "Créer une nouvelle réservation",
+    "navigation": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "createReservation": "Créer la Réservation",
+      "creating": "Création..."
+    },
+    "messages": {
+      "createSuccess": "Réservation créée avec succès",
+      "createError": "Échec de la création de la réservation"
+    }
+  }
+}

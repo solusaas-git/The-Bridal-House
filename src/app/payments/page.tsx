@@ -30,12 +30,15 @@ import Pagination from '@/components/ui/Pagination';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import DateFilter from '@/components/shared/DateFilter';
+import { useTranslation } from 'react-i18next';
 
 // Component that uses useSearchParams
 const PaymentsContent = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
+  const { t } = useTranslation('payments');
+  const { t: tCommon } = useTranslation('common');
 
   // Redux state
   const paymentState = useSelector((state: RootState) => state.payment);
@@ -52,6 +55,7 @@ const PaymentsContent = () => {
   // Local state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [savingPreferences, setSavingPreferences] = useState(false);
+  const [loadingPreferences, setLoadingPreferences] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -81,19 +85,19 @@ const PaymentsContent = () => {
   useEffect(() => {
     const loadColumnPreferences = async () => {
       try {
+        setLoadingPreferences(true);
         const response = await axios.get('/api/user-preferences/columns/payments', {
           withCredentials: true,
         });
         
-        if (response.data.success && response.data.preferences) {
-          // Merge with default values to ensure all properties are defined
-          setColumnVisibility(prevState => ({
-            ...prevState,
-            ...response.data.preferences
-          }));
+        if (response.data.success && response.data.columnPreferences) {
+          // Use the loaded preferences completely, don't merge to avoid conflicts
+          setColumnVisibility(response.data.columnPreferences);
         }
       } catch (error) {
         console.error('Error loading column preferences:', error);
+      } finally {
+        setLoadingPreferences(false);
       }
     };
 
@@ -216,8 +220,8 @@ const PaymentsContent = () => {
         }
       } catch (error) {
         console.error('Error fetching payments:', error);
-        dispatch(setError('Failed to fetch payments'));
-        toast.error('Failed to fetch payments');
+        dispatch(setError(t('messages.loadFailed')));
+        toast.error(t('messages.loadFailed'));
       } finally {
         dispatch(setLoading(false));
       }
@@ -324,10 +328,10 @@ const PaymentsContent = () => {
       await axios.put('/api/user-preferences/columns/payments', {
         columnVisibility: preferences,
       });
-      toast.success('Column preferences saved successfully');
+      toast.success(t('messages.columnPreferencesSaved'));
     } catch (error) {
       console.error('Failed to save column preferences:', error);
-      toast.error('Failed to save column preferences');
+      toast.error(t('messages.columnPreferencesFailed'));
     } finally {
       setSavingPreferences(false);
       setIsDropdownOpen(false);
@@ -372,17 +376,17 @@ const PaymentsContent = () => {
   }, [startDate, endDate]);
 
   const handleDelete = async (paymentId: string) => {
-    if (!confirm('Are you sure you want to delete this payment?')) {
+    if (!confirm(tCommon('deleteConfirm'))) {
       return;
     }
 
     try {
       await axios.delete(`/api/payments/${paymentId}`);
-      toast.success('Payment deleted successfully');
+      toast.success(t('messages.deleteSuccess'));
       fetchPaymentsData();
     } catch (error) {
       console.error('Failed to delete payment:', error);
-      toast.error('Failed to delete payment');
+      toast.error(t('messages.deleteFailed'));
     }
   };
 
@@ -398,17 +402,17 @@ const PaymentsContent = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Payments</h1>
-            <p className="text-gray-300">Manage customer payments and transactions</p>
+            <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+            <p className="text-gray-300">{t('subtitle')}</p>
           </div>
         </div>
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-          <p className="text-red-400">Error loading payments: {error}</p>
+          <p className="text-red-400">{t('messages.errorLoading')}: {error}</p>
           <button
             onClick={fetchPaymentsData}
             className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
           >
-            Retry
+            {t('actions.retry')}
           </button>
         </div>
       </div>
@@ -421,15 +425,15 @@ const PaymentsContent = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Payments</h1>
-            <p className="text-sm sm:text-base text-gray-300">Manage customer payments and transactions</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
+            <p className="text-sm sm:text-base text-gray-300">{t('subtitle')}</p>
           </div>
           <button
             onClick={() => router.push('/payments/add')}
             className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
-            Add Payment
+            {t('addPayment')}
           </button>
         </div>
 
@@ -442,7 +446,7 @@ const PaymentsContent = () => {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search payments, customers, references..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => dispatch(setSearchTerm(e.target.value))}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
@@ -456,7 +460,7 @@ const PaymentsContent = () => {
                 startDate={startDate}
                 endDate={endDate}
                 onDateChange={handleDateChange}
-                label="Date Filter"
+                label={t('dateFilter')}
                 className="w-full sm:w-auto"
               />
 
@@ -468,7 +472,7 @@ const PaymentsContent = () => {
                   className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
                 >
                   <GearIcon className="h-4 w-4" />
-                  <span className="text-sm">Columns</span>
+                  <span className="text-sm">{t('columns.columns')}</span>
                 </button>
               </div>
             </div>
@@ -494,9 +498,9 @@ const PaymentsContent = () => {
             >
               <div className="p-4">
                 <h3 className="text-sm font-medium text-white mb-3">
-                  Show/Hide Columns
+                  {t('columns.showHideColumns')}
                   {savingPreferences && (
-                    <span className="ml-2 text-xs text-blue-400">Saving...</span>
+                    <span className="ml-2 text-xs text-blue-400">{t('columns.saving')}</span>
                   )}
                 </h3>
                 
@@ -521,14 +525,14 @@ const PaymentsContent = () => {
                     onClick={() => setIsDropdownOpen(false)}
                     className="px-3 py-1 text-sm text-gray-300 hover:text-white transition-colors"
                   >
-                    Cancel
+                    {tCommon('cancel')}
                   </button>
                   <button
                     onClick={() => saveColumnPreferences(columnVisibility)}
                     disabled={savingPreferences}
                     className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
                   >
-                    {savingPreferences ? 'Saving...' : 'Save'}
+                    {savingPreferences ? t('columns.saving') : tCommon('save')}
                   </button>
                 </div>
               </div>
@@ -542,7 +546,7 @@ const PaymentsContent = () => {
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300 text-sm sm:text-base">Loading payments...</p>
+                              <p className="text-gray-300 text-sm sm:text-base">{t('table.loadingPayments')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto overflow-y-visible">
@@ -551,62 +555,62 @@ const PaymentsContent = () => {
                   <tr className="border-b border-white/20">
                     {columnVisibility.id && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Id
+                        {t('columns.id')}
                       </th>
                     )}
                     {columnVisibility.paymentDate && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Payment Date
+                        {t('columns.paymentDate')}
                       </th>
                     )}
                     {columnVisibility.customer && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Customer
+                        {t('columns.customer')}
                       </th>
                     )}
                     {columnVisibility.reservation && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Reservation
+                        {t('columns.reservation')}
                       </th>
                     )}
                     {columnVisibility.amount && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Amount
+                        {t('columns.amount')}
                       </th>
                     )}
                     {columnVisibility.paymentMethod && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Payment Method
+                        {t('columns.paymentMethod')}
                       </th>
                     )}
                     {columnVisibility.paymentType && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Payment Type
+                        {t('columns.paymentType')}
                       </th>
                     )}
                     {columnVisibility.reference && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Reference
+                        {t('columns.reference')}
                       </th>
                     )}
                     {columnVisibility.note && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Note
+                        {t('columns.note')}
                       </th>
                     )}
                     {columnVisibility.attachments && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Attachments
+                        {t('columns.attachments')}
                       </th>
                     )}
                     {columnVisibility.createdBy && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Created By
+                        {t('columns.createdBy')}
                       </th>
                     )}
                     {columnVisibility.actions && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Actions
+                        {t('columns.actions')}
                       </th>
                     )}
                   </tr>
@@ -630,7 +634,7 @@ const PaymentsContent = () => {
                       )}
                       {columnVisibility.customer && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                          {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : 'N/A'}
+                          {payment.client ? `${payment.client.firstName} ${payment.client.lastName}` : tCommon('notAvailable')}
                         </td>
                       )}
                       {columnVisibility.reservation && (
@@ -683,7 +687,7 @@ const PaymentsContent = () => {
                                 router.push(`/payments/${payment._id}`);
                               }}
                               className="p-1 hover:bg-white/10 rounded transition-colors"
-                              title="View"
+                              title={t('actions.view')}
                             >
                               <EyeOpenIcon className="h-4 w-4 text-blue-400" />
                             </button>
@@ -694,7 +698,7 @@ const PaymentsContent = () => {
                                 handleEdit(payment._id);
                               }}
                               className="p-1 hover:bg-white/10 rounded transition-colors"
-                              title="Edit"
+                              title={t('actions.edit')}
                             >
                               <Pencil1Icon className="h-4 w-4 text-green-400" />
                             </button>
@@ -708,14 +712,14 @@ const PaymentsContent = () => {
                                 await axios.delete(`/api/payments/${payment._id}`);
                               }}
                               onSuccess={() => {
-                                toast.success('Payment deleted successfully');
+                                toast.success(t('messages.deleteSuccess'));
                                 fetchPaymentsData(); // Refresh the list
                               }}
                             >
                               <button
                                 type="button"
                                 className="p-1 hover:bg-white/10 rounded transition-colors"
-                                title="Delete"
+                                title={t('actions.delete')}
                               >
                                 <TrashIcon className="h-4 w-4 text-red-400" />
                               </button>
@@ -730,10 +734,10 @@ const PaymentsContent = () => {
 
               {payments?.length === 0 && !loading && (
                 <div className="text-center py-8 sm:py-12">
-                  <p className="text-gray-400 text-sm sm:text-base">No payments found</p>
+                  <p className="text-gray-400 text-sm sm:text-base">{t('table.noPayments')}</p>
                   {searchTerm && (
                     <p className="text-gray-500 text-xs sm:text-sm mt-2">
-                      Try adjusting your search criteria
+                      {t('table.adjustCriteria')}
                     </p>
                   )}
                 </div>
@@ -762,12 +766,14 @@ const PaymentsContent = () => {
 
 // Main page component with Suspense boundary
 const PaymentsPage = () => {
+  const { t: tCommon } = useTranslation('common');
+  
   return (
     <Suspense fallback={
       <Layout>
         <div className="min-h-screen bg-gray-900 text-white">
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">Loading...</div>
+            <div className="text-center">{tCommon('loading')}</div>
           </div>
         </div>
       </Layout>

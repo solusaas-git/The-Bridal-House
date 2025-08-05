@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Truck, Clock, Package, Eye, X } from 'lucide-react';
 import { format, isWithinInterval } from 'date-fns';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Reservation {
   _id: string;
@@ -44,6 +45,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const { t } = useTranslation('dashboard');
   
   const upcomingPickups = reservations?.filter((reservation) => {
     const pickupDate = new Date(reservation.pickupDate);
@@ -117,7 +119,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
           <div className="p-2 bg-green-500/10 rounded-lg">
             <Truck className="h-5 w-5 text-green-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white">Upcoming Pickups</h3>
+          <h3 className="text-lg font-semibold text-white">{t('widgets.pickups.title')}</h3>
         </div>
         
         <div className="flex flex-col gap-2">
@@ -169,9 +171,9 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                     }}
                   className="text-xs border border-white/20 rounded-md px-2 py-1 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   max={customEndDate || undefined}
-                  title="Start Date"
+                  title={t('widgets.pickups.startDate')}
                 />
-                <span className="text-gray-400 text-xs">to</span>
+                <span className="text-gray-400 text-xs">{t('widgets.pickups.to')}</span>
                 <input
                   type="date"
                   value={customEndDate}
@@ -193,12 +195,12 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                     }}
                   className="text-xs border border-white/20 rounded-md px-2 py-1 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min={customStartDate || undefined}
-                  title="End Date"
+                  title={t('widgets.pickups.endDate')}
                 />
               </div>
               {activeRange === 'Custom' && customStartDate && customEndDate && (
                 <span className="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded text-center">
-                  Custom Range Active
+                  {t('widgets.pickups.customRangeActive')}
                 </span>
               )}
             </div>
@@ -212,7 +214,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
             <div className="p-3 bg-green-500/10 rounded-full w-fit mx-auto mb-3">
               <Truck className="h-12 w-12 text-green-400" />
             </div>
-            <p className="text-gray-400 text-sm">No pickups scheduled for this period</p>
+            <p className="text-gray-400 text-sm">{t('widgets.pickups.noPickups')}</p>
           </div>
         ) : (
           upcomingPickups.slice(0, 5).map((reservation) => (
@@ -228,8 +230,8 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">
                   {reservation.client 
-                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
-                    : 'Unknown Customer'
+                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || t('widgets.pickups.unknownCustomer')
+                    : t('widgets.pickups.unknownCustomer')
                   }
                 </p>
                 <div className="flex items-center gap-1 mt-1">
@@ -242,7 +244,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                   <div className="flex items-center gap-1 mt-1">
                     <Package className="h-3 w-3 text-gray-500" />
                     <p className="text-xs text-gray-500">
-                      {reservation.items.length} item(s)
+                      {reservation.items.length} {t('widgets.pickups.items')}
                     </p>
                   </div>
                 )}
@@ -257,7 +259,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
             className="flex items-center justify-center gap-2 w-full p-2 mt-3 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-lg transition-colors"
           >
             <Eye className="h-3 w-3" />
-            View all {upcomingPickups.length} pickups
+            {t('widgets.pickups.viewAll', { count: upcomingPickups.length })}
           </button>
         )}
       </div>
@@ -272,7 +274,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                   <Truck className="h-5 w-5 text-green-400" />
                 </div>
                 <h2 className="text-lg font-semibold text-white">
-                  All Upcoming Pickups ({upcomingPickups.length})
+                  {t('widgets.pickups.viewAll', { count: upcomingPickups.length })}
                 </h2>
               </div>
               <button
@@ -297,8 +299,8 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">
                         {reservation.client 
-                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
-                          : 'Unknown Customer'
+                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || t('widgets.pickups.unknownCustomer')
+                          : t('widgets.pickups.unknownCustomer')
                         }
                       </p>
                       <div className="flex items-center gap-1 mt-1">
@@ -311,7 +313,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                         <div className="flex items-center gap-1 mt-1">
                           <Package className="h-3 w-3 text-gray-500" />
                           <p className="text-xs text-gray-500">
-                            {reservation.items.length} item(s)
+                            {reservation.items.length} {t('widgets.pickups.items')}
                           </p>
                         </div>
                       )}

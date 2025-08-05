@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { UploadIcon } from '@radix-ui/react-icons'
+import { useTranslation } from 'react-i18next'
 
 interface FileUploadProps {
   onFilesAdded: (files: File[]) => void;
@@ -7,6 +8,7 @@ interface FileUploadProps {
 
 const FileUpload = ({ onFilesAdded }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false)
+  const { t } = useTranslation('shared')
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -69,10 +71,10 @@ const FileUpload = ({ onFilesAdded }: FileUploadProps) => {
       >
         <UploadIcon className="h-6 w-6 sm:h-8 sm:w-8 text-white/60" />
         <div className="text-xs sm:text-sm text-gray-300">
-          <span className="font-medium text-white">Click to upload</span> or drag and drop
+          <span className="font-medium text-white">{t('fileUpload.clickToUpload')}</span> {t('fileUpload.orDragAndDrop')}
         </div>
         <p className="text-xs text-gray-400">
-          PDF, PNG, JPG or JPEG (max. 10MB per file)
+          {t('fileUpload.supportedFormats')}
         </p>
       </label>
     </div>

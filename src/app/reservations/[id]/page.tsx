@@ -19,6 +19,7 @@ import {
 import { RootState } from '@/store/store';
 import { formatCurrency } from '@/utils/currency';
 import Layout from '@/components/Layout';
+import { useTranslation } from 'react-i18next';
 
 interface Reservation {
   _id: string;
@@ -64,6 +65,8 @@ export default function ViewReservationPage() {
   const params = useParams();
   const router = useRouter();
   const reservationId = params.id as string;
+  const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
 
   const currencySettings = useSelector((state: RootState) => state.settings);
 
@@ -88,9 +91,9 @@ export default function ViewReservationPage() {
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
 
   const tabs = [
-    { id: 'general', label: 'General Info', icon: PersonIcon },
-    { id: 'items', label: 'Reserved Items', icon: ListBulletIcon },
-    { id: 'payments', label: 'Associated Payments', icon: DashboardIcon },
+    { id: 'general', label: t('details.tabs.general'), icon: PersonIcon },
+    { id: 'items', label: t('details.tabs.items'), icon: ListBulletIcon },
+    { id: 'payments', label: t('details.tabs.payments'), icon: DashboardIcon },
   ];
 
   useEffect(() => {
@@ -132,10 +135,10 @@ export default function ViewReservationPage() {
       if (data.success) {
         setReservation(data.reservation);
       } else {
-        setError(data.message || 'Failed to fetch reservation');
+        setError(data.message || t('messages.loadFailed'));
       }
     } catch (error) {
-      setError('Failed to fetch reservation');
+      setError(t('messages.loadFailed'));
       console.error('Error fetching reservation:', error);
     } finally {
       setLoading(false);
@@ -209,7 +212,7 @@ export default function ViewReservationPage() {
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return tCommon('notAvailable');
     return format(new Date(dateString), 'dd/MM/yyyy HH:mm');
   };
 
@@ -263,7 +266,7 @@ export default function ViewReservationPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-300">Loading reservation...</div>
+          <div className="text-lg text-gray-300">{t('details.loadingReservation')}</div>
         </div>
       </Layout>
     );
@@ -273,12 +276,12 @@ export default function ViewReservationPage() {
     return (
       <Layout>
         <div className="text-center text-red-400">
-          <p>Error: {error || 'Reservation not found'}</p>
+          <p>{t('details.error')}: {error || t('details.reservationNotFound')}</p>
           <Link
             href="/reservations"
             className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Back to Reservations
+            {t('details.backToReservations')}
           </Link>
         </div>
       </Layout>
@@ -296,18 +299,18 @@ export default function ViewReservationPage() {
             {/* 1. Client Info */}
             {reservation.client && (
               <div className="bg-white/5 p-4 rounded-lg">
-                <h4 className="text-base sm:text-lg font-medium text-white mb-4">Client Information</h4>
+                <h4 className="text-base sm:text-lg font-medium text-white mb-4">{t('details.clientInfo.title')}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {/* Column 1: Basic Info */}
                   <div className="space-y-4">
                     <div>
-                      <h5 className="text-sm font-medium text-gray-400">Name</h5>
+                      <h5 className="text-sm font-medium text-gray-400">{t('details.clientInfo.name')}</h5>
                       <p className="mt-1 text-sm text-white">
                         {reservation.client.firstName} {reservation.client.lastName}
                       </p>
                     </div>
                     <div>
-                      <h5 className="text-sm font-medium text-gray-400">Phone</h5>
+                      <h5 className="text-sm font-medium text-gray-400">{t('details.clientInfo.phone')}</h5>
                       <p className="mt-1 text-sm text-white">{reservation.client.phone}</p>
                     </div>
                   </div>
@@ -315,12 +318,12 @@ export default function ViewReservationPage() {
                   {/* Column 2: Personal Info */}
                   <div className="space-y-4">
                     <div>
-                      <h5 className="text-sm font-medium text-gray-400">CIN</h5>
-                      <p className="mt-1 text-sm text-white">{reservation.client.idNumber || 'Not provided'}</p>
+                      <h5 className="text-sm font-medium text-gray-400">{t('details.clientInfo.idNumber')}</h5>
+                      <p className="mt-1 text-sm text-white">{reservation.client.idNumber || tCommon('notAvailable')}</p>
                     </div>
                     {reservation.client.weddingDate && (
                       <div>
-                        <h5 className="text-sm font-medium text-gray-400">Wedding Date</h5>
+                        <h5 className="text-sm font-medium text-gray-400">{t('details.clientInfo.weddingDate')}</h5>
                         <p className="mt-1 text-sm text-white">{formatDate(reservation.client.weddingDate)}</p>
                       </div>
                     )}
@@ -329,16 +332,16 @@ export default function ViewReservationPage() {
                   {/* Column 3: Rental Dates */}
                   <div className="space-y-4">
                     <div>
-                      <h5 className="text-sm font-medium text-gray-400">Pickup Date</h5>
+                      <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.pickupDate')}</h5>
                       <p className="mt-1 text-sm text-white">{formatDate(reservation.pickupDate)}</p>
                     </div>
                     <div>
-                      <h5 className="text-sm font-medium text-gray-400">Return Date</h5>
+                      <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.returnDate')}</h5>
                       <p className="mt-1 text-sm text-white">{formatDate(reservation.returnDate)}</p>
                     </div>
                     {reservation.availabilityDate && (
                       <div>
-                        <h5 className="text-sm font-medium text-gray-400">Availability Date</h5>
+                        <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.availabilityDate')}</h5>
                         <p className="mt-1 text-sm text-white">{formatDate(reservation.availabilityDate)}</p>
                       </div>
                     )}
@@ -350,30 +353,30 @@ export default function ViewReservationPage() {
             {/* 2. Financial Summary */}
             {financials && (
               <div className="bg-white/5 p-4 rounded-lg">
-                <h4 className="text-lg font-medium text-white mb-4">Financial Summary</h4>
+                <h4 className="text-lg font-medium text-white mb-4">{t('details.financialSummary.title')}</h4>
                 <div className="space-y-2 text-white">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Items Total:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.itemsTotal')}:</span>
                     <span>{formatCurrency(financials.itemsTotal, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Additional Cost:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.additionalCosts')}:</span>
                     <span>{formatCurrency(reservation.additionalCost || 0, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between font-medium border-t border-white/20 pt-2">
-                    <span className="text-gray-400">Subtotal:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.subtotal')}:</span>
                     <span>{formatCurrency(financials.subtotal, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Security Deposit:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.securityDeposit')}:</span>
                     <span>{formatCurrency(financials.securityDeposit, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Advance:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.advance')}:</span>
                     <span>{formatCurrency(financials.advance, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg border-t border-white/20 pt-2">
-                    <span className="text-gray-400">Total:</span>
+                    <span className="text-gray-400">{t('details.financialSummary.totalAmount')}:</span>
                     <span>{formatCurrency(financials.total, currencySettings)}</span>
                   </div>
                 </div>
@@ -383,34 +386,34 @@ export default function ViewReservationPage() {
             {/* 3. Notes */}
             {reservation.notes && (
               <div className="bg-white/5 p-4 rounded-lg">
-                <h4 className="text-lg font-medium text-white mb-4">Notes</h4>
+                <h4 className="text-lg font-medium text-white mb-4">{t('details.reservationDetails.notes')}</h4>
                 <p className="text-sm text-white bg-white/10 p-3 rounded-md">{reservation.notes}</p>
               </div>
             )}
 
             {/* 4. Reservation Info */}
             <div className="bg-white/5 p-4 rounded-lg">
-              <h4 className="text-lg font-medium text-white mb-4">Reservation Details</h4>
+              <h4 className="text-lg font-medium text-white mb-4">{t('details.reservationDetails.title')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div>
-                    <h5 className="text-sm font-medium text-gray-400">Reservation ID</h5>
+                    <h5 className="text-sm font-medium text-gray-400">ID</h5>
                     <p className="mt-1 text-sm text-white font-mono">{reservation._id}</p>
                   </div>
                   <div>
-                    <h5 className="text-sm font-medium text-gray-400">Type</h5>
+                    <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.type')}</h5>
                     <p className="mt-1 text-sm text-white">{reservation.type}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <h5 className="text-sm font-medium text-gray-400">Status</h5>
+                    <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.status')}</h5>
                     <span className={`mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(reservation.status)}`}>
                       {reservation.status}
                     </span>
                   </div>
                   <div>
-                    <h5 className="text-sm font-medium text-gray-400">Created Date</h5>
+                    <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.createdAt')}</h5>
                     <p className="mt-1 text-sm text-white">{formatDate(reservation.createdAt)}</p>
                   </div>
                 </div>
@@ -422,7 +425,7 @@ export default function ViewReservationPage() {
       case 'items':
         return (
           <div className="space-y-4">
-            <h4 className="text-base sm:text-lg font-medium text-white">Reserved Items</h4>
+            <h4 className="text-base sm:text-lg font-medium text-white">{t('details.itemsSection.title')}</h4>
             {reservation.items && reservation.items.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {reservation.items.map((item) => {
@@ -595,7 +598,7 @@ export default function ViewReservationPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400">No payments found for this reservation.</p>
+              <p className="text-gray-400">{t('details.paymentsSection.noPayments')}</p>
             )}
           </div>
         );
@@ -612,11 +615,11 @@ export default function ViewReservationPage() {
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-3xl font-bold text-white">Reservation Details</h1>
+            <h1 className="text-xl sm:text-3xl font-bold text-white">{t('details.title')}</h1>
             <p className="text-sm sm:text-base text-gray-400">
               {reservation.client ? 
                 `${reservation.client.firstName} ${reservation.client.lastName}` : 
-                'No client assigned'
+                t('table.noClient')
               }
             </p>
           </div>
@@ -626,13 +629,13 @@ export default function ViewReservationPage() {
               className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             >
               <Pencil1Icon className="w-4 h-4 mr-2" />
-              Edit
+              {t('details.editReservation')}
             </Link>
             <Link
               href="/reservations"
               className="inline-flex items-center justify-center px-4 py-2 border border-white/20 text-sm font-medium rounded-md text-gray-300 bg-white/10 hover:bg-white/20 w-full sm:w-auto"
             >
-              Back to List
+              {t('details.backToReservations')}
             </Link>
           </div>
         </div>
@@ -995,6 +998,8 @@ const ViewPaymentModal = ({
   payment: any;
 }) => {
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
   
   if (!isOpen) return null;
 
@@ -1003,7 +1008,7 @@ const ViewPaymentModal = ({
       <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-md">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Payment Details</h3>
+            <h3 className="text-lg font-semibold text-white">{t('details.paymentModal.viewTitle')}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white"
@@ -1014,47 +1019,47 @@ const ViewPaymentModal = ({
 
           <div className="space-y-4">
                          <div>
-               <label className="block text-sm font-medium text-gray-400">Amount</label>
+               <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.amount')}</label>
                <p className="text-white font-medium">{formatCurrency(payment.amount, currencySettings)}</p>
              </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400">Payment Method</label>
+              <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.paymentMethod')}</label>
               <p className="text-white">{payment.paymentMethod}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400">Payment Type</label>
+              <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.paymentType')}</label>
               <p className="text-white">{payment.paymentType}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400">Payment Date</label>
+              <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.paymentDate')}</label>
               <p className="text-white">{format(new Date(payment.paymentDate), 'PPP')}</p>
             </div>
 
             {payment.reference && (
               <div>
-                <label className="block text-sm font-medium text-gray-400">Reference</label>
+                <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.reference')}</label>
                 <p className="text-white">{payment.reference}</p>
               </div>
             )}
 
             {payment.note && (
               <div>
-                <label className="block text-sm font-medium text-gray-400">Note</label>
+                <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.note')}</label>
                 <p className="text-white">{payment.note}</p>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-400">Created</label>
+              <label className="block text-sm font-medium text-gray-400">{t('details.reservationDetails.createdAt')}</label>
               <p className="text-white">{format(new Date(payment.createdAt), 'PPP')}</p>
             </div>
 
             {payment.attachments && payment.attachments.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-gray-400">Attachments</label>
+                <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.attachments')}</label>
                 <div className="space-y-1 mt-1">
                   {payment.attachments.map((attachment: any, index: number) => (
                     <div key={index} className="flex items-center justify-between bg-white/5 p-2 rounded">
@@ -1065,7 +1070,7 @@ const ViewPaymentModal = ({
                         rel="noopener noreferrer"
                         className="text-blue-400 hover:text-blue-300 text-sm"
                       >
-                        Download
+                        {tCommon('download')}
                       </a>
                     </div>
                   ))}
@@ -1079,7 +1084,7 @@ const ViewPaymentModal = ({
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
             >
-              Close
+              {t('details.paymentModal.close')}
             </button>
           </div>
         </div>

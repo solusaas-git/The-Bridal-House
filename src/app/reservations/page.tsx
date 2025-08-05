@@ -21,6 +21,7 @@ import { formatCurrency } from '@/utils/currency';
 import Pagination from '@/components/ui/Pagination';
 import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 // Component that uses useSearchParams
 function ReservationsContent() {
@@ -29,6 +30,8 @@ function ReservationsContent() {
   const searchParams = useSearchParams();
   const reservations = useSelector((state: RootState) => state.reservation.reservations);
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -220,16 +223,16 @@ function ReservationsContent() {
         dispatch(setReservations(response.data.reservations));
         setTotalCount(response.data.pagination?.totalCount || response.data.reservations.length);
       } else {
-        setError(response.data.message || 'Failed to fetch reservations');
-        toast.error(response.data.message || 'Failed to load reservations');
+        setError(response.data.message || t('messages.loadFailed'));
+        toast.error(response.data.message || t('messages.loadFailed'));
       }
     } catch (error) {
-      setError('Failed to fetch reservations');
+      setError(t('messages.loadFailed'));
       console.error('Error fetching reservations:', error);
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Failed to load reservations: ${error.response.data.message || error.message}`);
+        toast.error(`${t('messages.loadFailed')}: ${error.response.data.message || error.message}`);
       } else {
-        toast.error('Failed to load reservations: Network error');
+        toast.error(`${t('messages.loadFailed')}: ${t('messages.networkError')}`);
       }
     } finally {
       setLoading(false);
@@ -309,10 +312,10 @@ function ReservationsContent() {
       await axios.put('/api/user-preferences/columns/reservations', {
         columnVisibility: preferences,
       });
-      toast.success('Column preferences saved successfully');
+      toast.success(t('messages.columnPreferencesSaved'));
     } catch (error) {
       console.error('Failed to save column preferences:', error);
-      toast.error('Failed to save column preferences');
+      toast.error(t('messages.columnPreferencesFailed'));
     } finally {
       setSavingPreferences(false);
     }
@@ -328,7 +331,7 @@ function ReservationsContent() {
       e.stopPropagation();
     }
 
-    if (!confirm('Are you sure you want to delete this reservation?')) {
+    if (!confirm(tCommon('deleteConfirm'))) {
       return;
     }
 
@@ -339,15 +342,15 @@ function ReservationsContent() {
       
       if (response.ok) {
         dispatch(removeReservation(reservationId));
-        toast.success('Reservation deleted successfully');
+        toast.success(t('messages.deleteSuccess'));
         // Refresh the list
         fetchReservations();
       } else {
-        toast.error('Failed to delete reservation');
+        toast.error(t('messages.deleteFailed'));
       }
     } catch (error) {
       console.error('Error deleting reservation:', error);
-      toast.error('Failed to delete reservation');
+      toast.error(t('messages.deleteFailed'));
     }
   };
 
@@ -372,7 +375,7 @@ function ReservationsContent() {
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return tCommon('notAvailable');
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -392,10 +395,33 @@ function ReservationsContent() {
 
 
 
+  // Helper functions to translate status values
+  const getTranslatedStatus = (status: string) => {
+    const statusKey = status?.toLowerCase();
+    return t(`details.statuses.${statusKey}`) || status;
+  };
+
+  const getTranslatedPaymentStatus = (paymentStatus: string) => {
+    // Map specific values first
+    if (paymentStatus === 'Partially Paid') return t('details.paymentStatuses.partiallyPaid');
+    if (paymentStatus === 'Not Paid') return t('details.paymentStatuses.notPaid');
+    
+    // For other values, clean and map
+    const statusKey = paymentStatus?.toLowerCase()
+      .replace(/\s+/g, ''); // Remove spaces
+    
+    return t(`details.paymentStatuses.${statusKey}`) || paymentStatus;
+  };
+
+  const getTranslatedType = (type: string) => {
+    const typeKey = type?.toLowerCase();
+    return t(`details.types.${typeKey}`) || type;
+  };
+
   const formatItemsList = (items: any[]) => {
     if (!items || items.length === 0) {
       return (
-        <span className="text-gray-400 text-sm">No items</span>
+        <span className="text-gray-400 text-sm">{t('table.noItems')}</span>
       );
     }
 
@@ -420,13 +446,13 @@ function ReservationsContent() {
                 // Replace failed image with placeholder div
                 const placeholder = document.createElement('div');
                 placeholder.className = 'h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center';
-                placeholder.innerHTML = '<span class="text-xs text-gray-400">IMG</span>';
+                placeholder.innerHTML = `<span class="text-xs text-gray-400">${t('table.imgPlaceholder')}</span>`;
                 (e.target as HTMLImageElement).parentNode?.replaceChild(placeholder, e.target as HTMLImageElement);
               }}
             />
           ) : (
             <div className="h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center">
-              <span className="text-xs text-gray-400">IMG</span>
+              <span className="text-xs text-gray-400">{t('table.imgPlaceholder')}</span>
             </div>
           )}
           <div className="flex flex-col">
@@ -438,7 +464,7 @@ function ReservationsContent() {
             </span>
             {items.length > 1 && (
               <span className="text-gray-400 text-xs">
-                +{items.length - 1} more items
++{items.length - 1} {t('table.moreItems')}
               </span>
             )}
           </div>
@@ -463,14 +489,14 @@ function ReservationsContent() {
               // Replace failed image with placeholder div
               const placeholder = document.createElement('div');
               placeholder.className = 'h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center';
-              placeholder.innerHTML = '<span class="text-xs text-gray-400">IMG</span>';
+              placeholder.innerHTML = `<span class="text-xs text-gray-400">${t('table.imgPlaceholder')}</span>`;
               (e.target as HTMLImageElement).parentNode?.replaceChild(placeholder, e.target as HTMLImageElement);
             }}
           />
         ) : (
-          <div className="h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center">
-            <span className="text-xs text-gray-400">IMG</span>
-          </div>
+                      <div className="h-10 w-10 rounded-lg bg-gray-600 flex items-center justify-center">
+              <span className="text-xs text-gray-400">{t('table.imgPlaceholder')}</span>
+            </div>
         )}
         <div className="flex flex-col">
           <span className="text-white text-sm">
@@ -481,7 +507,7 @@ function ReservationsContent() {
           </span>
           {dressItems.length > 1 && (
             <span className="text-gray-400 text-xs">
-              +{dressItems.length - 1} more dresses
++{dressItems.length - 1} {t('table.moreDresses')}
             </span>
           )}
         </div>
@@ -532,15 +558,15 @@ function ReservationsContent() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Reservations</h1>
-            <p className="text-sm sm:text-base text-gray-300">Manage your reservation bookings</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
+        <p className="text-sm sm:text-base text-gray-300">{t('subtitle')}</p>
           </div>
           <Link
             href="/reservations/add"
             className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
-            Add Reservation
+          {t('addReservation')}
           </Link>
         </div>
 
@@ -552,7 +578,7 @@ function ReservationsContent() {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search reservations, clients, or products..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
@@ -563,17 +589,17 @@ function ReservationsContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
             {/* Date Column Selector */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Filter by:</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.filterBy')}</label>
               <select
                 value={dateFilters.dateColumn}
                 onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
               >
-                <option value="pickupDate">Pickup Date</option>
-                <option value="returnDate">Return Date</option>
-                <option value="weddingDate">Wedding Date</option>
-                <option value="availabilityDate">Availability Date</option>
-                <option value="createdAt">Created Date</option>
+                          <option value="pickupDate">{t('filters.dateColumns.pickupDate')}</option>
+          <option value="returnDate">{t('filters.dateColumns.returnDate')}</option>
+          <option value="weddingDate">{t('filters.dateColumns.weddingDate')}</option>
+          <option value="availabilityDate">{t('filters.dateColumns.availabilityDate')}</option>
+          <option value="createdAt">{t('filters.dateColumns.createdAt')}</option>
               </select>
             </div>
 
@@ -581,7 +607,7 @@ function ReservationsContent() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
             {/* Start Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">From:</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.from')}</label>
               <input
                 type="date"
                 value={dateFilters.startDate}
@@ -592,7 +618,7 @@ function ReservationsContent() {
 
             {/* End Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">To:</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.to')}</label>
               <input
                 type="date"
                 value={dateFilters.endDate}
@@ -608,7 +634,7 @@ function ReservationsContent() {
                 onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap w-full sm:w-auto"
               >
-                Clear Dates
+        {t('filters.clearDates')}
               </button>
             )}
             </div>
@@ -626,10 +652,10 @@ function ReservationsContent() {
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none min-w-[140px] flex items-center justify-between"
                 >
                   <span>
-                    {paymentStatusFilter.length === 0 
-                      ? 'All Statuses' 
+{paymentStatusFilter.length === 0 
+                      ? t('filters.allStatuses') 
                       : paymentStatusFilter.length === 1 
-                        ? paymentStatusFilter[0]
+                        ? t(`filters.paymentStatuses.${paymentStatusFilter[0].toLowerCase().replace(' ', '')}`)
                         : `${paymentStatusFilter.length} selected`
                     }
                   </span>
@@ -666,7 +692,7 @@ function ReservationsContent() {
                           }}
                           className="mr-2 rounded"
                         />
-                        {status}
+{t(`reservations.filters.paymentStatuses.${status.toLowerCase().replace(' ', '')}`)}
                       </label>
                     ))}
                     
@@ -676,13 +702,13 @@ function ReservationsContent() {
                         onClick={handlePaymentStatusApply}
                         className="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
                       >
-                        Apply
+          {t('filters.apply')}
                       </button>
                       <button
                         onClick={handlePaymentStatusCancel}
                         className="flex-1 px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-colors"
                       >
-                        Cancel
+          {t('filters.cancel')}
                       </button>
                     </div>
                   </div>,
@@ -694,7 +720,7 @@ function ReservationsContent() {
                   onClick={() => setPaymentStatusFilter([])}
                   className="px-2 py-1 text-xs text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors"
                 >
-                  Clear
+          {t('filters.clear')}
                 </button>
               )}
             </div>
@@ -706,7 +732,7 @@ function ReservationsContent() {
                 className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
               >
                 <GearIcon className="h-4 w-4" />
-                <span className="text-sm">Columns</span>
+        {t('columns.columns')}
               </button>
             </div>
           </div>
@@ -731,9 +757,9 @@ function ReservationsContent() {
             >
               <div className="p-4">
                 <h3 className="text-sm font-medium text-white mb-3">
-                  Show/Hide Columns
+          {t('columns.showHideColumns')}
                   {savingPreferences && (
-                    <span className="ml-2 text-xs text-blue-400">Saving...</span>
+                    <span className="ml-2 text-xs text-blue-400">{t('columns.saving')}</span>
                   )}
                 </h3>
                 
@@ -945,7 +971,7 @@ function ReservationsContent() {
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300 text-sm sm:text-base">Loading reservations...</p>
+              <p className="text-gray-300 text-sm sm:text-base">{t('messages.loadingReservations')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -954,77 +980,77 @@ function ReservationsContent() {
                   <tr>
                     {columnVisibility.id && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        ID
+                        {t('columns.id')}
                       </th>
                     )}
                     {columnVisibility.createdAt && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Created
+                        {t('columns.createdAt')}
                       </th>
                     )}
                                          {columnVisibility.clientName && (
                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                         Client
+                         {t('columns.clientName')}
                        </th>
                      )}
                      {columnVisibility.weddingDate && (
                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                         Wedding Date
+                         {t('columns.weddingDate')}
                        </th>
                      )}
                      {columnVisibility.items && (
                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                         Items
+                         {t('columns.items')}
                        </th>
                      )}
                     {columnVisibility.pickupDate && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Pickup Date
+                        {t('columns.pickupDate')}
                       </th>
                     )}
                     {columnVisibility.returnDate && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Return Date
+                        {t('columns.returnDate')}
                       </th>
                     )}
                     {columnVisibility.availabilityDate && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Availability Date
+                        {t('columns.availabilityDate')}
                       </th>
                     )}
                     {columnVisibility.total && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Total
+                        {t('columns.total')}
                       </th>
                     )}
                     {columnVisibility.remainingBalance && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Remaining Balance
+                        {t('columns.remainingBalance')}
                       </th>
                     )}
                     {columnVisibility.type && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Type
+                        {t('columns.type')}
                       </th>
                     )}
                     {columnVisibility.status && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Status
+                        {t('columns.status')}
                       </th>
                     )}
                     {columnVisibility.paymentStatus && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Payment
+                        {t('columns.paymentStatus')}
                       </th>
                     )}
                     {columnVisibility.createdBy && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Created By
+                        {t('columns.createdBy')}
                       </th>
                     )}
                     {columnVisibility.actions && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Actions
+                        {t('columns.actions')}
                       </th>
                     )}
                   </tr>
@@ -1038,7 +1064,7 @@ function ReservationsContent() {
                     >
                       {columnVisibility.id && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {reservation._id?.slice(-6) || 'N/A'}
+                          {reservation._id?.slice(-6) || tCommon('notAvailable')}
                         </td>
                       )}
                       {columnVisibility.createdAt && (
@@ -1056,13 +1082,13 @@ function ReservationsContent() {
                                <div className="text-sm text-gray-400">{reservation.client.email}</div>
                              </div>
                            ) : (
-                             <span className="text-sm text-gray-400">No client</span>
+                             <span className="text-sm text-gray-400">{t('table.noClient')}</span>
                            )}
                          </td>
                        )}
                        {columnVisibility.weddingDate && (
                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                           {reservation.client?.weddingDate ? formatDate(reservation.client.weddingDate) : 'N/A'}
+                           {reservation.client?.weddingDate ? formatDate(reservation.client.weddingDate) : tCommon('notAvailable')}
                          </td>
                        )}
                        {columnVisibility.items && (
@@ -1103,26 +1129,26 @@ function ReservationsContent() {
                       )}
                       {columnVisibility.type && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {reservation.type}
+                          {getTranslatedType(reservation.type)}
                         </td>
                       )}
                       {columnVisibility.status && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(reservation.status)}`}>
-                            {reservation.status}
+                            {getTranslatedStatus(reservation.status)}
                           </span>
                         </td>
                       )}
                       {columnVisibility.paymentStatus && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getPaymentStatusBadgeColor(reservation.paymentStatus || 'Pending')}`}>
-                            {reservation.paymentStatus || 'Pending'}
+                            {getTranslatedPaymentStatus(reservation.paymentStatus || 'Pending')}
                           </span>
                         </td>
                       )}
                       {columnVisibility.createdBy && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {reservation.createdBy?.name || 'N/A'}
+                          {reservation.createdBy?.name || tCommon('notAvailable')}
                         </td>
                       )}
                       {columnVisibility.actions && (
@@ -1131,7 +1157,7 @@ function ReservationsContent() {
                             <Link
                               href={`/reservations/${reservation._id}`}
                               className="text-blue-400 hover:text-blue-300 transition-colors"
-                              title="View"
+                              title={t('actions.view')}
                               onClick={(e) => e.stopPropagation()}
                             >
                               <EyeOpenIcon className="w-4 h-4" />
@@ -1139,7 +1165,7 @@ function ReservationsContent() {
                             <Link
                               href={`/reservations/${reservation._id}/edit`}
                               className="text-green-400 hover:text-green-300 transition-colors"
-                              title="Edit"
+                              title={t('actions.edit')}
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Pencil1Icon className="w-4 h-4" />
@@ -1154,14 +1180,14 @@ function ReservationsContent() {
                                 await axios.delete(`/api/reservations/${reservation._id}`);
                               }}
                               onSuccess={() => {
-                                toast.success('Reservation deleted successfully');
+                                toast.success(t('messages.deleteSuccess'));
                                 fetchReservations(); // Refresh the list
                               }}
                             >
                               <button
                                 type="button"
                                 className="text-red-400 hover:text-red-300 transition-colors"
-                                title="Delete"
+                                title={t('actions.delete')}
                               >
                                 <TrashIcon className="w-4 h-4" />
                               </button>
@@ -1176,10 +1202,10 @@ function ReservationsContent() {
 
               {reservations?.length === 0 && !loading && (
                 <div className="text-center py-8 sm:py-12">
-                  <p className="text-gray-400 text-sm sm:text-base">No reservations found</p>
+                  <p className="text-gray-400 text-sm sm:text-base">{t('messages.noReservationsFound')}</p>
                   {searchTerm && (
                     <p className="text-gray-500 text-xs sm:text-sm mt-2">
-                      Try adjusting your search criteria
+                      {t('messages.adjustSearchCriteria')}
                     </p>
                   )}
                 </div>

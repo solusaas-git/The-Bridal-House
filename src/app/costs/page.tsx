@@ -31,12 +31,15 @@ import { canCreate, canEdit, canDelete } from '@/utils/permissions';
 import { formatCurrency } from '@/utils/currency';
 import DateFilter from '@/components/shared/DateFilter';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 // Component that uses useSearchParams
 function CostsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
+  const { t } = useTranslation('costs');
+  const { t: tCommon } = useTranslation('common');
   const { costs, costCategories, loading, pagination, filters } = useSelector(
     (state: RootState) => state.cost
   );
@@ -174,7 +177,7 @@ function CostsContent() {
       dispatch(setPagination(response.data.pagination));
     } catch (error) {
       console.error('Error fetching costs:', error);
-      toast.error('Failed to fetch costs');
+              toast.error(t('messages.loadFailed'));
     } finally {
       dispatch(setLoading(false));
     }
@@ -233,8 +236,8 @@ function CostsContent() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Costs</h1>
-            <p className="text-sm sm:text-base text-gray-300">Manage and track business expenses</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
+            <p className="text-sm sm:text-base text-gray-300">{t('subtitle')}</p>
           </div>
           
           {userCanCreate && (
@@ -243,7 +246,7 @@ function CostsContent() {
               className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
             >
               <PlusIcon className="h-4 w-4" />
-              Add Cost
+              {t('addCost')}
             </button>
           )}
         </div>
@@ -256,7 +259,7 @@ function CostsContent() {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search costs, notes, or categories..."
+                placeholder={t('search.placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
@@ -267,13 +270,13 @@ function CostsContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
               {/* Category Filter */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">Category:</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('search.category')}:</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
                 >
-                  <option value="">All Categories</option>
+                  <option value="">{t('search.allCategories')}</option>
                   {costCategories.map((category) => (
                     <option key={category._id} value={category._id}>
                       {category.name}
@@ -287,7 +290,7 @@ function CostsContent() {
                 startDate={startDate}
                 endDate={endDate}
                 onDateChange={handleDateChange}
-                label="Date Range"
+                label={t('search.dateRange')}
                 className="w-full sm:w-auto"
               />
 
@@ -301,7 +304,7 @@ function CostsContent() {
                   }}
                   className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap w-full sm:w-auto"
                 >
-                  Clear Filters
+                  {t('filters.clearFilters')}
                 </button>
               )}
             </div>
@@ -312,16 +315,16 @@ function CostsContent() {
         {(startDate || endDate || selectedCategory) && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-              <span className="text-xs sm:text-sm font-medium text-blue-300">Active filters:</span>
+              <span className="text-xs sm:text-sm font-medium text-blue-300">{t('filters.activeFilters')}:</span>
               <div className="flex flex-wrap items-center gap-2">
                 {selectedCategory && (
                   <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
-                    Category: {costCategories.find(cat => cat._id === selectedCategory)?.name}
+                    {t('search.category')}: {costCategories.find(cat => cat._id === selectedCategory)?.name}
                   </span>
                 )}
                 {(startDate || endDate) && (
                   <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
-                    Date: {
+                    {t('search.dateRange')}: {
                       startDate && endDate 
                         ? `${startDate} to ${endDate}`
                         : startDate 
@@ -331,7 +334,7 @@ function CostsContent() {
                   </span>
                 )}
                 <span className="text-xs text-blue-400">
-                  Showing {pagination.total} result{pagination.total !== 1 ? 's' : ''} • Total: {formatCurrency(getTotalCosts(), currencySettings)}
+                  {t('summary.showingCosts', { count: pagination.total, total: pagination.total })} • {t('summary.totalCosts')}: {formatCurrency(getTotalCosts(), currencySettings)}
                 </span>
               </div>
             </div>
@@ -343,7 +346,7 @@ function CostsContent() {
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300 text-sm sm:text-base">Loading costs...</p>
+                              <p className="text-gray-300 text-sm sm:text-base">{t('messages.loading')}</p>
             </div>
           ) : (
             <>
@@ -352,22 +355,22 @@ function CostsContent() {
                   <thead className="bg-white/5 border-b border-white/10">
                     <tr>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Date
+                        {t('table.date')}
                       </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Category
+                        {t('table.category')}
                       </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Amount
+                        {t('table.amount')}
                       </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Related
+                        {t('table.relatedTo')}
                       </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Notes
+                        {t('table.notes')}
                       </th>
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Actions
+                        {t('table.actions')}
                       </th>
                     </tr>
                   </thead>
@@ -396,12 +399,12 @@ function CostsContent() {
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           {cost.relatedReservation && (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
-                              Reservation
+                              {tCommon('reservation')}
                             </span>
                           )}
                           {cost.relatedProduct && (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
-                              Product
+                              {tCommon('product')}
                             </span>
                           )}
                           {!cost.relatedReservation && !cost.relatedProduct && (
@@ -421,7 +424,7 @@ function CostsContent() {
                                 router.push(`/costs/${cost._id}`);
                               }}
                               className="p-1 text-gray-400 hover:text-blue-400 transition-colors"
-                              title="View"
+                              title={t('actions.view')}
                             >
                               <EyeIcon className="h-4 w-4" />
                             </button>
@@ -433,7 +436,7 @@ function CostsContent() {
                                   router.push(`/costs/${cost._id}/edit`);
                                 }}
                                 className="p-1 text-gray-400 hover:text-yellow-400 transition-colors"
-                                title="Edit"
+                                title={t('actions.edit')}
                               >
                                 <PencilIcon className="h-4 w-4" />
                               </button>
@@ -450,7 +453,7 @@ function CostsContent() {
                                   await axios.delete(`/api/costs/${cost._id}`);
                                 }}
                                 onSuccess={() => {
-                                  toast.success('Cost deleted successfully');
+                                  toast.success(t('messages.deleteSuccess'));
                                   dispatch(removeCost(cost._id));
                                   fetchCosts(); // Refresh the list
                                 }}
@@ -460,7 +463,7 @@ function CostsContent() {
                                     e.stopPropagation();
                                   }}
                                   className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-                                  title="Delete"
+                                  title={t('actions.delete')}
                                 >
                                   <TrashIcon className="h-4 w-4" />
                                 </button>
@@ -476,11 +479,11 @@ function CostsContent() {
                 {costs.length === 0 && (
                   <div className="text-center py-8 sm:py-12">
                     <DocumentIcon className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-400 text-base sm:text-lg mb-2">No costs found</p>
+                    <p className="text-gray-400 text-base sm:text-lg mb-2">{t('empty.title')}</p>
                     <p className="text-gray-500 text-xs sm:text-sm">
                       {(startDate || endDate || selectedCategory) 
-                        ? 'Try adjusting your filters or search criteria'
-                        : 'Start by adding your first cost entry'
+                        ? t('empty.adjustFilters')
+                        : t('empty.description')
                       }
                     </p>
                   </div>
@@ -512,12 +515,14 @@ function CostsContent() {
 
 // Main page component with Suspense boundary
 export default function CostsPage() {
+  const { t: tCommon } = useTranslation('common');
+  
   return (
     <Suspense fallback={
       <Layout>
         <div className="min-h-screen bg-gray-900 text-white">
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">Loading...</div>
+            <div className="text-center">{tCommon('loading')}</div>
           </div>
         </div>
       </Layout>

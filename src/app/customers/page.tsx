@@ -19,6 +19,7 @@ import Pagination from '@/components/ui/Pagination';
 import { RootState } from '@/store/store';
 import { setCustomers } from '@/store/reducers/customerSlice';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 interface Customer {
   _id: string;
@@ -42,6 +43,7 @@ interface Customer {
 
 const CustomersPage = () => {
   const router = useRouter();
+  const { t } = useTranslation('customers');
   
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,14 +127,14 @@ const CustomersPage = () => {
         setCustomers(response.data.customers);
         setTotalCount(response.data.totalCount);
       } else {
-        toast.error(response.data.message || 'Failed to load customers');
+        toast.error(response.data.message || t('loadFailed'));
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Failed to load customers: ${error.response.data.message || error.message}`);
+        toast.error(`${t('loadFailed')}: ${error.response.data.message || error.message}`);
       } else {
-        toast.error('Failed to load customers: Network error');
+        toast.error(`${t('loadFailed')}: ${t('networkError')}`);
       }
     } finally {
       setLoading(false);
@@ -163,11 +165,11 @@ const CustomersPage = () => {
       });
       
       if (response.data.success) {
-        toast.success('Column preferences saved!');
+        toast.success(t('preferencesSaved'));
       }
     } catch (error) {
       console.error('Failed to save column preferences:', error);
-      toast.error('Failed to save preferences');
+      toast.error(t('preferencesFailed'));
     } finally {
       setSavingPreferences(false);
     }
@@ -178,14 +180,14 @@ const CustomersPage = () => {
   };
 
   const handleDelete = async (customerId: string) => {
-    if (window.confirm('Are you sure you want to delete this customer?')) {
+    if (window.confirm(t('deleteConfirm'))) {
       try {
         await axios.delete(`/api/customers/${customerId}`);
-        toast.success('Customer deleted successfully');
+        toast.success(t('deleteSuccess'));
         fetchCustomers(); // Refresh the list
       } catch (error) {
         console.error('Error deleting customer:', error);
-        toast.error('Failed to delete customer');
+        toast.error(t('deleteFailed'));
       }
     }
   };
@@ -196,21 +198,21 @@ const CustomersPage = () => {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  return (
+    return (
     <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Customers</h1>
-            <p className="text-sm sm:text-base text-gray-300">Manage your customer database</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
+            <p className="text-sm sm:text-base text-gray-300">{t('subtitle')}</p>
           </div>
           <button
             onClick={() => router.push('/customers/add')}
             className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors w-full sm:w-auto"
           >
             <PlusIcon className="h-4 w-4" />
-            Add Customer
+            {t('addCustomer')}
           </button>
         </div>
 
@@ -222,7 +224,7 @@ const CustomersPage = () => {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search customers..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
@@ -236,7 +238,7 @@ const CustomersPage = () => {
                 className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors w-full sm:w-auto"
               >
                 <GearIcon className="h-4 w-4" />
-                <span className="text-sm">Columns</span>
+                <span className="text-sm">{t('columns')}</span>
               </button>
             </div>
           </div>
@@ -261,9 +263,9 @@ const CustomersPage = () => {
             >
               <div className="p-4">
                 <h3 className="text-sm font-medium text-white mb-3">
-                  Show/Hide Columns
+                  {t('showHideColumns')}
                   {savingPreferences && (
-                    <span className="ml-2 text-xs text-blue-400">Saving...</span>
+                    <span className="ml-2 text-xs text-blue-400">{t('saving')}</span>
                   )}
                 </h3>
                 
@@ -275,7 +277,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('id')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">#</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.id')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -285,7 +287,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('firstName')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">First Name</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.firstName')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -295,7 +297,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('lastName')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Last Name</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.lastName')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -305,7 +307,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('address')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Address</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.address')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -315,7 +317,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('idNumber')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">CIN/Passport</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.idNumber')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -325,7 +327,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('phone')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Phone</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.phone')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -335,7 +337,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('weddingDate')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Wedding Date</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.weddingDate')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -345,7 +347,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('weddingTime')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Wedding Time</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.weddingTime')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -355,7 +357,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('weddingLocation')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Wedding Location</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.weddingLocation')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -365,7 +367,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('weddingCity')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Wedding City</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.weddingCity')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -375,7 +377,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('type')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Type</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.type')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -385,7 +387,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('createdAt')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Created At</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.createdAt')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -395,7 +397,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('updatedAt')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Updated At</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.updatedAt')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -405,7 +407,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('createdBy')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Created By</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.createdBy')}</span>
                   </label>
 
                   <label className="flex items-center">
@@ -415,7 +417,7 @@ const CustomersPage = () => {
                       onChange={() => toggleColumn('actions')}
                       className="rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                     />
-                    <span className="ml-2 text-sm text-gray-300">Actions</span>
+                    <span className="ml-2 text-sm text-gray-300">{t('fields.actions')}</span>
                   </label>
                 </div>
 
@@ -424,14 +426,14 @@ const CustomersPage = () => {
                     onClick={() => setDropdownOpen(false)}
                     className="px-3 py-1 text-sm text-gray-300 hover:text-white transition-colors"
                   >
-                    Cancel
+{t('common.cancel')}
                   </button>
                   <button
                     onClick={() => saveColumnPreferences(columnVisibility)}
                     disabled={savingPreferences}
                     className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
                   >
-                    {savingPreferences ? 'Saving...' : 'Save'}
+{savingPreferences ? t('saving') : t('common.save')}
                   </button>
                 </div>
               </div>
@@ -445,7 +447,7 @@ const CustomersPage = () => {
           {loading ? (
             <div className="p-4 sm:p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-300 text-sm sm:text-base">Loading customers...</p>
+              <p className="text-gray-300 text-sm sm:text-base">{t('loadingCustomers')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -454,77 +456,77 @@ const CustomersPage = () => {
                   <tr className="border-b border-white/20">
                     {columnVisibility.id && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        #
+{t('fields.id')}
                       </th>
                     )}
                     {columnVisibility.firstName && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        First Name
+{t('fields.firstName')}
                       </th>
                     )}
                     {columnVisibility.lastName && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Last Name
+{t('fields.lastName')}
                       </th>
                     )}
                     {columnVisibility.address && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Address
+{t('fields.address')}
                       </th>
                     )}
                     {columnVisibility.idNumber && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        CIN/Passport
+{t('fields.idNumber')}
                       </th>
                     )}
                     {columnVisibility.phone && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Phone
+{t('fields.phone')}
                       </th>
                     )}
                     {columnVisibility.weddingDate && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Wedding Date
+{t('fields.weddingDate')}
                       </th>
                     )}
                     {columnVisibility.weddingTime && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Wedding Time
+{t('fields.weddingTime')}
                       </th>
                     )}
                     {columnVisibility.weddingLocation && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Wedding Location
+{t('fields.weddingLocation')}
                       </th>
                     )}
                     {columnVisibility.weddingCity && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Wedding City
+{t('fields.weddingCity')}
                       </th>
                     )}
                     {columnVisibility.type && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Type
+{t('fields.type')}
                       </th>
                     )}
                     {columnVisibility.createdAt && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Created At
+{t('fields.createdAt')}
                       </th>
                     )}
                     {columnVisibility.updatedAt && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Updated At
+{t('fields.updatedAt')}
                       </th>
                     )}
                     {columnVisibility.createdBy && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Created By
+{t('fields.createdBy')}
                       </th>
                     )}
                     {columnVisibility.actions && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                        Actions
+{t('fields.actions')}
                       </th>
                     )}
                   </tr>
@@ -616,7 +618,7 @@ const CustomersPage = () => {
                                 router.push(`/customers/${customer._id}`);
                               }}
                               className="text-blue-400 hover:text-blue-300 transition-colors"
-                              title="View"
+                              title={t('actions.view')}
                             >
                               <EyeOpenIcon className="h-4 w-4" />
                             </button>
@@ -627,7 +629,7 @@ const CustomersPage = () => {
                                 handleEdit(customer._id);
                               }}
                               className="text-green-400 hover:text-green-300 transition-colors"
-                              title="Edit"
+                              title={t('actions.edit')}
                             >
                               <Pencil1Icon className="h-4 w-4" />
                             </button>
@@ -641,14 +643,14 @@ const CustomersPage = () => {
                                  await axios.delete(`/api/customers/${customer._id}`);
                                }}
                                onSuccess={() => {
-                                 toast.success('Customer deleted successfully');
+                                 toast.success(t('deleteSuccess'));
                                  fetchCustomers(); // Refresh the list
                                }}
                              >
                                <button
                                  type="button"
                                  className="text-red-400 hover:text-red-300 transition-colors"
-                                 title="Delete"
+                                 title={t('actions.delete')}
                                >
                                  <TrashIcon className="h-4 w-4" />
                                </button>
@@ -663,10 +665,10 @@ const CustomersPage = () => {
 
               {customers?.length === 0 && !loading && (
                 <div className="text-center py-8 sm:py-12">
-                  <p className="text-gray-400 text-sm sm:text-base">No customers found</p>
+                  <p className="text-gray-400 text-sm sm:text-base">{t('noCustomersFound')}</p>
                   {searchTerm && (
                     <p className="text-gray-500 text-xs sm:text-sm mt-2">
-                      Try adjusting your search criteria
+                      {t('adjustSearchCriteria')}
                     </p>
                   )}
                 </div>

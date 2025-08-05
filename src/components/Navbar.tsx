@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { canViewMenu } from '@/utils/permissions';
 import { useApprovalsCount } from '@/hooks/useApprovalsCount';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   isMobileMenuOpen: boolean;
@@ -31,6 +33,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
   const pathname = usePathname();
   const { currentUser } = useSelector((state: RootState) => state.auth);
   const { pendingCount } = useApprovalsCount();
+  const { t } = useTranslation('navigation');
 
   const [activeTab, setActiveTab] = React.useState(() => {
     if (pathname.includes('/customers')) return 'Customers';
@@ -54,18 +57,18 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
 
   const tabs = React.useMemo(() => {
     const allTabs = [
-      { name: 'Dashboard', icon: Home, path: '/dashboard', permission: 'dashboard' },
-      { name: 'Customers', icon: Users, path: '/customers', permission: 'customers' },
-      { name: 'Reservations', icon: Calendar, path: '/reservations', permission: 'reservations' },
-      { name: 'Payments', icon: DollarSign, path: '/payments', permission: 'payments' },
-      { name: 'Products', icon: Shirt, path: '/products', permission: 'products' },
-      { name: 'Costs', icon: Receipt, path: '/costs', permission: 'costs' },
-      { name: 'Approvals', icon: CheckCircle, path: '/approvals', permission: 'approvals' },
-      { name: 'Settings', icon: SettingsIcon, path: '/settings', permission: 'settings' },
+      { name: 'Dashboard', label: t('dashboard'), icon: Home, path: '/dashboard', permission: 'dashboard' },
+      { name: 'Customers', label: t('customers'), icon: Users, path: '/customers', permission: 'customers' },
+      { name: 'Reservations', label: t('reservations'), icon: Calendar, path: '/reservations', permission: 'reservations' },
+      { name: 'Payments', label: t('payments'), icon: DollarSign, path: '/payments', permission: 'payments' },
+      { name: 'Products', label: t('products'), icon: Shirt, path: '/products', permission: 'products' },
+      { name: 'Costs', label: t('costs'), icon: Receipt, path: '/costs', permission: 'costs' },
+      { name: 'Approvals', label: t('approvals'), icon: CheckCircle, path: '/approvals', permission: 'approvals' },
+      { name: 'Settings', label: t('settings'), icon: SettingsIcon, path: '/settings', permission: 'settings' },
     ];
 
     return allTabs.filter(tab => canViewMenu(currentUser, tab.permission));
-  }, [currentUser]);
+  }, [currentUser, t]);
 
   return (
     <>
@@ -103,7 +106,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
                 }`}
               >
                   <IconComponent className="mr-3 h-4 w-4 flex-shrink-0" />
-                <span className="flex-1 text-left">{tab.name}</span>
+                <span className="flex-1 text-left">{tab.label}</span>
                 {isApprovals && pendingCount > 0 && (
                   <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
                     {pendingCount > 99 ? '99+' : pendingCount}
@@ -113,6 +116,11 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
             );
           })}
         </nav>
+        
+        {/* Bottom Section - Language Switcher */}
+        <div className="p-4 border-t border-white/10">
+          <LanguageSwitcher />
+        </div>
         </div>
       </div>
     </>

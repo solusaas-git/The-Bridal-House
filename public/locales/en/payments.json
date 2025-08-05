@@ -1,0 +1,270 @@
+{
+  "title": "Payments",
+  "subtitle": "Manage customer payments and transactions",
+  "addPayment": "Add Payment",
+  "searchPlaceholder": "Search payments, customers, references...",
+  "dateFilter": "Date Filter",
+  "columns": {
+    "columns": "Columns", 
+    "showHideColumns": "Show/Hide Columns",
+    "saving": "Saving...",
+    "id": "ID",
+    "paymentDate": "Payment Date",
+    "customer": "Customer",
+    "reservation": "Reservation",
+    "amount": "Amount",
+    "paymentMethod": "Payment Method",
+    "paymentType": "Payment Type",
+    "reference": "Reference",
+    "note": "Note",
+    "attachments": "Attachments",
+    "createdBy": "Created By",
+    "actions": "Actions"
+  },
+  "table": {
+    "noPayments": "No payments found",
+    "adjustCriteria": "Try adjusting your search criteria",
+    "loadingPayments": "Loading payments..."
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "retry": "Retry"
+  },
+  "messages": {
+    "loadFailed": "Failed to fetch payments",
+    "deleteSuccess": "Payment deleted successfully",
+    "deleteFailed": "Failed to delete payment",
+    "errorLoading": "Error loading payments",
+    "columnPreferencesSaved": "Column preferences saved successfully",
+    "columnPreferencesFailed": "Failed to save column preferences"
+  },
+  "paymentMethods": {
+    "cash": "Cash",
+    "bankTransfer": "Bank Transfer",
+    "creditCard": "Credit Card",
+    "check": "Check"
+  },
+  "paymentTypes": {
+    "advance": "Advance",
+    "security": "Security Deposit",
+    "final": "Final Payment",
+    "refund": "Refund",
+    "other": "Other"
+  },
+  "details": {
+    "title": "Payment Details",
+    "backToPayments": "Back to Payments",
+    "paymentNumber": "Payment #",
+    "unknownCustomer": "Unknown Customer",
+    "loadingPayment": "Loading payment data...",
+    "paymentNotFound": "Payment not found",
+    "tabs": {
+      "details": "Details",
+      "attachments": "Attachments"
+    },
+    "header": {
+      "amount": "Amount",
+      "method": "Method",
+      "type": "Type",
+      "editPayment": "Edit Payment",
+      "deletePayment": "Delete Payment"
+    },
+    "info": {
+      "paymentInfo": "Payment Information",
+      "paymentDate": "Payment Date",
+      "paymentMethod": "Payment Method",
+      "paymentType": "Payment Type",
+      "amount": "Amount",
+      "reference": "Reference",
+      "note": "Note",
+      "createdAt": "Created At",
+      "lastUpdated": "Last Updated"
+    },
+    "customer": {
+      "customerInfo": "Customer Information",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "reservation": {
+      "reservationInfo": "Associated Reservation",
+      "reservationNumber": "Reservation #",
+      "eventDate": "Event Date",
+      "eventTime": "Event Time",
+      "eventLocation": "Event Location",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "viewReservation": "View Reservation"
+    },
+    "attachments": {
+      "title": "Attachments",
+      "noAttachments": "No attachments found",
+      "cannotAccess": "Attachments found but cannot be accessed",
+      "incompleteData": "attachment(s) exist but have incomplete file URL data",
+      "fileReference": "File reference exists but URL missing",
+      "images": "Images",
+      "documents": "Documents",
+      "downloadFile": "Download File",
+      "previewNotAvailable": "Preview not available for this file type",
+      "viewFile": "View File",
+      "downloadError": "Failed to download file",
+      "imageLoadError": "Failed to load image"
+    },
+    "confirmDelete": "Are you sure you want to delete this payment? This action cannot be undone.",
+    "messages": {
+      "deleteSuccess": "Payment deleted successfully",
+      "deleteFailed": "Failed to delete payment",
+      "loadFailed": "Failed to load payment details"
+    }
+  },
+  "edit": {
+    "title": "Edit Payment",
+    "subtitle": "Update payment information",
+    "backToPayment": "Back to Payment",
+    "loading": "Loading payment details...",
+    "loadingPayment": "Loading payment data...",
+    "paymentNotFound": "Payment not found",
+    "form": {
+      "paymentInfo": "Payment Information",
+      "customerInfo": "Customer Information",
+      "reservationInfo": "Reservation Information",
+      "customer": "Customer",
+      "customerSearchPlaceholder": "Search customers by name, phone, or email...",
+      "searching": "Searching...",
+      "noCustomersFound": "No customers found",
+      "reservation": "Reservation",
+      "dateNotSet": "Date not set",
+      "type": "Type",
+      "wedding": "Wedding",
+      "amount": "Amount",
+      "amountRequired": "Amount is required",
+      "paymentMethod": "Payment Method",
+      "paymentDate": "Payment Date",
+      "paymentTime": "Payment Time",
+      "paymentType": "Payment Type",
+      "reference": "Reference",
+      "referencePlaceholder": "Payment reference or transaction ID",
+      "notes": "Notes",
+      "notesPlaceholder": "Additional notes about this payment",
+      "attachments": "Attachments",
+      "cancel": "Cancel",
+      "update": "Update Payment",
+      "updatePayment": "Update Payment",
+      "updating": "Updating...",
+      "paymentMethods": {
+        "cash": "Cash",
+        "bankTransfer": "Bank Transfer",
+        "creditCard": "Credit Card",
+        "check": "Check"
+      },
+      "paymentTypes": {
+        "advance": "Advance",
+        "security": "Security",
+        "final": "Final",
+        "other": "Other"
+      }
+    },
+    "reservation": {
+      "noReservation": "No associated reservation",
+      "selectReservation": "Select Reservation",
+      "reservationDetails": "Reservation Details",
+      "eventDate": "Event Date",
+      "pickupDate": "Pickup Date",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "loading": "Loading...",
+      "itemsCount": "{{count}} items",
+      "noReservationsFound": "No reservations found for this customer.",
+      "selectCustomerFirst": "Please select a customer first to view their reservations.",
+      "paymentStatus": {
+        "paid": "Paid",
+        "partial": "Partial",
+        "unpaid": "Unpaid",
+        "refunded": "Refunded"
+      }
+    },
+    "messages": {
+      "updateSuccess": "Payment updated successfully",
+      "updateError": "Failed to update payment",
+      "loadError": "Error loading payment data",
+      "validationError": "Please fill in all required fields"
+    }
+  },
+  "add": {
+    "title": "Add Payment",
+    "subtitle": "Create a new payment record",
+    "backToPayments": "Back to Payments",
+    "form": {
+      "customer": "Customer",
+      "customerSearchPlaceholder": "Search customers by name, phone, or email...",
+      "searching": "Searching...",
+      "noCustomersFound": "No customers found",
+      "reservation": "Reservation",
+      "dateNotSet": "Date not set",
+      "type": "Type",
+      "wedding": "Wedding",
+      "amount": "Amount",
+      "paymentDate": "Payment Date",
+      "paymentMethods": {
+        "cash": "Cash",
+        "bankTransfer": "Bank Transfer",
+        "creditCard": "Credit Card",
+        "check": "Check"
+      },
+      "paymentTypes": {
+        "advance": "Advance",
+        "security": "Security",
+        "final": "Final",
+        "other": "Other"
+      },
+      "customerInfo": "Customer Information",
+      "selectCustomer": "Select Customer",
+      "noCustomerSelected": "No customer selected",
+      "reservationInfo": "Reservation Information",
+      "selectReservation": "Select Reservation (Optional)",
+      "noReservation": "No reservation selected",
+      "paymentInfo": "Payment Information",
+      "amountRequired": "Amount is required",
+      "paymentTime": "Payment Time",
+      "paymentMethod": "Payment Method",
+      "paymentType": "Payment Type",
+      "reference": "Reference",
+      "referencePlaceholder": "Payment reference or transaction ID",
+      "notes": "Notes",
+      "notesPlaceholder": "Additional payment notes...",
+      "attachments": "Attachments",
+      "cancel": "Cancel",
+      "createPayment": "Create Payment",
+      "creating": "Creating..."
+    },
+    "customer": {
+      "loadingCustomers": "Loading customers...",
+      "noCustomersFound": "No customers found",
+      "searchMinLength": "Type at least 2 characters to search"
+    },
+    "reservation": {
+      "loadingReservations": "Loading reservations...",
+      "noReservationsFound": "No reservations found for this customer",
+      "selectCustomerFirst": "Please select a customer first to view their reservations",
+      "eventDate": "Event Date",
+      "pickupDate": "Pickup Date",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "loading": "Loading...",
+      "itemsCount": "{{count}} items"
+    },
+    "messages": {
+      "createSuccess": "Payment created successfully",
+      "createError": "Failed to create payment",
+      "validationError": "Please fill in all required fields",
+      "customerRequired": "Please select a customer"
+    }
+  }
+}

@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import TopBar from '@/components/TopBar';
+import { useTranslation } from 'react-i18next';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,6 +23,8 @@ export default function Layout({ children }: LayoutProps) {
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [stoppingImpersonation, setStoppingImpersonation] = useState(false);
+  const { t: tCommon } = useTranslation('common');
+  const { t: tImpersonation } = useTranslation('impersonation');
 
   // Check if user is currently impersonating (has originalAdmin in session)
   const [isImpersonating, setIsImpersonating] = useState(false);
@@ -87,7 +90,7 @@ export default function Layout({ children }: LayoutProps) {
       dispatch(setCurrentUser(response.data.user));
       setIsImpersonating(false);
       setOriginalAdminInfo(null);
-      toast.success('Stopped impersonation');
+      toast.success(tImpersonation('stop'));
       // Redirect to settings/users or reload
       router.push('/settings');
     } catch (error: any) {
@@ -103,7 +106,7 @@ export default function Layout({ children }: LayoutProps) {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading...</p>
+          <p className="text-gray-300">{tCommon('loading')}</p>
         </div>
       </div>
     );
@@ -122,7 +125,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2 min-w-0">
               <span className="flex items-center gap-1">
                 <span className="animate-pulse">⚠️</span>
-                <span className="hidden sm:inline text-xs">Impersonating</span>
+                <span className="hidden sm:inline text-xs">{tImpersonation('warning')}</span>
                 <span className="font-semibold truncate">{currentUser?.name}</span>
               </span>
             </div>
@@ -133,7 +136,7 @@ export default function Layout({ children }: LayoutProps) {
               title={`Stop impersonating ${currentUser?.name} (Originally: ${originalAdminInfo.name})`}
             >
               <X className="h-3 w-3" />
-              <span className="hidden lg:inline">{stoppingImpersonation ? 'Stop...' : 'Stop'}</span>
+              <span className="hidden lg:inline">{stoppingImpersonation ? tImpersonation('stopping') : tImpersonation('stop')}</span>
             </button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Undo2, Clock, Package, Eye, X } from 'lucide-react';
 import { format, isWithinInterval } from 'date-fns';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Reservation {
   _id: string;
@@ -44,6 +45,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const { t } = useTranslation('dashboard');
   
   const upcomingReturns = reservations?.filter((reservation) => {
     const returnDate = new Date(reservation.returnDate);
@@ -117,7 +119,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
           <div className="p-2 bg-orange-500/10 rounded-lg">
             <Undo2 className="h-5 w-5 text-orange-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white">Upcoming Returns</h3>
+          <h3 className="text-lg font-semibold text-white">{t('widgets.returns.title')}</h3>
         </div>
         
         <div className="flex flex-col gap-2">
@@ -169,9 +171,9 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                     }}
                   className="text-xs border border-white/20 rounded-md px-2 py-1 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   max={customEndDate || undefined}
-                  title="Start Date"
+                  title={t('widgets.returns.startDate')}
                 />
-                <span className="text-gray-400 text-xs">to</span>
+                <span className="text-gray-400 text-xs">{t('widgets.returns.to')}</span>
                 <input
                   type="date"
                   value={customEndDate}
@@ -193,7 +195,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                     }}
                   className="text-xs border border-white/20 rounded-md px-2 py-1 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min={customStartDate || undefined}
-                  title="End Date"
+                  title={t('widgets.returns.endDate')}
                 />
               </div>
               {activeRange === 'Custom' && customStartDate && customEndDate && (
@@ -212,7 +214,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
             <div className="p-3 bg-orange-500/10 rounded-full w-fit mx-auto mb-3">
               <Undo2 className="h-12 w-12 text-orange-400" />
             </div>
-            <p className="text-gray-400 text-sm">No returns scheduled for this period</p>
+            <p className="text-gray-400 text-sm">{t('widgets.returns.noReturns')}</p>
           </div>
         ) : (
           upcomingReturns.slice(0, 5).map((reservation) => (
@@ -228,8 +230,8 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">
                   {reservation.client 
-                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
-                    : 'Unknown Customer'
+                    ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || t('widgets.returns.unknownCustomer')
+                    : t('widgets.returns.unknownCustomer')
                   }
                 </p>
                 <div className="flex items-center gap-1 mt-1">
@@ -242,7 +244,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                   <div className="flex items-center gap-1 mt-1">
                     <Package className="h-3 w-3 text-gray-500" />
                     <p className="text-xs text-gray-500">
-                      {reservation.items.length} item(s)
+                      {reservation.items.length} {t('widgets.returns.items')}
                     </p>
                   </div>
                 )}
@@ -257,7 +259,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
             className="flex items-center justify-center gap-2 w-full p-2 mt-3 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-lg transition-colors"
           >
             <Eye className="h-3 w-3" />
-            View all {upcomingReturns.length} returns
+            {t('widgets.returns.viewAll', { count: upcomingReturns.length })}
           </button>
         )}
       </div>
@@ -272,7 +274,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                   <Undo2 className="h-5 w-5 text-orange-400" />
                 </div>
                 <h2 className="text-lg font-semibold text-white">
-                  All Upcoming Returns ({upcomingReturns.length})
+                  {t('widgets.returns.viewAll', { count: upcomingReturns.length })}
                 </h2>
               </div>
               <button
@@ -297,8 +299,8 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">
                         {reservation.client 
-                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || 'Unknown Customer'
-                          : 'Unknown Customer'
+                          ? `${reservation.client.firstName || ''} ${reservation.client.lastName || ''}`.trim() || t('widgets.returns.unknownCustomer')
+                          : t('widgets.returns.unknownCustomer')
                         }
                       </p>
                       <div className="flex items-center gap-1 mt-1">
@@ -311,7 +313,7 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
                         <div className="flex items-center gap-1 mt-1">
                           <Package className="h-3 w-3 text-gray-500" />
                           <p className="text-xs text-gray-500">
-                            {reservation.items.length} item(s)
+                            {reservation.items.length} {t('widgets.returns.items')}
                           </p>
                         </div>
                       )}

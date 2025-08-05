@@ -6,6 +6,7 @@ import { Plus, X, Edit, Trash2, Lock, Check } from 'lucide-react';
 import { RootState } from '@/store/store';
 import { setRoles, addRole, updateRole, removeRole } from '@/store/reducers/settingsSlice';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 interface Role {
   id: string;
@@ -19,6 +20,8 @@ const Roles = () => {
   const dispatch = useDispatch();
   const settings = useSelector((state: RootState) => state.settings);
   const roles = settings.settings.roles;
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
 
   const [isAddingRole, setIsAddingRole] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
@@ -105,7 +108,7 @@ const Roles = () => {
     };
 
     dispatch(updateRole(updatedRole));
-    toast.success('Role updated successfully');
+          toast.success(t('sections.roles.roleUpdated'));
     setEditingRole(null);
     resetForm();
   };
@@ -122,7 +125,7 @@ const Roles = () => {
   const confirmDelete = () => {
     if (roleToDelete) {
       dispatch(removeRole(roleToDelete.id));
-      toast.success('Role deleted successfully');
+      toast.success(t('sections.roles.roleDeleted'));
       setShowDeleteModal(false);
       setRoleToDelete(null);
     }
@@ -178,7 +181,7 @@ const Roles = () => {
           className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
-          Add Role
+          {t('sections.roles.addRole')}
         </button>
       </div>
 

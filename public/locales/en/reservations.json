@@ -1,0 +1,281 @@
+{
+  "title": "Reservations",
+  "subtitle": "Manage your reservation bookings",
+  "addReservation": "Add Reservation",
+  "editReservation": "Edit Reservation",
+  "searchPlaceholder": "Search reservations, clients, or products...",
+  "filters": {
+    "filterBy": "Filter by:",
+    "dateColumns": {
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "weddingDate": "Wedding Date",
+      "availabilityDate": "Availability Date",
+      "createdAt": "Created Date"
+    },
+    "from": "From:",
+    "to": "To:",
+    "clearDates": "Clear Dates",
+    "allStatuses": "All Statuses",
+    "paymentStatuses": {
+      "notpaid": "Not Paid",
+      "partiallypaid": "Partially Paid",
+      "paid": "Paid",
+      "pending": "Pending"
+    },
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "clear": "Clear"
+  },
+  "columns": {
+    "columns": "Columns",
+    "showHideColumns": "Show/Hide Columns",
+    "saving": "Saving...",
+    "id": "ID",
+    "createdAt": "Created",
+    "clientName": "Client",
+    "weddingDate": "Wedding Date",
+    "items": "Items",
+    "pickupDate": "Pickup Date",
+    "returnDate": "Return Date",
+    "availabilityDate": "Availability Date",
+    "total": "Total",
+    "remainingBalance": "Remaining Balance",
+    "type": "Type",
+    "status": "Status",
+    "paymentStatus": "Payment",
+    "createdBy": "Created By",
+    "actions": "Actions"
+  },
+  "table": {
+    "noItems": "No items",
+    "imgPlaceholder": "IMG",
+    "moreItems": "more items",
+    "moreDresses": "more dresses",
+    "noClient": "No client"
+  },
+  "messages": {
+    "loadFailed": "Failed to load reservations",
+    "networkError": "Network error",
+    "columnPreferencesSaved": "Column preferences saved successfully",
+    "columnPreferencesFailed": "Failed to save column preferences",
+    "deleteSuccess": "Reservation deleted successfully",
+    "deleteFailed": "Failed to delete reservation",
+    "noReservationsFound": "No reservations found",
+    "adjustSearchCriteria": "Try adjusting your search criteria",
+    "loadingReservations": "Loading reservations..."
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "details": {
+    "title": "Reservation Details",
+    "editReservation": "Edit Reservation",
+    "backToReservations": "Back to Reservations",
+    "loadingReservation": "Loading reservation...",
+    "reservationNotFound": "Reservation not found",
+    "error": "Error",
+    "tabs": {
+      "general": "General Info",
+      "items": "Reserved Items",
+      "payments": "Associated Payments"
+    },
+    "clientInfo": {
+      "title": "Client Information",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "weddingDate": "Wedding Date",
+      "idNumber": "ID Number"
+    },
+    "reservationDetails": {
+      "title": "Reservation Details", 
+      "type": "Type",
+      "status": "Status",
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "availabilityDate": "Availability Date",
+      "createdAt": "Created At",
+      "createdBy": "Created By",
+      "notes": "Notes",
+      "noNotes": "No notes provided"
+    },
+    "financialSummary": {
+      "title": "Financial Summary",
+      "itemsTotal": "Items Total",
+      "additionalCosts": "Additional Costs",
+      "subtotal": "Subtotal",
+      "securityDeposit": "Security Deposit",
+      "advance": "Advance",
+      "totalAmount": "Total Amount"
+    },
+    "itemsSection": {
+      "title": "Reserved Items",
+      "noItems": "No items found",
+      "itemDetails": "Item Details",
+      "rentalCost": "Rental Cost",
+      "size": "Size",
+      "category": "Category"
+    },
+    "paymentsSection": {
+      "title": "Payment Progress",
+      "addPayment": "Add Payment",
+      "totalPaid": "Total Paid",
+      "remaining": "Remaining",
+      "paymentStatus": "Payment Status",
+      "noPayments": "No payments found",
+      "paymentDate": "Payment Date",
+      "paymentMethod": "Payment Method",
+      "paymentType": "Payment Type",
+      "amount": "Amount",
+      "reference": "Reference",
+      "note": "Note",
+      "attachments": "Attachments",
+      "viewDetails": "View Details"
+    },
+    "paymentModal": {
+      "addTitle": "Add Payment",
+      "viewTitle": "Payment Details",
+      "amount": "Amount",
+      "paymentMethod": "Payment Method",
+      "paymentType": "Payment Type",
+      "paymentDate": "Payment Date",
+      "reference": "Reference",
+      "note": "Note",
+      "attachments": "Attachments",
+      "methods": {
+        "cash": "Cash",
+        "bankTransfer": "Bank Transfer",
+        "creditCard": "Credit Card",
+        "check": "Check"
+      },
+      "types": {
+        "advance": "Advance",
+        "security": "Security Deposit",
+        "final": "Final Payment",
+        "other": "Other"
+      },
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "createPayment": "Create Payment",
+      "creating": "Creating...",
+      "close": "Close"
+    },
+    "statuses": {
+      "confirmed": "Confirmed",
+      "draft": "Draft", 
+      "cancelled": "Cancelled"
+    },
+    "paymentStatuses": {
+      "paid": "Paid",
+      "partial": "Partial",
+      "unpaid": "Unpaid",
+      "partiallyPaid": "Partially Paid",
+      "notPaid": "Not Paid",
+      "pending": "Pending"
+    },
+    "types": {
+      "final": "Final",
+      "fitting": "Fitting"
+    }
+  },
+  "edit": {
+    "title": "Edit Reservation",
+    "subtitle": "Update reservation details",
+    "backToReservation": "Back to Reservation",
+    "steps": {
+      "clientSelection": "Client Selection",
+      "itemsAndDates": "Items & Dates",
+      "financialDetails": "Financial Details"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "updateReservation": "Update Reservation",
+      "updating": "Updating..."
+    },
+    "clientSection": {
+      "title": "Select Client",
+      "searchPlaceholder": "Search client by name, email, or phone...",
+      "selectedClient": "Selected Client",
+      "noClientSelected": "No client selected",
+      "noClientsFound": "No clients found",
+      "loadingClients": "Loading clients...",
+      "clientRequired": "Please select a client to continue"
+    },
+    "itemsSection": {
+      "title": "Items & Dates Configuration",
+      "selectItems": "Select Items",
+      "selectedItems": "Selected Items",
+      "noItemsSelected": "No items selected yet",
+      "addItems": "Add Items",
+      "searchItems": "Search items...",
+      "categories": {
+        "all": "All Categories",
+        "dresses": "Dresses",
+        "accessories": "Accessories"
+      },
+      "itemDetails": {
+        "size": "Size",
+        "rentalCost": "Rental Cost",
+        "addToSelection": "Add to Selection",
+        "removeFromSelection": "Remove from Selection"
+      }
+    },
+    "datesSection": {
+      "title": "Dates Configuration",
+      "weddingDate": "Wedding Date",
+      "pickupDate": "Pickup Date",
+      "pickupTime": "Pickup Time",
+      "returnDate": "Return Date", 
+      "returnTime": "Return Time",
+      "availabilityDate": "Availability Date",
+      "availabilityTime": "Availability Time",
+      "bufferSettings": "Buffer Settings",
+      "bufferBefore": "Buffer Before (days)",
+      "bufferAfter": "Buffer After (days)",
+      "availability": "Availability (days)"
+    },
+    "financialSection": {
+      "title": "Financial Configuration",
+      "itemsTotal": "Items Total",
+      "customItemsTotal": "Custom Items Total",
+      "useCustomTotal": "Use Custom Total",
+      "additionalCost": "Additional Cost",
+      "subtotal": "Subtotal",
+      "securityDeposit": "Security Deposit Amount",
+      "advance": "Advance Amount",
+      "totalAmount": "Total Amount"
+    },
+    "generalSettings": {
+      "title": "General Settings",
+      "reservationType": "Reservation Type",
+      "status": "Status",
+      "notes": "Notes",
+      "notesPlaceholder": "Add any special notes or instructions..."
+    },
+    "messages": {
+      "loadingReservation": "Loading reservation...",
+      "updateSuccess": "Reservation updated successfully",
+      "updateError": "Failed to update reservation",
+      "fetchError": "Failed to fetch data",
+      "validationError": "Please fill in all required fields"
+    }
+  },
+  "add": {
+    "title": "New Reservation",
+    "subtitle": "Create a new reservation",
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "createReservation": "Create Reservation",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "createSuccess": "Reservation created successfully",
+      "createError": "Failed to create reservation"
+    }
+  }
+}

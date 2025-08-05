@@ -4,6 +4,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Users, DollarSign, Calendar, Shirt, TrendingUp, TrendingDown, Receipt, Calculator } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface Customer {
   _id: string;
@@ -85,6 +86,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   onUpcomingPaymentsClick,
   dateRange,
 }) => {
+  const { t } = useTranslation('dashboard');
+  
   // Get complete unfiltered data from Redux store for accurate month-over-month calculations
   const allCustomers = useSelector((state: any) => (state.customer as { customers: Customer[] })?.customers || []);
   const allReservations = useSelector((state: any) => (state.reservation as { reservations: Reservation[] })?.reservations || []);
@@ -252,7 +255,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
 
   const stats = [
     {
-      title: 'Total Costs',
+      id: 'costs',
+      title: t('widgets.stats.totalCosts'),
       value: formatCurrency(totalCosts || 0, currencySettings),
       change: costsChange.change,
       trend: costsChange.trend,
@@ -261,7 +265,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       iconColor: 'text-red-400',
     },
     {
-      title: 'Total Payments',
+      id: 'payments',
+      title: t('widgets.stats.totalPayments'),
       value: formatCurrency(totalPayments || 0, currencySettings),
       change: paymentsChange.change,
       trend: paymentsChange.trend,
@@ -270,7 +275,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       iconColor: 'text-yellow-400',
     },
     {
-      title: 'Margin',
+      id: 'margin',
+      title: t('widgets.stats.margin'),
       value: formatCurrency(margin, currencySettings),
       change: marginChange.change,
       trend: marginChange.trend,
@@ -279,7 +285,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       iconColor: margin >= 0 ? 'text-green-400' : 'text-orange-400',
     },
     {
-      title: 'Upcoming Payments',
+      id: 'upcoming',
+      title: t('widgets.stats.upcomingPayments'),
       value: formatCurrency(totalUpcomingPayments || 0, currencySettings),
       change: upcomingPaymentsChange.change,
       trend: upcomingPaymentsChange.trend,
@@ -289,7 +296,7 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
     },
   ];
 
-  const handleStatClick = (statTitle: string) => {
+  const handleStatClick = (statId: string) => {
     if (!dateRange) return;
     
     const formatDateForURL = (date: Date): string => {
@@ -304,11 +311,11 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
       endDate: formatDateForURL(dateRange.endDate),
     };
 
-    if (statTitle === 'Total Payments' && onPaymentsClick) {
+    if (statId === 'payments' && onPaymentsClick) {
       onPaymentsClick(dateRangeFormatted);
-    } else if (statTitle === 'Total Costs' && onCostsClick) {
+    } else if (statId === 'costs' && onCostsClick) {
       onCostsClick(dateRangeFormatted);
-    } else if (statTitle === 'Upcoming Payments' && onUpcomingPaymentsClick) {
+    } else if (statId === 'upcoming' && onUpcomingPaymentsClick) {
       onUpcomingPaymentsClick(dateRangeFormatted);
     }
   };
@@ -317,14 +324,14 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats?.map((stat) => {
         const Icon = stat.icon;
-        const isClickable = (stat.title === 'Total Payments' && onPaymentsClick) || 
-                           (stat.title === 'Total Costs' && onCostsClick) ||
-                           (stat.title === 'Upcoming Payments' && onUpcomingPaymentsClick);
+        const isClickable = (stat.id === 'payments' && onPaymentsClick) || 
+                           (stat.id === 'costs' && onCostsClick) ||
+                           (stat.id === 'upcoming' && onUpcomingPaymentsClick);
         
         return (
           <div
-            key={stat.title}
-            onClick={() => isClickable ? handleStatClick(stat.title) : undefined}
+            key={stat.id}
+            onClick={() => isClickable ? handleStatClick(stat.id) : undefined}
             className={`bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6 space-y-4 transition-all duration-200 ${
               isClickable 
                 ? 'cursor-pointer hover:bg-white/15 hover:border-white/20 hover:scale-105' 

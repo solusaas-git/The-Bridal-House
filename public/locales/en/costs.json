@@ -1,0 +1,168 @@
+{
+  "title": "Costs",
+  "subtitle": "Manage and track business expenses",
+  "addCost": "Add Cost",
+  "search": {
+    "placeholder": "Search costs...",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "dateRange": "Date Range"
+  },
+  "table": {
+    "date": "Date",
+    "category": "Category",
+    "amount": "Amount",
+    "relatedTo": "Related To",
+    "notes": "Notes",
+    "actions": "Actions",
+    "noCategory": "No Category",
+    "noRelation": "No Relation",
+    "noNotes": "No Notes"
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit", 
+    "delete": "Delete"
+  },
+  "filters": {
+    "showFilters": "Show Filters",
+    "hideFilters": "Hide Filters",
+    "applyFilters": "Apply Filters",
+    "clearFilters": "Clear Filters",
+    "activeFilters": "Active filters",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "summary": {
+    "totalCosts": "Total Costs",
+    "showingCosts": "Showing {{count}} of {{total}} costs"
+  },
+  "messages": {
+    "loading": "Loading costs...",
+    "loadFailed": "Failed to load costs",
+    "noCostsFound": "No costs found",
+    "deleteSuccess": "Cost deleted successfully",
+    "deleteFailed": "Failed to delete cost",
+    "confirmDelete": "Are you sure you want to delete this cost?",
+    "exportSuccess": "Costs exported successfully",
+    "exportFailed": "Failed to export costs"
+  },
+  "empty": {
+    "title": "No costs found",
+    "description": "Start by adding your first cost entry",
+    "adjustFilters": "Try adjusting your filters or search criteria",
+    "addFirstCost": "Add First Cost"
+  },
+  "details": {
+    "title": "Cost Details",
+    "backToCosts": "Back to Costs",
+    "loadingCost": "Loading cost...",
+    "costNotFound": "Cost not found",
+    "editCost": "Edit Cost",
+    "deleteCost": "Delete Cost",
+    "info": {
+      "costInfo": "Cost Information",
+      "amount": "Amount",
+      "date": "Date",
+      "category": "Category",
+      "notes": "Notes",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "lastUpdated": "Last Updated"
+    },
+    "related": {
+      "relatedItems": "Related Items",
+      "reservation": "Related Reservation",
+      "product": "Related Product",
+      "reservationNumber": "Reservation #{{number}}",
+      "client": "Client",
+      "eventDate": "Event Date",
+      "items": "Items",
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "noRelatedItems": "No related items"
+    },
+    "attachments": {
+      "title": "Attachments",
+      "noAttachments": "No attachments found",
+      "images": "Images",
+      "documents": "Documents",
+      "preview": "Preview",
+      "download": "Download",
+      "previewNotAvailable": "Preview not available for this file type",
+      "downloadToView": "Download to View"
+    },
+    "messages": {
+      "loadFailed": "Failed to load cost details",
+      "deleteSuccess": "Cost deleted successfully",
+      "deleteFailed": "Failed to delete cost"
+    }
+  },
+  "edit": {
+    "title": "Edit Cost",
+    "subtitle": "Update cost information",
+    "backToCost": "Back to Cost",
+    "loadingCost": "Loading cost...",
+    "costNotFound": "Cost not found",
+    "form": {
+      "costInformation": "Cost Information",
+      "date": "Date",
+      "category": "Category",
+      "amount": "Amount",
+      "selectCategory": "Select a category",
+      "relatedItems": "Related Items",
+      "relatedType": "Related Type",
+      "relatedTo": "Related To",
+      "selectType": "Select type",
+      "selectReservation": "Select a reservation",
+      "selectProduct": "Select a product",
+      "searchReservations": "Search reservations...",
+      "searchProducts": "Search products...",
+      "notes": "Notes",
+      "notesPlaceholder": "Add any additional notes about this expense...",
+      "attachments": "Attachments",
+      "currentAttachments": "Current Attachments",
+      "newAttachments": "New Attachments",
+      "cancel": "Cancel",
+      "updateCost": "Update Cost",
+      "updating": "Updating..."
+    },
+    "relatedTypes": {
+      "none": "None",
+      "reservation": "Reservation",
+      "product": "Product"
+    },
+    "attachments": {
+      "uploadFiles": "Upload Files",
+      "dragDrop": "Drag and drop files here or click to browse",
+      "supportedFormats": "PDF, Images, Documents up to 10MB each",
+      "removeFile": "Remove file",
+      "currentFiles": "Current Files",
+      "newFiles": "New Files to Upload"
+    },
+    "validation": {
+      "dateRequired": "Date is required",
+      "categoryRequired": "Category is required", 
+      "amountRequired": "Amount is required",
+      "amountInvalid": "Amount must be a valid number"
+    },
+    "messages": {
+      "updateSuccess": "Cost updated successfully",
+      "updateError": "Failed to update cost",
+      "loadError": "Error loading cost data"
+    }
+  },
+  "add": {
+    "title": "Add Cost",
+    "subtitle": "Create a new cost entry",
+    "backToCosts": "Back to Costs",
+    "form": {
+      "createCost": "Create Cost",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "createSuccess": "Cost created successfully",
+      "createError": "Failed to create cost"
+    }
+  }
+}

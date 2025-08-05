@@ -3,6 +3,7 @@ import { FileIcon, DownloadIcon, TrashIcon, EyeOpenIcon, Cross2Icon } from "@rad
 import Image from "next/image";
 import FileUpload from "./FileUpload";
 import type { IAttachment } from "@/models";
+import { useTranslation } from 'react-i18next';
 
 type Attachment = IAttachment;
 
@@ -23,6 +24,7 @@ const AttachmentsSection = ({
 }: AttachmentsSectionProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [previewFile, setPreviewFile] = useState<{ file: Attachment | File; url: string; type: string } | null>(null);
+  const { t } = useTranslation('shared');
 
   const handleFilesAdded = async (files: File[]) => {
     setIsUploading(true);
@@ -163,14 +165,14 @@ const AttachmentsSection = ({
         return (
           <div className="text-center p-8">
             <FileIcon className="h-16 w-16 text-white/60 mx-auto mb-4" />
-            <p className="text-white mb-4">Preview not available for this file type</p>
+            <p className="text-white mb-4">{t('attachments.previewNotAvailable')}</p>
             <p className="text-gray-400 text-sm mb-4">{fileName}</p>
             <button
               type="button"
               onClick={(e) => handleDownloadClick(e, 'url' in file ? file.url : '')}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
             >
-              Download to View
+                              {t('attachments.downloadToView')}
             </button>
           </div>
         );
@@ -180,13 +182,13 @@ const AttachmentsSection = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-white mb-4">Attachments</h3>
+        <h3 className="text-lg font-medium text-white mb-4">{t('attachments.title')}</h3>
         <FileUpload onFilesAdded={handleFilesAdded} />
       </div>
 
       {(existingFiles.length > 0 || newFiles.length > 0) && (
         <div className="space-y-4">
-          <h4 className="text-sm font-medium text-gray-400">Uploaded Files</h4>
+          <h4 className="text-sm font-medium text-gray-400">{t('attachments.uploadedFiles')}</h4>
           <div className="space-y-3">
             {existingFiles?.map((file, index) => (
               <div
@@ -209,7 +211,7 @@ const AttachmentsSection = ({
                     type="button"
                     onClick={(e) => handlePreviewClick(e, file)}
                     className="p-1 hover:bg-white/10 rounded transition-colors"
-                    title="Preview"
+                    title={t('attachments.preview')}
                   >
                     <EyeOpenIcon className="h-4 w-4 text-blue-400 hover:text-blue-300" />
                   </button>
@@ -218,7 +220,7 @@ const AttachmentsSection = ({
                     type="button"
                     onClick={(e) => handleDownloadClick(e, file.url)}
                     className="p-1 hover:bg-white/10 rounded transition-colors"
-                    title="Download"
+                    title={t('attachments.download')}
                   >
                     <DownloadIcon className="h-4 w-4 text-white/60 hover:text-white" />
                   </button>
@@ -228,7 +230,7 @@ const AttachmentsSection = ({
                       type="button"
                       onClick={(e) => handleRemoveClick(e, () => onRemoveExisting(file, index))}
                       className="p-1 hover:bg-white/10 rounded transition-colors opacity-0 group-hover:opacity-100"
-                      title="Remove"
+                      title={t('attachments.removeFile')}
                     >
                       <TrashIcon className="h-4 w-4 text-red-400" />
                     </button>
@@ -258,7 +260,7 @@ const AttachmentsSection = ({
                     type="button"
                     onClick={(e) => handlePreviewClick(e, file)}
                     className="p-1 hover:bg-white/10 rounded transition-colors"
-                    title="Preview"
+                    title={t('attachments.preview')}
                   >
                     <EyeOpenIcon className="h-4 w-4 text-blue-400 hover:text-blue-300" />
                   </button>
@@ -268,7 +270,7 @@ const AttachmentsSection = ({
                       type="button"
                       onClick={(e) => handleRemoveClick(e, () => onRemoveNew(index))}
                       className="p-1 hover:bg-white/10 rounded transition-colors opacity-0 group-hover:opacity-100"
-                      title="Remove"
+                      title={t('attachments.removeFile')}
                     >
                       <TrashIcon className="h-4 w-4 text-red-400" />
                     </button>

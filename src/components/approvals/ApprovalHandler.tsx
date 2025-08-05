@@ -7,6 +7,7 @@ import { createApprovalRequest, getChangedFields } from '@/utils/approval';
 import ApprovalRequestModal from './ApprovalRequestModal';
 import axios from 'axios'; // Added axios import
 import { toast } from 'react-toastify'; // Added toast import
+import { useTranslation } from 'react-i18next';
 
 interface ApprovalHandlerProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { t } = useTranslation('approvals');
 
   const handleAction = async (e?: React.FormEvent | React.MouseEvent) => {
     // Prevent default form submission and stop propagation
@@ -137,7 +139,7 @@ const ApprovalHandler: React.FC<ApprovalHandlerProps> = ({
       
       // Don't call onDirectAction or onSuccess here - the changes haven't been applied yet
       // Only show a success message for the approval request
-      toast.success('Approval request submitted successfully. Changes will be applied once approved.');
+      toast.success(t('handler.requestSubmittedSuccess'));
       
       // Close the modal
       setShowApprovalModal(false);

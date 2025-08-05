@@ -18,6 +18,7 @@ import { RootState } from '@/store/store';
 import { formatCurrency } from '@/utils/currency';
 import Layout from '@/components/Layout';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isWithinInterval, addMonths, subMonths, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 interface Product {
   _id: string;
@@ -77,6 +78,8 @@ export default function ProductViewPage() {
   const params = useParams();
   const productId = params.id as string;
   const currencySettings = useSelector((state: RootState) => state.settings);
+  const { t } = useTranslation('products');
+  const { t: tCommon } = useTranslation('common');
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -300,14 +303,14 @@ export default function ProductViewPage() {
               className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors text-sm w-full sm:w-auto"
             >
               <Pencil1Icon className="h-4 w-4" />
-              Edit
+              {t('details.actions.edit')}
             </button>
             <button
               onClick={handleDeleteProduct}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
             >
               <TrashIcon className="h-4 w-4" />
-              Delete
+              {t('details.actions.delete')}
             </button>
           </div>
         </div>
@@ -323,7 +326,7 @@ export default function ProductViewPage() {
                   : 'border-transparent text-gray-400 hover:text-white'
               }`}
             >
-              Product Details
+              {t('details.tabs.details')}
             </button>
             <button
               onClick={() => setActiveTab('availability')}
@@ -358,7 +361,7 @@ export default function ProductViewPage() {
                           <button
                             onClick={() => handleDownload(allImages[selectedImageIndex], `${product.name}_image_${selectedImageIndex + 1}`)}
                             className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
-                            title="Download Image"
+                            title={t('details.actions.downloadImage')}
                           >
                             <DownloadIcon className="h-5 w-5" />
                           </button>
@@ -366,7 +369,7 @@ export default function ProductViewPage() {
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-gray-500">No Image Available</span>
+                        <span className="text-gray-500">{t('details.images.noImageAvailable')}</span>
                       </div>
                     )}
                   </div>
@@ -400,7 +403,7 @@ export default function ProductViewPage() {
                   {/* Videos */}
                   {product.videoUrls && product.videoUrls.length > 0 && (
                     <div className="space-y-2">
-                      <h3 className="text-lg font-medium text-white">Videos</h3>
+                      <h3 className="text-lg font-medium text-white">{t('details.sections.videos')}</h3>
                       <div className="grid grid-cols-1 gap-4">
                         {product.videoUrls.map((videoUrl, index) => (
                           <div key={index} className="relative group">
@@ -413,7 +416,7 @@ export default function ProductViewPage() {
                               <button
                                 onClick={() => handleDownload(videoUrl, `${product.name}_video_${index + 1}`)}
                                 className="p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
-                                title="Download Video"
+                                title={t('details.actions.downloadVideo')}
                               >
                                 <DownloadIcon className="h-5 w-5" />
                               </button>
@@ -429,14 +432,14 @@ export default function ProductViewPage() {
                 <div className="space-y-6">
                   {/* Basic Info */}
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-white mb-4">Basic Information</h3>
+                    <h3 className="text-lg font-medium text-white mb-4">{t('details.sections.basicInfo')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Name</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.name')}</label>
                         <p className="text-white">{product.name}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Status</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.status')}</label>
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                           product.status === 'Published'
                             ? 'bg-green-500/20 text-green-400'
@@ -446,19 +449,19 @@ export default function ProductViewPage() {
                         </span>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
-                        <p className="text-white">{product.category?.name || 'N/A'}</p>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.category')}</label>
+                        <p className="text-white">{product.category?.name || tCommon('notAvailable')}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Sub Category</label>
-                        <p className="text-white">{product.subCategory || 'N/A'}</p>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.subCategory')}</label>
+                        <p className="text-white">{product.subCategory || tCommon('notAvailable')}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Size</label>
-                        <p className="text-white">{product.size || 'N/A'}</p>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.size')}</label>
+                        <p className="text-white">{product.size || tCommon('notAvailable')}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">In Stock</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.inStock')}</label>
                         <p className="text-white">{product.quantity}</p>
                       </div>
                     </div>
@@ -466,24 +469,24 @@ export default function ProductViewPage() {
 
                   {/* Pricing */}
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-white mb-4">Pricing</h3>
+                    <h3 className="text-lg font-medium text-white mb-4">{t('details.sections.pricing')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Rental Cost/Day</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.rentalCostPerDay')}</label>
                         <p className="text-lg font-semibold text-green-400">
                           {formatCurrency(product.rentalCost, currencySettings)}
                         </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Buy Cost</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.buyCost')}</label>
                         <p className="text-white">
-                          {product.buyCost ? formatCurrency(product.buyCost, currencySettings) : 'N/A'}
+                          {product.buyCost ? formatCurrency(product.buyCost, currencySettings) : tCommon('notAvailable')}
                         </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Sell Price</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.sellPrice')}</label>
                         <p className="text-white">
-                          {product.sellPrice ? formatCurrency(product.sellPrice, currencySettings) : 'N/A'}
+                          {product.sellPrice ? formatCurrency(product.sellPrice, currencySettings) : tCommon('notAvailable')}
                         </p>
                       </div>
                     </div>
@@ -491,11 +494,11 @@ export default function ProductViewPage() {
 
                   {/* Metadata */}
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-white mb-4">Metadata</h3>
+                    <h3 className="text-lg font-medium text-white mb-4">{t('details.sections.metadata')}</h3>
                     <div className="space-y-2">
                       <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Created By</label>
-                        <p className="text-white">{product.createdBy?.name || 'Unknown'}</p>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">{t('details.fields.createdBy')}</label>
+                        <p className="text-white">{product.createdBy?.name || tCommon('notAvailable')}</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Created At</label>
@@ -602,7 +605,7 @@ export default function ProductViewPage() {
                     {selectedDay && selectedDay.reservations.length > 0 && (
                       <div className="bg-white/5 rounded-lg p-6">
                         <h3 className="text-lg font-medium text-white mb-4">
-                          Reservations for {format(selectedDay.date, 'MMMM d, yyyy')}
+                          {t('details.availability.reservationsFor')} {format(selectedDay.date, 'MMMM d, yyyy')}
                         </h3>
                         <div className="space-y-3">
                           {selectedDay.reservations.map(reservation => (
@@ -643,12 +646,12 @@ export default function ProductViewPage() {
 
                     {/* Current & Upcoming Reservations */}
                     <div className="bg-white/5 rounded-lg p-6">
-                      <h3 className="text-lg font-medium text-white mb-4">Current & Upcoming Reservations</h3>
+                      <h3 className="text-lg font-medium text-white mb-4">{t('details.availability.currentUpcoming')}</h3>
                       {reservations.length === 0 ? (
                         <div className="text-center py-8">
                           <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No reservations found for this product.</p>
-                          <p className="text-sm text-gray-500 mt-1">This product is currently available for all dates.</p>
+                          <p className="text-gray-400">{t('details.availability.noReservations')}</p>
+                          <p className="text-sm text-gray-500 mt-1">{t('details.availability.availableAllDates')}</p>
                         </div>
                       ) : (
                         <div className="space-y-3">
@@ -670,19 +673,19 @@ export default function ProductViewPage() {
                                   <div className="flex items-center gap-2">
                                     <Truck className="h-4 w-4 text-green-400" />
                                     <span className="text-gray-300">
-                                      Pickup: {format(parseISO(reservation.pickupDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.pickup')}: {format(parseISO(reservation.pickupDate), 'dd/MM/yyyy')}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Undo2 className="h-4 w-4 text-orange-400" />
                                     <span className="text-gray-300">
-                                      Return: {format(parseISO(reservation.returnDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.return')}: {format(parseISO(reservation.returnDate), 'dd/MM/yyyy')}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-purple-400" />
                                     <span className="text-gray-300">
-                                      Wedding: {format(parseISO(reservation.client.weddingDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.wedding')}: {format(parseISO(reservation.client.weddingDate), 'dd/MM/yyyy')}
                                     </span>
                                   </div>
                                 </div>
@@ -690,7 +693,7 @@ export default function ProductViewPage() {
                             ))}
                           {reservations.filter(r => new Date(r.availabilityDate) >= new Date()).length > 5 && (
                             <p className="text-sm text-gray-400 text-center mt-3">
-                              +{reservations.filter(r => new Date(r.availabilityDate) >= new Date()).length - 5} more upcoming reservations
+                              +{reservations.filter(r => new Date(r.availabilityDate) >= new Date()).length - 5} {t('details.availability.moreUpcoming')}
                             </p>
                           )}
                         </div>

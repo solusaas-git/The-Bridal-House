@@ -1,0 +1,168 @@
+{
+  "title": "Coûts",
+  "subtitle": "Gérer et suivre les dépenses d'entreprise",
+  "addCost": "Ajouter un Coût",
+  "search": {
+    "placeholder": "Rechercher des coûts...",
+    "category": "Catégorie",
+    "allCategories": "Toutes les Catégories",
+    "dateRange": "Plage de Dates"
+  },
+  "table": {
+    "date": "Date",
+    "category": "Catégorie",
+    "amount": "Montant",
+    "relatedTo": "Lié à",
+    "notes": "Notes",
+    "actions": "Actions",
+    "noCategory": "Aucune Catégorie",
+    "noRelation": "Aucune Relation",
+    "noNotes": "Aucune Note"
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "filters": {
+    "showFilters": "Afficher les Filtres",
+    "hideFilters": "Masquer les Filtres",
+    "applyFilters": "Appliquer les Filtres",
+    "clearFilters": "Effacer les Filtres",
+    "activeFilters": "Filtres actifs",
+    "startDate": "Date de Début",
+    "endDate": "Date de Fin"
+  },
+  "summary": {
+    "totalCosts": "Coûts Totaux",
+    "showingCosts": "Affichage de {{count}} sur {{total}} coûts"
+  },
+  "messages": {
+    "loading": "Chargement des coûts...",
+    "loadFailed": "Échec du chargement des coûts",
+    "noCostsFound": "Aucun coût trouvé",
+    "deleteSuccess": "Coût supprimé avec succès",
+    "deleteFailed": "Échec de la suppression du coût",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce coût ?",
+    "exportSuccess": "Coûts exportés avec succès",
+    "exportFailed": "Échec de l'exportation des coûts"
+  },
+  "empty": {
+    "title": "Aucun coût trouvé",
+    "description": "Commencez par ajouter votre première entrée de coût",
+    "adjustFilters": "Essayez d'ajuster vos filtres ou critères de recherche",
+    "addFirstCost": "Ajouter le Premier Coût"
+  },
+  "details": {
+    "title": "Détails du Coût",
+    "backToCosts": "Retour aux Coûts",
+    "loadingCost": "Chargement du coût...",
+    "costNotFound": "Coût non trouvé",
+    "editCost": "Modifier le Coût",
+    "deleteCost": "Supprimer le Coût",
+    "info": {
+      "costInfo": "Informations du Coût",
+      "amount": "Montant",
+      "date": "Date",
+      "category": "Catégorie",
+      "notes": "Notes",
+      "createdBy": "Créé par",
+      "createdAt": "Créé le",
+      "lastUpdated": "Dernière Mise à Jour"
+    },
+    "related": {
+      "relatedItems": "Éléments Liés",
+      "reservation": "Réservation Liée",
+      "product": "Produit Lié",
+      "reservationNumber": "Réservation #{{number}}",
+      "client": "Client",
+      "eventDate": "Date de l'Événement",
+      "items": "Articles",
+      "pickupDate": "Date de Retrait",
+      "returnDate": "Date de Retour",
+      "noRelatedItems": "Aucun élément lié"
+    },
+    "attachments": {
+      "title": "Pièces Jointes",
+      "noAttachments": "Aucune pièce jointe trouvée",
+      "images": "Images",
+      "documents": "Documents",
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "previewNotAvailable": "Aperçu non disponible pour ce type de fichier",
+      "downloadToView": "Télécharger pour Voir"
+    },
+    "messages": {
+      "loadFailed": "Échec du chargement des détails du coût",
+      "deleteSuccess": "Coût supprimé avec succès",
+      "deleteFailed": "Échec de la suppression du coût"
+    }
+  },
+  "edit": {
+    "title": "Modifier le Coût",
+    "subtitle": "Mettre à jour les informations du coût",
+    "backToCost": "Retour au Coût",
+    "loadingCost": "Chargement du coût...",
+    "costNotFound": "Coût non trouvé",
+    "form": {
+      "costInformation": "Informations du Coût",
+      "date": "Date",
+      "category": "Catégorie",
+      "amount": "Montant",
+      "selectCategory": "Sélectionner une catégorie",
+      "relatedItems": "Éléments Liés",
+      "relatedType": "Type Lié",
+      "relatedTo": "Lié à",
+      "selectType": "Sélectionner un type",
+      "selectReservation": "Sélectionner une réservation",
+      "selectProduct": "Sélectionner un produit",
+      "searchReservations": "Rechercher des réservations...",
+      "searchProducts": "Rechercher des produits...",
+      "notes": "Notes",
+      "notesPlaceholder": "Ajoutez des notes supplémentaires sur cette dépense...",
+      "attachments": "Pièces Jointes",
+      "currentAttachments": "Pièces Jointes Actuelles",
+      "newAttachments": "Nouvelles Pièces Jointes",
+      "cancel": "Annuler",
+      "updateCost": "Mettre à Jour le Coût",
+      "updating": "Mise à jour..."
+    },
+    "relatedTypes": {
+      "none": "Aucun",
+      "reservation": "Réservation",
+      "product": "Produit"
+    },
+    "attachments": {
+      "uploadFiles": "Télécharger des Fichiers",
+      "dragDrop": "Glissez-déposez des fichiers ici ou cliquez pour parcourir",
+      "supportedFormats": "PDF, Images, Documents jusqu'à 10 MB chacun",
+      "removeFile": "Supprimer le fichier",
+      "currentFiles": "Fichiers Actuels",
+      "newFiles": "Nouveaux Fichiers à Télécharger"
+    },
+    "validation": {
+      "dateRequired": "La date est requise",
+      "categoryRequired": "La catégorie est requise",
+      "amountRequired": "Le montant est requis",
+      "amountInvalid": "Le montant doit être un nombre valide"
+    },
+    "messages": {
+      "updateSuccess": "Coût mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du coût",
+      "loadError": "Erreur lors du chargement des données du coût"
+    }
+  },
+  "add": {
+    "title": "Ajouter un Coût",
+    "subtitle": "Créer une nouvelle entrée de coût",
+    "backToCosts": "Retour aux Coûts",
+    "form": {
+      "createCost": "Créer le Coût",
+      "creating": "Création..."
+    },
+    "messages": {
+      "createSuccess": "Coût créé avec succès",
+      "createError": "Échec de la création du coût"
+    }
+  }
+}

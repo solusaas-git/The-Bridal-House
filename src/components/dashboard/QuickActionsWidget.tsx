@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Users, Shirt, Calendar, DollarSign, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const QuickActionsWidget: React.FC = () => {
   const router = useRouter();
   const [navigating, setNavigating] = useState<string | null>(null);
+  const { t } = useTranslation('dashboard');
 
   const handleNavigation = async (path: string, actionName: string) => {
     try {
@@ -22,42 +24,42 @@ const QuickActionsWidget: React.FC = () => {
 
   const actions = [
     {
-      name: 'Add Customer',
-      description: 'Create a new customer profile',
+      name: t('widgets.quickActions.addCustomer.name'),
+      description: t('widgets.quickActions.addCustomer.description'),
       icon: Users,
       iconBg: 'bg-blue-500/10',
       iconColor: 'text-blue-400',
-      action: () => handleNavigation('/customers/add', 'Add Customer'),
+      action: () => handleNavigation('/customers/add', t('widgets.quickActions.addCustomer.name')),
     },
     {
-      name: 'Add Product',
-      description: 'Add new product to inventory',
+      name: t('widgets.quickActions.addProduct.name'),
+      description: t('widgets.quickActions.addProduct.description'),
       icon: Shirt,
       iconBg: 'bg-green-500/10',
       iconColor: 'text-green-400',
-      action: () => handleNavigation('/products/add', 'Add Product'),
+      action: () => handleNavigation('/products/add', t('widgets.quickActions.addProduct.name')),
     },
     {
-      name: 'New Reservation',
-      description: 'Create a new booking',
+      name: t('widgets.quickActions.newReservation.name'),
+      description: t('widgets.quickActions.newReservation.description'),
       icon: Calendar,
       iconBg: 'bg-purple-500/10',
       iconColor: 'text-purple-400',
-      action: () => handleNavigation('/reservations/add', 'New Reservation'),
+      action: () => handleNavigation('/reservations/add', t('widgets.quickActions.newReservation.name')),
     },
     {
-      name: 'Record Payment',
-      description: 'Add payment record',
+      name: t('widgets.quickActions.recordPayment.name'),
+      description: t('widgets.quickActions.recordPayment.description'),
       icon: DollarSign,
       iconBg: 'bg-yellow-500/10',
       iconColor: 'text-yellow-400',
-      action: () => handleNavigation('/payments/add', 'Record Payment'),
+      action: () => handleNavigation('/payments/add', t('widgets.quickActions.recordPayment.name')),
     },
   ];
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+      <h3 className="text-lg font-semibold text-white mb-4">{t('widgets.quickActions.title')}</h3>
       
       <div className="grid grid-cols-1 gap-3">
         {actions.map((action) => {

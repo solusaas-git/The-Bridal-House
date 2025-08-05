@@ -1,0 +1,83 @@
+{
+  "title": "Tableau de Bord",
+  "subtitle": "Aperçu de vos opérations commerciales",
+  "welcome": "Bon retour ! Voici ce qui se passe avec votre entreprise aujourd'hui.",
+  "loadingData": "Chargement des données du tableau de bord...",
+  "dateRanges": {
+    "today": "Aujourd'hui",
+    "lastWeek": "Semaine Dernière",
+    "thisWeek": "Cette Semaine",
+    "nextWeek": "Semaine Prochaine", 
+    "lastMonth": "Mois Dernier",
+    "thisMonth": "Ce Mois",
+    "nextMonth": "Mois Prochain",
+    "thisYear": "Cette Année",
+    "custom": "Personnalisé"
+  },
+  "widgets": {
+    "pickups": {
+      "title": "Enlèvements à Venir",
+      "noPickups": "Aucun enlèvement programmé pour cette période",
+      "unknownCustomer": "Client Inconnu",
+      "items": "article(s)",
+      "viewAll": "Voir tous les {{count}} enlèvements",
+      "customRangeActive": "Plage Personnalisée Active",
+      "startDate": "Date de Début",
+      "endDate": "Date de Fin",
+      "to": "à"
+    },
+    "returns": {
+      "title": "Retours à Venir",
+      "noReturns": "Aucun retour programmé pour cette période",
+      "unknownCustomer": "Client Inconnu",
+      "items": "article(s)",
+      "viewAll": "Voir tous les {{count}} retours",
+      "customRangeActive": "Plage Personnalisée Active",
+      "startDate": "Date de Début",
+      "endDate": "Date de Fin", 
+      "to": "à"
+    },
+    "quickActions": {
+      "title": "Actions Rapides",
+      "addCustomer": {
+        "name": "Ajouter un Client",
+        "description": "Créer un nouveau profil client"
+      },
+      "addProduct": {
+        "name": "Ajouter un Produit",
+        "description": "Ajouter un nouveau produit à l'inventaire"
+      },
+      "newReservation": {
+        "name": "Nouvelle Réservation",
+        "description": "Créer une nouvelle réservation"
+      },
+      "recordPayment": {
+        "name": "Enregistrer un Paiement",
+        "description": "Ajouter un enregistrement de paiement"
+      }
+    },
+    "stats": {
+      "totalCustomers": "Total des Clients",
+      "publishedProducts": "Produits Publiés",
+      "activeReservations": "Réservations Actives",
+      "totalPayments": "Total des Paiements",
+      "totalCosts": "Total des Coûts",
+      "margin": "Marge",
+      "upcomingPayments": "Paiements à Venir"
+    },
+    "systemHealth": {
+      "title": "État du Système",
+      "customersWithoutEmail": "Clients sans email",
+      "customersWithoutPhone": "Clients sans téléphone",
+      "draftProducts": "Produits en brouillon",
+      "pendingReservations": "Réservations en attente",
+      "lowValuePayments": "Paiements de faible valeur"
+    },
+    "widgetManager": {
+      "title": "Gérer les Widgets",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "customize": "Personnaliser"
+    }
+  }
+}

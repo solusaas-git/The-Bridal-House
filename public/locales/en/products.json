@@ -1,0 +1,191 @@
+{
+  "title": "Products",
+  "subtitle": "Manage product inventory and catalog",
+  "addProduct": "Add Product",
+  "searchPlaceholder": "Search products...",
+  "viewMode": {
+    "grid": "Grid View",
+    "table": "Table View"
+  },
+  "filters": {
+    "category": "Category",
+    "subCategory": "Subcategory",
+    "allCategories": "All Categories",
+    "allSubCategories": "All Subcategories"
+  },
+  "columns": {
+    "columns": "Columns",
+    "showHideColumns": "Show/Hide Columns",
+    "saving": "Saving...",
+    "id": "ID",
+    "name": "Name",
+    "category": "Category",
+    "subCategory": "Sub Category",
+    "rentalCost": "Rental Cost",
+    "buyCost": "Buy Cost",
+    "sellPrice": "Sell Price",
+    "size": "Size",
+    "quantity": "Quantity",
+    "status": "Status",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "createdBy": "Created By",
+    "actions": "Actions"
+  },
+  "productInfo": {
+    "noImage": "No Image",
+    "noCategory": "No Category",
+    "rentalPerDay": "Rental/Day",
+    "buyCost": "Buy Cost",
+    "sellPrice": "Sell Price",
+    "size": "Size",
+    "stock": "Stock"
+  },
+  "status": {
+    "published": "Published",
+    "draft": "Draft",
+    "archived": "Archived"
+  },
+  "table": {
+    "noProducts": "No products found",
+    "loadingProducts": "Loading products...",
+    "retryLoading": "Retry Loading"
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "messages": {
+    "loadFailed": "Failed to load products",
+    "deleteFailed": "Failed to delete product", 
+    "deleteSuccess": "Product deleted successfully",
+    "columnPreferencesSaved": "Column preferences saved successfully",
+    "columnPreferencesFailed": "Failed to save column preferences",
+    "networkError": "Network error"
+  },
+  "details": {
+    "title": "Product Details",
+    "backToProducts": "Back to Products",
+    "loadingProduct": "Loading product...",
+    "productNotFound": "Product not found",
+    "tabs": {
+      "details": "Product Details",
+      "availability": "Availability"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "downloadImage": "Download Image",
+      "downloadVideo": "Download Video"
+    },
+    "sections": {
+      "videos": "Videos",
+      "basicInfo": "Basic Information",
+      "pricing": "Pricing",
+      "metadata": "Metadata"
+    },
+    "fields": {
+      "name": "Name",
+      "status": "Status",
+      "category": "Category",
+      "subCategory": "Sub Category",
+      "size": "Size",
+      "inStock": "In Stock",
+      "rentalCostPerDay": "Rental Cost/Day",
+      "buyCost": "Buy Cost",
+      "sellPrice": "Sell Price",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "availability": {
+      "reservationsFor": "Reservations for",
+      "pickup": "Pickup",
+      "return": "Return",
+      "wedding": "Wedding",
+      "currentUpcoming": "Current & Upcoming Reservations",
+      "noReservations": "No reservations found for this product.",
+      "availableAllDates": "This product is currently available for all dates.",
+      "moreUpcoming": "more upcoming reservations"
+    },
+    "images": {
+      "noImageAvailable": "No Image Available"
+    },
+    "messages": {
+      "loadFailed": "Failed to load product details",
+      "deleteSuccess": "Product deleted successfully",
+      "deleteFailed": "Failed to delete product"
+    }
+  },
+  "edit": {
+    "title": "Edit Product",
+    "subtitle": "Update product information",
+    "backToProduct": "Back to Product",
+    "loadingProduct": "Loading product...",
+    "productNotFound": "Product not found",
+    "form": {
+      "productName": "Product Name",
+      "category": "Category",
+      "subCategory": "Sub Category",
+      "status": "Status",
+      "rentalCost": "Rental Cost",
+      "buyCost": "Buy Cost",
+      "sellPrice": "Sell Price",
+      "size": "Size",
+      "quantity": "Quantity",
+      "primaryPhoto": "Primary Photo",
+      "secondaryPhotos": "Secondary Photos",
+      "videos": "Product Videos",
+      "selectCategory": "Select a category",
+      "selectSubCategory": "Select a sub category",
+      "enterProductName": "Enter product name",
+      "uploadPrimary": "Click to upload primary photo",
+      "uploadSecondary": "Click to upload additional photos",
+      "uploadVideos": "Click to upload videos",
+      "supportedFormats": "PNG, JPG up to 10MB each",
+      "videoFormats": "MP4, MOV up to 50MB each",
+      "cancel": "Cancel",
+      "updateProduct": "Update Product",
+      "updating": "Updating...",
+      "required": "Required"
+    },
+    "status": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "upload": {
+      "clickToUpload": "Click to upload",
+      "dragDrop": "or drag and drop",
+      "removeFile": "Remove file",
+      "primaryPhoto": "primary photo",
+      "additionalPhotos": "additional photos",
+      "videos": "videos"
+    },
+    "validation": {
+      "nameRequired": "Product name is required",
+      "categoryRequired": "Category is required",
+      "rentalCostRequired": "Rental cost is required",
+      "quantityRequired": "Quantity is required"
+    },
+    "messages": {
+      "updateSuccess": "Product updated successfully",
+      "updateError": "Failed to update product",
+      "loadError": "Error loading product data",
+      "uploadError": "Error uploading files"
+    }
+  },
+  "add": {
+    "title": "Add Product",
+    "subtitle": "Create a new product",
+    "backToProducts": "Back to Products",
+    "form": {
+      "createProduct": "Create Product",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "createSuccess": "Product created successfully",
+      "createError": "Failed to create product"
+    }
+  }
+}

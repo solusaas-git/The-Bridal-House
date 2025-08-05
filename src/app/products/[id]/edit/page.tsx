@@ -12,6 +12,7 @@ import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import { needsApproval } from '@/utils/permissions';
 import { setCategories } from '@/store/reducers/categorySlice';
+import { useTranslation } from 'react-i18next';
 
 interface Product {
   _id: string;
@@ -45,6 +46,8 @@ export default function EditProductPage() {
   const categories = useSelector((state: RootState) => state.category.categories);
   const currencySettings = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
+  const { t } = useTranslation('products');
+  const { t: tCommon } = useTranslation('common');
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -397,7 +400,7 @@ export default function EditProductPage() {
               {/* Product Name */}
               <div>
                 <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Product Name *
+                  {t('edit.form.productName')} *
                 </label>
                 <input
                   type="text"
@@ -408,7 +411,7 @@ export default function EditProductPage() {
                   className={`w-full px-3 py-2 bg-white/10 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                     errors.name ? 'border-red-500' : 'border-white/20'
                   }`}
-                  placeholder="Enter product name"
+                  placeholder={t('edit.form.enterProductName')}
                 />
                 {errors.name && <p className="mt-1 text-xs sm:text-sm text-red-400">{errors.name}</p>}
               </div>
@@ -416,7 +419,7 @@ export default function EditProductPage() {
               {/* Category */}
               <div>
                 <label htmlFor="category" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Category *
+                  {t('edit.form.category')} *
                 </label>
                 <select
                   id="category"
@@ -427,7 +430,7 @@ export default function EditProductPage() {
                     errors.category ? 'border-red-500' : 'border-white/20'
                   }`}
                 >
-                  <option value="">Select a category</option>
+                  <option value="">{t('edit.form.selectCategory')}</option>
                   {categories.map((category: any) => (
                     <option key={category._id} value={category._id} className="bg-gray-800">
                       {category.name}
@@ -440,7 +443,7 @@ export default function EditProductPage() {
               {/* Sub Category */}
               <div>
                 <label htmlFor="subCategory" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Sub Category
+                  {t('edit.form.subCategory')}
                 </label>
                 <select
                   id="subCategory"
@@ -450,7 +453,7 @@ export default function EditProductPage() {
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   disabled={!formData.category || availableSubCategories.length === 0}
                 >
-                  <option value="">Select a sub category</option>
+                  <option value="">{t('edit.form.selectSubCategory')}</option>
                   {availableSubCategories.map((subCat: string, index: number) => (
                     <option key={index} value={subCat} className="bg-gray-800">
                       {subCat}
@@ -462,7 +465,7 @@ export default function EditProductPage() {
               {/* Status */}
               <div>
                 <label htmlFor="status" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Status
+                  {t('edit.form.status')}
                 </label>
                 <select
                   id="status"
@@ -471,8 +474,8 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
-                  <option value="Draft" className="bg-gray-800">Draft</option>
-                  <option value="Published" className="bg-gray-800">Published</option>
+                  <option value="Draft" className="bg-gray-800">{t('edit.status.draft')}</option>
+                  <option value="Published" className="bg-gray-800">{t('edit.status.published')}</option>
                 </select>
               </div>
             </div>
@@ -482,7 +485,7 @@ export default function EditProductPage() {
               {/* Rental Cost */}
               <div>
                 <label htmlFor="rentalCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Rental Cost * ({getCurrencySymbol(currencySettings)})
+                  {t('edit.form.rentalCost')} * ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
                   type="number"
@@ -503,7 +506,7 @@ export default function EditProductPage() {
               {/* Buy Cost */}
               <div>
                 <label htmlFor="buyCost" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Buy Cost ({getCurrencySymbol(currencySettings)})
+                  {t('edit.form.buyCost')} ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
                   type="number"
@@ -521,7 +524,7 @@ export default function EditProductPage() {
               {/* Sell Price */}
               <div>
                 <label htmlFor="sellPrice" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Sell Price ({getCurrencySymbol(currencySettings)})
+                  {t('edit.form.sellPrice')} ({getCurrencySymbol(currencySettings)})
                 </label>
                 <input
                   type="number"
@@ -542,7 +545,7 @@ export default function EditProductPage() {
               {/* Size */}
               <div>
                 <label htmlFor="size" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Size
+                  {t('edit.form.size')}
                 </label>
                 <input
                   type="number"
@@ -552,14 +555,14 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   min="0"
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  placeholder="Size"
+                  placeholder={t('edit.form.size')}
                 />
               </div>
 
               {/* Quantity */}
               <div>
                 <label htmlFor="quantity" className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                  Quantity
+                  {t('edit.form.quantity')}
                 </label>
                 <input
                   type="number"
@@ -577,7 +580,7 @@ export default function EditProductPage() {
             {/* Primary Photo */}
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">
-                Primary Photo
+                {t('edit.form.primaryPhoto')}
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
@@ -585,9 +588,9 @@ export default function EditProductPage() {
                     <div className="flex flex-col items-center justify-center pt-3 sm:pt-5 pb-4 sm:pb-6">
                       <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
                       <p className="mb-2 text-xs sm:text-sm text-gray-400">
-                        <span className="font-semibold">Click to upload</span> new primary photo
+                        <span className="font-semibold">{t('edit.upload.clickToUpload')}</span> {t('edit.upload.primaryPhoto')}
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                      <p className="text-xs text-gray-500">{t('edit.form.supportedFormats')}</p>
                     </div>
                     <input
                       type="file"
@@ -624,7 +627,7 @@ export default function EditProductPage() {
             {/* Secondary Photos */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Secondary Photos
+                {t('edit.form.secondaryPhotos')}
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
@@ -632,9 +635,9 @@ export default function EditProductPage() {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />
                       <p className="mb-2 text-sm text-gray-400">
-                        <span className="font-semibold">Click to upload</span> additional photos
+                        <span className="font-semibold">{t('edit.upload.clickToUpload')}</span> {t('edit.upload.additionalPhotos')}
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG up to 10MB each</p>
+                      <p className="text-xs text-gray-500">{t('edit.form.supportedFormats')}</p>
                     </div>
                     <input
                       type="file"
@@ -673,7 +676,7 @@ export default function EditProductPage() {
             {/* Videos */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Videos
+                {t('edit.form.videos')}
               </label>
               <div className="space-y-4">
                 <div className="flex items-center justify-center w-full">
@@ -681,9 +684,9 @@ export default function EditProductPage() {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <VideoIcon className="w-8 h-8 mb-2 text-gray-400" />
                       <p className="mb-2 text-sm text-gray-400">
-                        <span className="font-semibold">Click to upload</span> videos
+                        <span className="font-semibold">{t('edit.upload.clickToUpload')}</span> {t('edit.upload.videos')}
                       </p>
-                      <p className="text-xs text-gray-500">MP4, MOV up to 50MB each</p>
+                      <p className="text-xs text-gray-500">{t('edit.form.videoFormats')}</p>
                     </div>
                     <input
                       type="file"
@@ -726,7 +729,7 @@ export default function EditProductPage() {
                 onClick={() => router.push(`/products/${productId}`)}
                 className="px-4 sm:px-6 py-2 text-gray-300 hover:text-white border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
               >
-                Cancel
+                {t('edit.form.cancel')}
               </button>
               <ApprovalHandler
                 actionType="edit"
@@ -793,7 +796,7 @@ export default function EditProductPage() {
                   {submitting && (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   )}
-                  {submitting ? 'Updating...' : 'Update Product'}
+                  {submitting ? t('edit.form.updating') : t('edit.form.updateProduct')}
                 </button>
               </ApprovalHandler>
             </div>

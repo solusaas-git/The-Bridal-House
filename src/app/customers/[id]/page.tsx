@@ -13,6 +13,7 @@ import {
 } from '@radix-ui/react-icons';
 import Layout from '@/components/Layout';
 import type { IAttachment } from '@/models';
+import { useTranslation } from 'react-i18next';
 
 interface Customer {
   _id: string;
@@ -70,7 +71,10 @@ const CustomerHeader = ({ title, onBack, onEdit, showEditButton = true }: {
   onBack: () => void;
   onEdit: () => void;
   showEditButton?: boolean;
-}) => (
+}) => {
+  const { t } = useTranslation('customers');
+  
+  return (
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div className="flex items-center gap-3 sm:gap-4">
       <button
@@ -81,7 +85,7 @@ const CustomerHeader = ({ title, onBack, onEdit, showEditButton = true }: {
       </button>
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-white">{title}</h1>
-        <p className="text-sm sm:text-base text-gray-300">View and manage customer information</p>
+        <p className="text-sm sm:text-base text-gray-300">{t('details.subtitle')}</p>
       </div>
     </div>
     {showEditButton && (
@@ -89,11 +93,12 @@ const CustomerHeader = ({ title, onBack, onEdit, showEditButton = true }: {
         onClick={onEdit}
         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors text-sm w-full sm:w-auto"
       >
-        Edit Customer
+{t('details.editButton')}
       </button>
     )}
   </div>
-);
+  );
+};
 
 // TabButton Component
 const TabButton = ({ active, children, onClick }: {
@@ -118,11 +123,13 @@ const CustomerTabs = ({ activeTab, onTabChange }: {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }) => {
+  const { t } = useTranslation('customers');
+  
   const tabs = [
-    { id: 'details', label: 'Customer Details' },
-    { id: 'reservations', label: 'Reservations' },
-    { id: 'payments', label: 'Payments' },
-    { id: 'attachments', label: 'Attachments' },
+    { id: 'details', label: t('details.tabs.details') },
+    { id: 'reservations', label: t('details.tabs.reservations') },
+    { id: 'payments', label: t('details.tabs.payments') },
+    { id: 'attachments', label: t('details.tabs.attachments') },
   ];
 
   return (
@@ -143,65 +150,70 @@ const CustomerTabs = ({ activeTab, onTabChange }: {
 };
 
 // CustomerDetails Component
-const CustomerDetails = ({ customer }: { customer: Customer }) => (
+const CustomerDetails = ({ customer }: { customer: Customer }) => {
+  const { t } = useTranslation('customers');
+  
+  return (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
     <div className="space-y-3 sm:space-y-4">
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Full Name</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.fullName')}</label>
         <p className="text-white text-sm sm:text-base">{customer.firstName} {customer.lastName}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Email</label>
-        <p className="text-white text-sm sm:text-base">{customer.email || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.email')}</label>
+        <p className="text-white text-sm sm:text-base">{customer.email || t('common.notAvailable')}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Phone</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.phone')}</label>
         <p className="text-white text-sm sm:text-base">{customer.phone}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">WhatsApp</label>
-        <p className="text-white text-sm sm:text-base">{customer.whatsapp || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.whatsapp')}</label>
+        <p className="text-white text-sm sm:text-base">{customer.whatsapp || t('common.notAvailable')}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Type</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.type')}</label>
         <p className="text-white text-sm sm:text-base">{customer.type}</p>
       </div>
     </div>
     <div className="space-y-3 sm:space-y-4">
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Address</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.address')}</label>
         <p className="text-white text-sm sm:text-base">{customer.address}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">CIN/Passport ID</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.cinPassport')}</label>
         <p className="text-white text-sm sm:text-base">{customer.idNumber}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Date</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingDate')}</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : t('common.notAvailable')}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Time</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingTime || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingTime')}</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingTime || t('common.notAvailable')}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding Location</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingLocation || 'N/A'}</p>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingLocation')}</label>
+        <p className="text-white text-sm sm:text-base">{customer.weddingLocation || t('common.notAvailable')}</p>
       </div>
       <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">Wedding City</label>
+        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingCity')}</label>
         <p className="text-white text-sm sm:text-base">{customer.weddingCity}</p>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 // CustomerReservations Component
 const CustomerReservations = ({ reservations }: { reservations: Reservation[] }) => {
+  const { t } = useTranslation('customers');
   if (!reservations || reservations.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400">No reservations found for this customer.</p>
+        <p className="text-gray-400">{t('details.reservations.noReservations')}</p>
       </div>
     );
   }
@@ -234,22 +246,22 @@ const CustomerReservations = ({ reservations }: { reservations: Reservation[] })
         <thead>
           <tr className="border-b border-white/20">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Id
+              {t('details.reservations.headers.id')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Items
+              {t('details.reservations.headers.items')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Date
+              {t('details.reservations.headers.date')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Time
+              {t('details.reservations.headers.time')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Service
+              {t('details.reservations.headers.service')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Status
+              {t('details.reservations.headers.status')}
             </th>
           </tr>
         </thead>
@@ -262,7 +274,7 @@ const CustomerReservations = ({ reservations }: { reservations: Reservation[] })
                     #{index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400" colSpan={5}>
-                    No items found for this reservation
+                    {t('details.reservations.noItems')}
                   </td>
                 </tr>
               );
@@ -308,27 +320,27 @@ const CustomerReservations = ({ reservations }: { reservations: Reservation[] })
                     )}
                     <div className="flex flex-col">
                       <span className="text-white text-sm">
-                        {mainItem?.name || 'Unknown Item'}
+                        {mainItem?.name || t('details.reservations.unknownItem')}
                       </span>
                       {reservation.items.length > 1 && (
                         <span className="text-gray-400 text-xs">
-                          +{reservation.items.length - 1} more items
+                          +{reservation.items.length - 1} {t('details.reservations.moreItems')}
                         </span>
                       )}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {reservation.createdAt ? reservation.createdAt.split('T')[0] : 'N/A'}
+                  {reservation.createdAt ? reservation.createdAt.split('T')[0] : t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {reservation.createdAt ? reservation.createdAt.split('T')[1]?.split('.')[0] : 'N/A'}
+                  {reservation.createdAt ? reservation.createdAt.split('T')[1]?.split('.')[0] : t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {reservation.service || 'N/A'}
+                  {reservation.service || t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {reservation.status || 'N/A'}
+                  {reservation.status || t('common.notAvailable')}
                 </td>
               </tr>
             );
@@ -341,10 +353,11 @@ const CustomerReservations = ({ reservations }: { reservations: Reservation[] })
 
 // CustomerPayments Component
 const CustomerPayments = ({ payments }: { payments: Payment[] }) => {
+  const { t } = useTranslation('customers');
   if (!payments || payments.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400">No payments found for this customer.</p>
+        <p className="text-gray-400">{t('details.payments.noPayments')}</p>
       </div>
     );
   }
@@ -362,16 +375,16 @@ const CustomerPayments = ({ payments }: { payments: Payment[] }) => {
         <thead>
           <tr className="border-b border-white/20">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Id
+              {t('details.payments.headers.id')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Date
+              {t('details.payments.headers.date')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Amount
+              {t('details.payments.headers.amount')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-              Method
+              {t('details.payments.headers.method')}
             </th>
           </tr>
         </thead>
@@ -384,7 +397,7 @@ const CustomerPayments = ({ payments }: { payments: Payment[] }) => {
                     #{index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400" colSpan={3}>
-                    Payment data not available
+                    {t('details.payments.noData')}
                   </td>
                 </tr>
               );
@@ -396,13 +409,13 @@ const CustomerPayments = ({ payments }: { payments: Payment[] }) => {
                   #{index + 1}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {payment.paymentDate ? payment.paymentDate.split('T')[0] : 'N/A'}
+                  {payment.paymentDate ? payment.paymentDate.split('T')[0] : t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {payment.amount ? formatCurrency(payment.amount) : 'N/A'}
+                  {payment.amount ? formatCurrency(payment.amount) : t('common.notAvailable')}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                  {payment.paymentMethod || 'N/A'}
+                  {payment.paymentMethod || t('common.notAvailable')}
                 </td>
               </tr>
             );
@@ -415,12 +428,13 @@ const CustomerPayments = ({ payments }: { payments: Payment[] }) => {
 
 // CustomerAttachments Component
 const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) => {
+  const { t } = useTranslation('customers');
   const [previewFile, setPreviewFile] = useState<{ file: IAttachment; url: string; type: string } | null>(null);
 
   if (!attachments || attachments.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400">No attachments found for this customer.</p>
+        <p className="text-gray-400">{t('details.attachments.noAttachments')}</p>
       </div>
     );
   }
@@ -525,14 +539,14 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
         return (
           <div className="text-center p-8">
             <FileIcon className="h-16 w-16 text-white/60 mx-auto mb-4" />
-            <p className="text-white mb-4">Preview not available for this file type</p>
+            <p className="text-white mb-4">{t('details.attachments.noPreview')}</p>
             <p className="text-gray-400 text-sm mb-4">{file.name}</p>
             <button
               type="button"
               onClick={() => handleDownload(file)}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
             >
-              Download to View
+              {t('details.attachments.downloadToView')}
             </button>
           </div>
         );
@@ -550,7 +564,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
         <div>
           <h4 className="text-lg font-medium text-white mb-6 flex items-center">
             <span className="mr-2">🖼️</span>
-            Images ({imageFiles.length})
+{t('details.attachments.images')} ({imageFiles.length})
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {imageFiles.map((file, index) => {
@@ -593,7 +607,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                           handlePreview(file);
                         }}
                         className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-                        title="Preview"
+                        title={t('details.attachments.preview')}
                       >
                         <EyeOpenIcon className="h-4 w-4 text-white" />
                       </button>
@@ -604,7 +618,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                           handleDownload(file);
                         }}
                         className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-                        title="Download"
+                        title={t('details.attachments.download')}
                       >
                         <DownloadIcon className="h-4 w-4 text-white" />
                       </button>
@@ -632,7 +646,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
         <div>
           <h4 className="text-lg font-medium text-white mb-6 flex items-center">
             <span className="mr-2">📄</span>
-            Documents ({documentFiles.length})
+{t('details.attachments.documents')} ({documentFiles.length})
           </h4>
           <div className="space-y-3">
             {documentFiles.map((file, index) => (
@@ -650,7 +664,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                     </span>
                     <div className="flex items-center space-x-4 text-xs text-gray-400">
                       <span>{(file.size / 1024 / 1024).toFixed(2)} MB</span>
-                      <span className="capitalize">{getFileType(file.name)} file</span>
+                      <span className="capitalize">{getFileType(file.name)} {t('details.attachments.file')}</span>
                     </div>
                   </div>
                 </div>
@@ -660,17 +674,17 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                     type="button"
                     onClick={() => handlePreview(file)}
                     className="px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md transition-colors flex items-center space-x-2"
-                    title="Preview"
+                    title={t('details.attachments.preview')}
                   >
                     <EyeOpenIcon className="h-4 w-4" />
-                    <span className="text-sm">Preview</span>
+                    <span className="text-sm">{t('details.attachments.preview')}</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => handleDownload(file)}
                     className="p-2 hover:bg-white/10 rounded-md transition-colors"
-                    title="Download"
+                    title={t('details.attachments.download')}
                   >
                     <DownloadIcon className="h-4 w-4 text-white/60 hover:text-white" />
                   </button>
@@ -695,7 +709,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                   type="button"
                   onClick={() => handleDownload(previewFile.file)}
                   className="p-2 hover:bg-white/10 rounded transition-colors"
-                  title="Download"
+                  title={t('details.attachments.download')}
                 >
                   <DownloadIcon className="h-4 w-4 text-white/60 hover:text-white" />
                 </button>
@@ -703,7 +717,7 @@ const CustomerAttachments = ({ attachments }: { attachments: IAttachment[] }) =>
                   type="button"
                   onClick={closePreview}
                   className="p-2 hover:bg-white/10 rounded transition-colors"
-                  title="Close"
+                  title={t('details.attachments.close')}
                 >
                   <Cross2Icon className="h-4 w-4 text-white/60 hover:text-white" />
                 </button>
@@ -726,6 +740,7 @@ const ViewCustomerPage = () => {
   const router = useRouter();
   const params = useParams();
   const customerId = params.id as string;
+  const { t } = useTranslation('customers');
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -745,7 +760,7 @@ const ViewCustomerPage = () => {
         if (customerResponse.data.success) {
           setCustomer(customerResponse.data.customer);
         } else {
-          setError('Customer not found');
+          setError(t('details.errors.customerNotFound'));
           return;
         }
 
@@ -771,7 +786,7 @@ const ViewCustomerPage = () => {
 
       } catch (error) {
         console.error('Error fetching customer data:', error);
-        setError('Failed to load customer data');
+        setError(t('details.errors.loadFailed'));
       } finally {
         setLoading(false);
       }
@@ -819,13 +834,13 @@ const ViewCustomerPage = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-white mb-2">Error</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('details.errors.error')}</h2>
           <p className="text-gray-400 mb-4">{error}</p>
           <button
             onClick={handleBack}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
           >
-            Back to Customers
+            {t('details.errors.backToCustomers')}
           </button>
         </div>
       </Layout>
@@ -836,13 +851,13 @@ const ViewCustomerPage = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-white mb-2">Customer Not Found</h2>
-          <p className="text-gray-400 mb-4">The customer you&apos;re looking for doesn&apos;t exist.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('details.errors.customerNotFound')}</h2>
+          <p className="text-gray-400 mb-4">{t('details.errors.customerNotExist')}</p>
           <button
             onClick={handleBack}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
           >
-            Back to Customers
+            {t('details.errors.backToCustomers')}
           </button>
         </div>
       </Layout>
@@ -853,7 +868,7 @@ const ViewCustomerPage = () => {
     <Layout>
       <div className="space-y-8">
         <CustomerHeader
-          title="Customer Details"
+          title={t('details.title')}
           onBack={handleBack}
           onEdit={handleEdit}
         />

@@ -20,6 +20,7 @@ import { RootState } from '@/store/store';
 import { setCostCategories, addCost } from '@/store/reducers/costSlice';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import { formatCurrency } from '@/utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface CostFormData {
   date: string;
@@ -53,6 +54,8 @@ export default function AddCostPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { costCategories } = useSelector((state: RootState) => state.cost);
+  const { t } = useTranslation('costs');
+  const { t: tCommon } = useTranslation('common');
   const currencySettings = useSelector((state: RootState) => state.settings);
 
   const [formData, setFormData] = useState<CostFormData>({
@@ -225,11 +228,11 @@ export default function AddCostPage() {
       });
 
       dispatch(addCost(response.data.cost));
-      toast.success('Cost added successfully');
+      toast.success(t('add.messages.createSuccess'));
       router.push('/costs');
     } catch (error: unknown) {
       console.error('Error adding cost:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add cost';
+      const errorMessage = error instanceof Error ? error.message : t('add.messages.createError');
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -278,11 +281,11 @@ export default function AddCostPage() {
       });
 
       dispatch(addCost(response.data.cost));
-      toast.success('Cost added successfully');
+      toast.success(t('add.messages.createSuccess'));
       router.push('/costs');
     } catch (error: unknown) {
       console.error('Error adding cost:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add cost';
+      const errorMessage = error instanceof Error ? error.message : t('add.messages.createError');
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -327,9 +330,9 @@ export default function AddCostPage() {
               className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Costs
+            {t('add.backToCosts')}
           </button>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Add New Cost</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('add.title')}</h1>
           </div>
         </div>
 
@@ -341,7 +344,7 @@ export default function AddCostPage() {
               {/* Date */}
               <div className="space-y-2">
                 <label className="text-xs sm:text-sm font-medium text-gray-200">
-                  Date <span className="text-red-400">*</span>
+                  {t('edit.form.date')} <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -359,7 +362,7 @@ export default function AddCostPage() {
               {/* Category */}
               <div className="space-y-2">
                 <label className="text-xs sm:text-sm font-medium text-gray-200">
-                  Category <span className="text-red-400">*</span>
+                  {t('edit.form.category')} <span className="text-red-400">*</span>
                 </label>
                 <select
                   name="category"
@@ -368,7 +371,7 @@ export default function AddCostPage() {
                   required
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
-                  <option value="" className="bg-gray-800">Select a category</option>
+                  <option value="" className="bg-gray-800">{t('edit.form.selectCategory')}</option>
                   {costCategories.map((category) => (
                     <option key={category._id} value={category._id} className="bg-gray-800">
                       {category.name}
@@ -380,7 +383,7 @@ export default function AddCostPage() {
               {/* Amount */}
               <div className="space-y-2">
                 <label className="text-xs sm:text-sm font-medium text-gray-200">
-                  Amount <span className="text-red-400">*</span>
+                  {t('edit.form.amount')} <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -401,7 +404,7 @@ export default function AddCostPage() {
 
             {/* Related Item Section */}
             <div className="space-y-4">
-              <label className="text-xs sm:text-sm font-medium text-gray-200">Related Item (Optional)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.relatedItems')}</label>
               
               {/* Item Type Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -420,8 +423,8 @@ export default function AddCostPage() {
                   }`}
                 >
                   <CalendarIcon className="h-6 w-6 mx-auto mb-2" />
-                  <div className="font-medium">Reservation</div>
-                  <div className="text-xs text-gray-400 mt-1">Link to a customer reservation</div>
+                  <div className="font-medium">{t('edit.relatedTypes.reservation')}</div>
+                  <div className="text-xs text-gray-400 mt-1">{tCommon('linkToReservation')}</div>
                 </button>
                 <button
                   type="button"
@@ -438,8 +441,8 @@ export default function AddCostPage() {
                   }`}
                 >
                   <DocumentIcon className="h-6 w-6 mx-auto mb-2" />
-                  <div className="font-medium">Product</div>
-                  <div className="text-xs text-gray-400 mt-1">Link to a product item</div>
+                  <div className="font-medium">{t('edit.relatedTypes.product')}</div>
+                  <div className="text-xs text-gray-400 mt-1">{tCommon('linkToProduct')}</div>
                 </button>
               </div>
 
@@ -598,26 +601,26 @@ export default function AddCostPage() {
                 value={formData.notes}
                 onChange={handleInputChange}
                 rows={4}
-                placeholder="Add any additional notes about this expense..."
+                placeholder={t('edit.form.notesPlaceholder')}
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>
 
             {/* Attachments */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Attachments</label>
+              <label className="text-sm font-medium text-gray-200">{t('edit.form.attachments')}</label>
               <div 
                 className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/30 transition-all cursor-pointer bg-white/5"
                 onClick={() => document.getElementById('file-upload')?.click()}
               >
                 <PaperClipIcon className="mx-auto h-8 w-8 text-gray-400 mb-3" />
-                <p className="text-gray-300 text-lg mb-2">Drop files here or click to browse</p>
-                <p className="text-sm text-gray-400 mb-4">PDF, DOC, Images (Max 10MB per file)</p>
+                <p className="text-gray-300 text-lg mb-2">{t('edit.attachments.dragDrop')}</p>
+                <p className="text-sm text-gray-400 mb-4">{t('edit.attachments.supportedFormats')}</p>
                 <button
                   type="button"
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                  Choose Files
+                  {tCommon('chooseFiles')}
                 </button>
                 <input
                   id="file-upload"
@@ -633,7 +636,7 @@ export default function AddCostPage() {
             {/* Attachment Previews */}
             {attachments.length > 0 && (
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-200">Uploaded Files</label>
+                <label className="text-sm font-medium text-gray-200">{t('edit.attachments.newFiles')}</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                   {attachments.map((attachment, index) => (
                     <div key={index} className="relative group">
@@ -684,7 +687,7 @@ export default function AddCostPage() {
                 newData={formData}
                 onDirectAction={handleDirectSubmit}
                 onSuccess={() => {
-                  toast.success('Cost added successfully');
+                  toast.success(t('add.messages.createSuccess'));
                   router.push('/costs');
                 }}
               >
@@ -696,10 +699,10 @@ export default function AddCostPage() {
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Adding...
+                      {t('add.form.creating')}
                     </>
                   ) : (
-                    'Add Cost'
+                    t('add.form.createCost')
                   )}
                 </button>
               </ApprovalHandler>

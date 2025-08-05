@@ -27,6 +27,7 @@ import { RootState } from '@/store/store';
 import { canEdit, canDelete } from '@/utils/permissions';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
+import { useTranslation } from 'react-i18next';
 
 interface Cost {
   _id: string;
@@ -77,6 +78,8 @@ export default function ViewCostPage() {
   const params = useParams();
   const router = useRouter();
   const costId = params.id as string;
+  const { t } = useTranslation('costs');
+  const { t: tCommon } = useTranslation('common');
   
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const currencySettings = useSelector((state: RootState) => state.settings);
@@ -109,7 +112,7 @@ export default function ViewCostPage() {
       setCost(response.data.cost);
     } catch (error: any) {
       console.error('Error fetching cost:', error);
-      toast.error(error.response?.data?.error || 'Failed to fetch cost');
+      toast.error(error.response?.data?.error || t('details.messages.loadFailed'));
       router.push('/costs');
     } finally {
       setLoading(false);
@@ -121,11 +124,11 @@ export default function ViewCostPage() {
     
     try {
       await axios.delete(`/api/costs/${cost._id}`);
-      toast.success('Cost deleted successfully');
+      toast.success(t('details.messages.deleteSuccess'));
       router.push('/costs');
     } catch (error: any) {
       console.error('Error deleting cost:', error);
-      toast.error(error.response?.data?.error || 'Failed to delete cost');
+      toast.error(error.response?.data?.error || t('details.messages.deleteFailed'));
       throw error;
     }
   };
@@ -212,14 +215,14 @@ export default function ViewCostPage() {
         return (
           <div className="text-center p-8">
             <FileIcon className="h-16 w-16 text-white/60 mx-auto mb-4" />
-            <p className="text-white mb-4">Preview not available for this file type</p>
+            <p className="text-white mb-4">{t('details.attachments.previewNotAvailable')}</p>
             <p className="text-gray-400 text-sm mb-4">{fileName}</p>
             <button
               type="button"
               onClick={() => handleDownload(file)}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
             >
-              Download to View
+              {t('details.attachments.downloadToView')}
             </button>
           </div>
         );
@@ -251,13 +254,13 @@ export default function ViewCostPage() {
     return (
       <Layout>
         <div className="text-center py-8">
-          <h2 className="text-xl font-semibold text-white mb-2">Cost Not Found</h2>
-          <p className="text-gray-400 mb-4">The requested cost could not be found.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">{t('details.costNotFound')}</h2>
+          <p className="text-gray-400 mb-4">{tCommon('requestedItemNotFound')}</p>
           <button
             onClick={() => router.push('/costs')}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
-            Back to Costs
+            {t('details.backToCosts')}
           </button>
         </div>
       </Layout>
@@ -277,8 +280,8 @@ export default function ViewCostPage() {
               <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">Cost Details</h1>
-              <p className="text-gray-300">View and manage cost information</p>
+              <h1 className="text-2xl font-bold text-white">{t('details.title')}</h1>
+              <p className="text-gray-300">{tCommon('viewAndManage')}</p>
             </div>
           </div>
 
@@ -288,7 +291,7 @@ export default function ViewCostPage() {
                 onClick={() => router.push(`/costs/${cost._id}/edit`)}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                Edit Cost
+                {t('details.editCost')}
               </button>
             )}
             
@@ -303,7 +306,7 @@ export default function ViewCostPage() {
                 onSuccess={() => router.push('/costs')}
               >
                 <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
-                  Delete
+                  {t('details.deleteCost')}
                 </button>
               </ApprovalHandler>
             )}
@@ -341,7 +344,7 @@ export default function ViewCostPage() {
                     </div>
                   )}
                   <div className="text-sm text-gray-400">
-                    Created by {cost.createdBy?.name || 'Unknown'}
+                    {t('details.info.createdBy')} {cost.createdBy?.name || tCommon('unknown')}
                   </div>
                 </div>
               </div>
@@ -358,7 +361,7 @@ export default function ViewCostPage() {
                   <div className="bg-white/5 rounded-lg border border-white/10 p-4">
                     <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
                       <DocumentIcon className="h-5 w-5 mr-2 text-blue-400" />
-                      Notes
+                      {t('details.info.notes')}
                     </h3>
                     <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{cost.notes}</p>
                   </div>
@@ -369,17 +372,17 @@ export default function ViewCostPage() {
                   <div className="bg-white/5 rounded-lg border border-white/10 p-4">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                       <CalendarIcon className="h-5 w-5 mr-2 text-green-400" />
-                      Related Reservation
+                      {t('details.related.reservation')}
                     </h3>
                     
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-400">Customer</p>
+                          <p className="text-sm text-gray-400">{t('details.related.client')}</p>
                           <p className="text-white font-medium">
                             {cost.relatedReservation.client ? 
                               `${cost.relatedReservation.client.firstName} ${cost.relatedReservation.client.lastName}` : 
-                              'Unknown Customer'
+                              tCommon('unknown')
                             }
                           </p>
                         </div>
@@ -387,13 +390,13 @@ export default function ViewCostPage() {
                           onClick={() => router.push(`/reservations/${cost.relatedReservation?._id}`)}
                           className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
                         >
-                          View Details
+                          {tCommon('viewDetails')}
                         </button>
                       </div>
                       
                       {cost.relatedReservation.items && cost.relatedReservation.items.length > 0 && (
                         <div>
-                          <p className="text-sm text-gray-400 mb-2">Reserved Items ({cost.relatedReservation.items.length})</p>
+                          <p className="text-sm text-gray-400 mb-2">{t('details.related.items')} ({cost.relatedReservation.items.length})</p>
                           <div className="space-y-2 max-h-40 overflow-y-auto">
                             {cost.relatedReservation.items.map((item: any, index: number) => {
                               console.log('Product item:', item);
@@ -417,7 +420,7 @@ export default function ViewCostPage() {
                                     />
                                   )}
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-white text-sm font-medium truncate">{item.name || 'Unknown Product'}</p>
+                                    <p className="text-white text-sm font-medium truncate">{item.name || tCommon('unknownProduct')}</p>
                                   </div>
                                 </div>
                               );
@@ -434,7 +437,7 @@ export default function ViewCostPage() {
                   <div className="bg-white/5 rounded-lg border border-white/10 p-4">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                       <TagIcon className="h-5 w-5 mr-2 text-yellow-400" />
-                      Related Product
+                      {t('details.related.product')}
                     </h3>
                     
                     <div className="space-y-4">
@@ -459,14 +462,14 @@ export default function ViewCostPage() {
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-400">Product Name</p>
-                          <p className="text-white font-medium">{cost.relatedProduct.name || 'Unknown Product'}</p>
+                          <p className="text-sm text-gray-400">{tCommon('productName')}</p>
+                          <p className="text-white font-medium">{cost.relatedProduct.name || tCommon('unknownProduct')}</p>
                         </div>
                         <button
                           onClick={() => router.push(`/products/${cost.relatedProduct?._id}`)}
                           className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
                         >
-                          View Details
+                          {tCommon('viewDetails')}
                         </button>
                       </div>
                     </div>
@@ -481,7 +484,7 @@ export default function ViewCostPage() {
                   <div className="bg-white/5 rounded-lg border border-white/10 p-4">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                       <PaperClipIcon className="h-5 w-5 mr-2 text-purple-400" />
-                      Attachments ({cost.attachments.length})
+                      {t('details.attachments.title')} ({cost.attachments.length})
                     </h3>
                     
                     <div className="space-y-3">
@@ -518,7 +521,7 @@ export default function ViewCostPage() {
                               type="button"
                               onClick={() => handleFileClick(attachment)}
                               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-                              title="Preview"
+                              title={t('details.attachments.preview')}
                             >
                               <EyeIcon className="h-4 w-4" />
                             </button>
@@ -526,7 +529,7 @@ export default function ViewCostPage() {
                               type="button"
                               onClick={() => handleDownload(attachment)}
                               className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-                              title="Download"
+                              title={t('details.attachments.download')}
                             >
                               <ArrowDownTrayIcon className="h-4 w-4" />
                             </button>
@@ -541,23 +544,23 @@ export default function ViewCostPage() {
                 <div className="bg-white/5 rounded-lg border border-white/10 p-4">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <UserIcon className="h-5 w-5 mr-2 text-gray-400" />
-                    Information
+                    {t('details.info.costInfo')}
                   </h3>
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Created</p>
-                        <p className="text-gray-400 text-sm">Created: {format(new Date(cost.createdAt), 'dd/MM/yyyy HH:mm')}</p>
+                        <p className="text-sm text-gray-400">{t('details.info.createdAt')}</p>
+                        <p className="text-gray-400 text-sm">{t('details.info.createdAt')}: {format(new Date(cost.createdAt), 'dd/MM/yyyy HH:mm')}</p>
                       </div>
                       
                       <div>
-                        <p className="text-sm text-gray-400">Last Updated</p>
-                        <p className="text-gray-400 text-sm">Updated: {format(new Date(cost.updatedAt), 'dd/MM/yyyy HH:mm')}</p>
+                        <p className="text-sm text-gray-400">{t('details.info.lastUpdated')}</p>
+                        <p className="text-gray-400 text-sm">{t('details.info.lastUpdated')}: {format(new Date(cost.updatedAt), 'dd/MM/yyyy HH:mm')}</p>
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-400">Cost ID</p>
+                        <p className="text-sm text-gray-400">{tCommon('id')}</p>
                         <p className="text-white text-sm font-mono">
                           #{cost._id.slice(-8).toUpperCase()}
                         </p>

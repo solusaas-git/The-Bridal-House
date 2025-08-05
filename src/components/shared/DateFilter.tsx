@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar, X, Filter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface DateRange {
   startDate: string;
@@ -26,6 +27,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
   className = "",
   showQuickFilters = true,
 }) => {
+  const { t } = useTranslation('shared');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [hasActiveFilter, setHasActiveFilter] = useState(false);
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
@@ -136,7 +138,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
             className="flex items-center gap-1 px-2 py-1 text-xs bg-red-500/20 border border-red-500/30 text-red-300 rounded hover:bg-red-500/30 transition-colors"
           >
             <X className="h-3 w-3" />
-            Clear
+            {t('dateFilter.clear')}
           </button>
         )}
       </div>
@@ -173,31 +175,31 @@ const DateFilter: React.FC<DateFilterProps> = ({
             }}
           >
             <h3 className="text-sm font-medium text-white mb-3">
-              Select Date Range
+              {t('dateFilter.selectDateRange')}
             </h3>
             
             {/* Quick Filters */}
             {showQuickFilters && (
               <div className="mb-4">
-                <p className="text-xs text-gray-400 mb-2">Quick Filters:</p>
+                <p className="text-xs text-gray-400 mb-2">{t('dateFilter.quickFilters')}:</p>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => handleQuickFilter(7)}
                     className="text-xs px-2 py-1 bg-white/10 hover:bg-white/20 border border-white/20 rounded transition-colors text-gray-300"
                   >
-                    Last 7 days
+                    {t('dateFilter.last7Days')}
                   </button>
                   <button
                     onClick={() => handleQuickFilter(30)}
                     className="text-xs px-2 py-1 bg-white/10 hover:bg-white/20 border border-white/20 rounded transition-colors text-gray-300"
                   >
-                    Last 30 days
+                    {t('dateFilter.last30Days')}
                   </button>
                   <button
                     onClick={() => handleQuickFilter(90)}
                     className="text-xs px-2 py-1 bg-white/10 hover:bg-white/20 border border-white/20 rounded transition-colors text-gray-300"
                   >
-                    Last 90 days
+                    {t('dateFilter.last90Days')}
                   </button>
                 </div>
               </div>
@@ -206,7 +208,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
             {/* Date Inputs */}
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Start Date</label>
+                <label className="block text-xs text-gray-400 mb-1">{t('dateFilter.startDate')}</label>
                 <input
                   type="date"
                   value={localStartDate}
@@ -217,7 +219,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
               </div>
               
               <div>
-                <label className="block text-xs text-gray-400 mb-1">End Date</label>
+                <label className="block text-xs text-gray-400 mb-1">{t('dateFilter.endDate')}</label>
                 <input
                   type="date"
                   value={localEndDate}
@@ -234,13 +236,13 @@ const DateFilter: React.FC<DateFilterProps> = ({
                 onClick={handleClear}
                 className="text-xs text-gray-400 hover:text-white transition-colors"
               >
-                Clear filters
+                {t('dateFilter.clearFilter')}
               </button>
               <button
                 onClick={handleApply}
                 className="text-xs px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
               >
-                Apply
+                {t('dateFilter.applyFilter')}
               </button>
             </div>
           </div>

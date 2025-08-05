@@ -16,6 +16,7 @@ import { formatCurrency } from '@/utils/currency';
 import AttachmentsSection from '@/components/shared/AttachmentsSection';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import type { IAttachment } from '@/models';
+import { useTranslation } from 'react-i18next';
 
 // Types
 interface Customer {
@@ -78,6 +79,7 @@ const ReservationFinancials: React.FC<{ reservation: Reservation; customerId?: s
   reservation, 
   customerId 
 }) => {
+  const { t } = useTranslation('payments');
   const currencySettings = useSelector((state: RootState) => state.settings);
   const [paymentDetails, setPaymentDetails] = useState<{
     totalPaid: number;
@@ -150,12 +152,13 @@ const ReservationFinancials: React.FC<{ reservation: Reservation; customerId?: s
     };
 
     fetchPaymentDetails();
+ 
   }, [reservation._id, customerId, reservation.itemsTotal, reservation.subtotal, reservation.advance, reservation.securityDeposit, reservation.total]);
 
   if (!paymentDetails) {
     return (
       <div className="text-right">
-        <div className="text-sm text-gray-400">Loading...</div>
+        <div className="text-sm text-gray-400">{t('edit.reservation.loading')}</div>
       </div>
     );
   }
@@ -165,23 +168,23 @@ const ReservationFinancials: React.FC<{ reservation: Reservation; customerId?: s
   return (
     <div className="text-right">
       <div className="text-sm text-gray-400">
-        {reservation.items?.length || 0} items
+        {t('edit.reservation.itemsCount', { count: reservation.items?.length || 0 })}
       </div>
       <div className="font-medium text-green-400">
-        Total: {formatCurrency(financials.total, currencySettings)}
+        {t('edit.reservation.total')}: {formatCurrency(financials.total, currencySettings)}
       </div>
       <div className="text-xs text-green-500 mt-1">
-        Paid: {formatCurrency(totalPaid, currencySettings)}
+        {t('edit.reservation.paid')}: {formatCurrency(totalPaid, currencySettings)}
       </div>
       <div className="text-xs text-yellow-400">
-        Remaining: {formatCurrency(remaining, currencySettings)}
+        {t('edit.reservation.remaining')}: {formatCurrency(remaining, currencySettings)}
       </div>
       <div className={`text-xs mt-1 px-2 py-1 rounded ${
         paymentStatus === 'Paid' ? 'bg-green-500/20 text-green-400' :
         paymentStatus === 'Partial' ? 'bg-yellow-500/20 text-yellow-400' :
         'bg-red-500/20 text-red-400'
       }`}>
-        {paymentStatus}
+        {t(`edit.reservation.paymentStatus.${paymentStatus.toLowerCase()}`)}
       </div>
     </div>
   );
@@ -191,6 +194,8 @@ const EditPaymentPage = () => {
   const params = useParams();
   const router = useRouter();
   const paymentId = params.id as string;
+  const { t } = useTranslation('payments');
+  const { t: tCommon } = useTranslation('common');
 
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -604,7 +609,7 @@ const EditPaymentPage = () => {
       router.push(`/payments/${paymentId}`);
     } catch (error: any) {
       console.error('Error updating payment:', error);
-      toast.error(error.response?.data?.error || 'Failed to update payment');
+      toast.error(error.response?.data?.error || t('edit.messages.updateError'));
       throw error;
     } finally {
       setSubmitting(false);
@@ -736,9 +741,9 @@ const EditPaymentPage = () => {
               className="inline-flex items-center px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors text-sm"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Back to Payment
+            {t('edit.backToPayment')}
           </button>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Edit Payment</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{t('edit.title')}</h1>
           </div>
         </div>
 
@@ -746,7 +751,7 @@ const EditPaymentPage = () => {
         {loading && (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <span className="ml-3 text-white">Loading payment details...</span>
+            <span className="ml-3 text-white">{t('edit.loading')}</span>
           </div>
         )}
 
@@ -758,13 +763,13 @@ const EditPaymentPage = () => {
               <div className="space-y-6">
                 {/* Customer Selection */}
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Customer</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.customer')}</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={customerSearch}
                       onChange={(e) => handleCustomerSearch(e.target.value)}
-                      placeholder="Search customers by name, phone, or email..."
+                      placeholder={t('edit.form.customerSearchPlaceholder')}
                       className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     
@@ -773,7 +778,7 @@ const EditPaymentPage = () => {
                         {searchLoading ? (
                           <div className="px-4 py-3 text-center text-gray-400">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto mb-2"></div>
-                            Searching...
+                            {t('edit.form.searching')}
                           </div>
                         ) : (
                           filteredCustomers.map((customer) => (
@@ -797,7 +802,7 @@ const EditPaymentPage = () => {
                     {showCustomerDropdown && !searchLoading && filteredCustomers.length === 0 && customerSearch.length >= 2 && !selectedCustomer && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-50">
                         <div className="px-4 py-3 text-center text-gray-400">
-                          No customers found
+                          {t('edit.form.noCustomersFound')}
                         </div>
                       </div>
                     )}
@@ -806,7 +811,7 @@ const EditPaymentPage = () => {
 
                 {/* Reservation Selection */}
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Reservation</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.reservation')}</label>
                   {selectedCustomer ? (
                     <div className="space-y-2">
                       {customerReservations.length > 0 ? (
@@ -834,7 +839,7 @@ const EditPaymentPage = () => {
                                         new Date(reservation.pickupDate).toLocaleDateString() :
                                         reservation.weddingDate ?
                                         new Date(reservation.weddingDate).toLocaleDateString() :
-                                        'Date not set'
+                                        t('edit.form.dateNotSet')
                                       }
                                       {reservation.eventTime && ` at ${reservation.eventTime}`}
                                     </div>
@@ -842,7 +847,7 @@ const EditPaymentPage = () => {
                                       <div className="text-sm text-gray-400">{reservation.eventLocation}</div>
                                     )}
                                     <div className="text-xs text-blue-300 mt-1">
-                                      Type: {reservation.type || 'Wedding'}
+                                      {t('edit.form.type')}: {reservation.type || t('edit.form.wedding')}
                                     </div>
                                   </div>
                                   <ReservationFinancials 
@@ -856,13 +861,13 @@ const EditPaymentPage = () => {
                         </div>
                       ) : (
                         <div className="p-4 bg-yellow-600/20 border border-yellow-500/50 rounded-lg">
-                          <p className="text-yellow-200 text-sm">No reservations found for this customer.</p>
+                          <p className="text-yellow-200 text-sm">{t('edit.reservation.noReservationsFound')}</p>
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className="p-4 bg-gray-600/20 border border-gray-500/50 rounded-lg">
-                      <p className="text-gray-300 text-sm">Please select a customer first to view their reservations.</p>
+                      <p className="text-gray-300 text-sm">{t('edit.reservation.selectCustomerFirst')}</p>
                     </div>
                   )}
                 </div>
@@ -870,7 +875,7 @@ const EditPaymentPage = () => {
 
               {/* Amount */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Amount *</label>
+                <label className="text-sm font-medium text-gray-200">{t('edit.form.amount')} *</label>
                 <input
                   type="number"
                   name="amount"
@@ -886,24 +891,24 @@ const EditPaymentPage = () => {
 
               {/* Payment Method */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-200">Payment Method</label>
+                <label className="text-sm font-medium text-gray-200">{t('edit.form.paymentMethod')}</label>
                 <select
                   name="paymentMethod"
                   value={formData.paymentMethod}
                   onChange={handleChange}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Cash" className="text-black">Cash</option>
-                  <option value="Bank Transfer" className="text-black">Bank Transfer</option>
-                  <option value="Credit Card" className="text-black">Credit Card</option>
-                  <option value="Check" className="text-black">Check</option>
+                  <option value="Cash" className="text-black">{t('edit.form.paymentMethods.cash')}</option>
+                  <option value="Bank Transfer" className="text-black">{t('edit.form.paymentMethods.bankTransfer')}</option>
+                  <option value="Credit Card" className="text-black">{t('edit.form.paymentMethods.creditCard')}</option>
+                  <option value="Check" className="text-black">{t('edit.form.paymentMethods.check')}</option>
                 </select>
               </div>
 
               {/* Payment Date and Time */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Payment Date</label>
+                  <label className="text-sm font-medium text-gray-200">{t('edit.form.paymentDate')}</label>
                   <div className="relative">
                     <input
                       type="date"
@@ -916,7 +921,7 @@ const EditPaymentPage = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Payment Time</label>
+                  <label className="text-sm font-medium text-gray-200">{t('edit.form.paymentTime')}</label>
                   <div className="relative">
                     <input
                       type="time"
@@ -932,28 +937,28 @@ const EditPaymentPage = () => {
               {/* Payment Type and Reference */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Payment Type</label>
+                  <label className="text-sm font-medium text-gray-200">{t('edit.form.paymentType')}</label>
                   <select
                     name="paymentType"
                     value={formData.paymentType}
                     onChange={handleChange}
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="Advance">Advance</option>
-                    <option value="Security">Security</option>
-                    <option value="Final">Final</option>
-                    <option value="Other">Other</option>
+                    <option value="Advance">{t('edit.form.paymentTypes.advance')}</option>
+                    <option value="Security">{t('edit.form.paymentTypes.security')}</option>
+                    <option value="Final">{t('edit.form.paymentTypes.final')}</option>
+                    <option value="Other">{t('edit.form.paymentTypes.other')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-200">Reference</label>
+                  <label className="text-sm font-medium text-gray-200">{t('edit.form.reference')}</label>
                   <input
                     type="text"
                     name="reference"
                     value={formData.reference}
                     onChange={handleChange}
-                    placeholder="Payment reference or transaction ID"
+                    placeholder={t('edit.form.referencePlaceholder')}
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -961,20 +966,20 @@ const EditPaymentPage = () => {
 
               {/* Notes */}
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Notes</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.notes')}</label>
                 <textarea
                   name="note"
                   value={formData.note}
                   onChange={handleChange}
                   rows={3}
-                  placeholder="Additional notes about this payment"
+                  placeholder={t('edit.form.notesPlaceholder')}
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
                 />
               </div>
 
               {/* Attachments */}
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Attachments</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.attachments')}</label>
                 <AttachmentsSection
                   existingFiles={existingFiles}
                   newFiles={newFiles}
@@ -991,7 +996,7 @@ const EditPaymentPage = () => {
                   onClick={handleBack}
                   className="px-4 sm:px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition-colors text-sm w-full sm:w-auto"
                 >
-                  Cancel
+                  {t('edit.form.cancel')}
                 </button>
                 <ApprovalHandler
                   actionType="edit"
@@ -1015,7 +1020,7 @@ const EditPaymentPage = () => {
                   }}
                   onDirectAction={handleDirectSubmit}
                   onSuccess={() => {
-                    toast.success('Payment updated successfully');
+                    toast.success(t('edit.messages.updateSuccess'));
                     router.push(`/payments/${paymentId}`);
                   }}
                 >
@@ -1027,10 +1032,10 @@ const EditPaymentPage = () => {
                     {submitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Updating...
+                        {t('edit.form.updating')}
                       </>
                     ) : (
-                      'Update Payment'
+                      t('edit.form.updatePayment')
                     )}
                   </button>
                 </ApprovalHandler>

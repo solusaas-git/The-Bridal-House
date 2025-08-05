@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { RootState } from '@/store/store';
 import { isAdmin } from '@/utils/permissions';
+import { useTranslation } from 'react-i18next';
 
 interface CostCategory {
   _id: string;
@@ -27,6 +28,8 @@ interface FormData {
 const CostCategories = () => {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const userIsAdmin = isAdmin(currentUser);
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
 
   const [costCategories, setCostCategories] = useState<CostCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,12 +81,12 @@ const CostCategories = () => {
         setCostCategories(prev =>
           prev.map(cat => cat._id === editingId ? response.data.costCategory : cat)
         );
-        toast.success('Cost category updated successfully');
+        toast.success(t('sections.costCategories.categoryUpdated'));
       } else {
         // Create new category
         const response = await axios.post('/api/cost-categories', formData);
         setCostCategories(prev => [...prev, response.data.costCategory]);
-        toast.success('Cost category created successfully');
+        toast.success(t('sections.costCategories.categoryCreated'));
       }
 
       // Reset form
@@ -117,7 +120,7 @@ const CostCategories = () => {
     try {
       await axios.delete(`/api/cost-categories/${id}`);
       setCostCategories(prev => prev.filter(cat => cat._id !== id));
-      toast.success('Cost category deleted successfully');
+      toast.success(t('sections.costCategories.categoryDeleted'));
     } catch (error: unknown) {
       console.error('Error deleting cost category:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete cost category';
@@ -190,7 +193,7 @@ const CostCategories = () => {
               {/* Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Color
+                                      {t('sections.costCategories.color')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {colorOptions.map((color) => (
@@ -211,7 +214,7 @@ const CostCategories = () => {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Description
+                                    {t('sections.costCategories.description')}
               </label>
               <textarea
                 value={formData.description}
@@ -229,7 +232,7 @@ const CostCategories = () => {
                 onClick={resetForm}
                 className="px-4 py-2 text-gray-300 hover:text-white border border-white/20 rounded-lg hover:bg-white/10 transition-colors"
               >
-                Cancel
+                                  {tCommon('cancel')}
               </button>
               <button
                 type="submit"

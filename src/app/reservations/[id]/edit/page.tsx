@@ -16,6 +16,7 @@ import { formatCurrency, getCurrencySymbol } from '@/utils/currency';
 import Layout from '@/components/Layout';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   type: string;
@@ -43,6 +44,8 @@ export default function EditReservationPage() {
   const router = useRouter();
   const params = useParams();
   const reservationId = params.id as string;
+  const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
   
   const customers = useSelector((state: RootState) => state.customer.customers);
   const products = useSelector((state: RootState) => state.item.items);
@@ -99,9 +102,9 @@ export default function EditReservationPage() {
   });
 
   const steps = [
-    { number: 1, title: 'Client Selection' },
-    { number: 2, title: 'Items & Dates' },
-    { number: 3, title: 'Financial Details' },
+    { number: 1, title: t('edit.steps.clientSelection') },
+    { number: 2, title: t('edit.steps.itemsAndDates') },
+    { number: 3, title: t('edit.steps.financialDetails') },
   ];
 
   // Fetch reservation data and load initial data
@@ -503,7 +506,7 @@ export default function EditReservationPage() {
       case 1:
         return (
           <div className="space-y-6">
-            <h3 className="text-lg font-medium text-white">Client Selection</h3>
+            <h3 className="text-lg font-medium text-white">{t('edit.clientSection.title')}</h3>
             
             {/* Client Search */}
             <div className="relative">
@@ -512,7 +515,7 @@ export default function EditReservationPage() {
               </div>
               <input
                 type="text"
-                placeholder="Search clients..."
+                placeholder={t('edit.clientSection.searchPlaceholder')}
                 value={clientSearchTerm}
                 onChange={(e) => {
                   setClientSearchTerm(e.target.value);
@@ -555,7 +558,7 @@ export default function EditReservationPage() {
                       setFormData(prev => ({ ...prev, clientId: '' }));
                     }}
                     className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                    title="Clear selection"
+                    title={tCommon('clear')}
                   >
                     <Cross2Icon className="h-4 w-4" />
                   </button>
@@ -563,16 +566,16 @@ export default function EditReservationPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-400">Phone</label>
+                    <label className="text-sm text-gray-400">{tCommon('phone')}</label>
                     <p className="text-white">{selectedClient.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-400">Email</label>
-                    <p className="text-white">{selectedClient.email || 'N/A'}</p>
+                    <label className="text-sm text-gray-400">{tCommon('email')}</label>
+                    <p className="text-white">{selectedClient.email || tCommon('notAvailable')}</p>
                   </div>
                   {selectedClient.weddingDate && (
                     <div>
-                      <label className="text-sm text-gray-400">Wedding Date</label>
+                      <label className="text-sm text-gray-400">{t('edit.datesSection.weddingDate')}</label>
                       <p className="text-white">
                         {format(new Date(selectedClient.weddingDate), 'dd/MM/yyyy')}
                       </p>
@@ -580,7 +583,7 @@ export default function EditReservationPage() {
                   )}
                   {selectedClient.weddingCity && (
                     <div>
-                      <label className="text-sm text-gray-400">Wedding City</label>
+                      <label className="text-sm text-gray-400">{tCommon('city')}</label>
                       <p className="text-white">{selectedClient.weddingCity}</p>
                     </div>
                   )}
@@ -590,7 +593,7 @@ export default function EditReservationPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Reservation Type
+                {t('edit.generalSettings.reservationType')}
               </label>
               <select
                 value={formData.type}
@@ -611,13 +614,13 @@ export default function EditReservationPage() {
             {selectedClient && (
               <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
                 <div className="mb-4">
-                  <h3 className="text-lg font-medium text-white mb-2">Date & Time Selection</h3>
+                  <h3 className="text-lg font-medium text-white mb-2">{t('edit.datesSection.title')}</h3>
                   <p className="text-sm text-gray-400">
-                    Select both date and time for pickup, return, and availability. Times will be stored with the reservation.
+                    {t('edit.datesSection.bufferSettings')}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Wedding Date</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">{t('edit.datesSection.weddingDate')}</label>
                   <input
                     type="date"
                     value={formData.weddingDate}
@@ -631,7 +634,7 @@ export default function EditReservationPage() {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-gray-400">Pickup Date</p>
+                      <p className="text-sm text-gray-400">{t('edit.datesSection.pickupDate')}</p>
                       <p className="text-lg font-medium text-white">
                         {formData.pickupDate
                           ? format(new Date(formData.pickupDate), 'dd/MM/yyyy')
@@ -640,7 +643,7 @@ export default function EditReservationPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300">
-                        Pickup Time
+                        {t('edit.datesSection.pickupTime')}
                       </label>
                       <input
                         type="time"
@@ -656,7 +659,7 @@ export default function EditReservationPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300">
-                        Days Before Wedding
+                        {t('edit.datesSection.bufferBefore')}
                       </label>
                       <input
                         type="number"
@@ -675,7 +678,7 @@ export default function EditReservationPage() {
 
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-gray-400">Return Date</p>
+                      <p className="text-sm text-gray-400">{t('edit.datesSection.returnDate')}</p>
                       <p className="text-lg font-medium text-white">
                         {formData.returnDate
                           ? format(new Date(formData.returnDate), 'dd/MM/yyyy')
@@ -684,7 +687,7 @@ export default function EditReservationPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300">
-                        Return Time
+                        {t('edit.datesSection.returnTime')}
                       </label>
                       <input
                         type="time"
@@ -1107,7 +1110,7 @@ export default function EditReservationPage() {
 
                 {/* Advance Payment */}
                 <div className="flex justify-between text-sm items-center">
-                  <span className="text-gray-300">Advance Payment</span>
+                  <span className="text-gray-300">{t('edit.financialSection.advance')}</span>
                   <div className="relative w-40">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                       {getCurrencySymbol(currencySettings)}
@@ -1123,7 +1126,7 @@ export default function EditReservationPage() {
                 </div>
 
                 <div className="flex justify-between text-lg font-bold text-blue-400 border-t border-white/10 pt-3">
-                  <span>Total</span>
+                  <span>{t('edit.financialSection.totalAmount')}</span>
                   <span>{formatCurrency(financials.total, currencySettings)}</span>
                 </div>
               </div>
@@ -1141,7 +1144,7 @@ export default function EditReservationPage() {
       <Layout>
         <div className="p-6">
           <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-white">Loading reservation...</div>
+            <div className="text-lg text-white">{t('edit.messages.loadingReservation')}</div>
           </div>
         </div>
       </Layout>
@@ -1153,12 +1156,12 @@ export default function EditReservationPage() {
       <Layout>
         <div className="p-6">
           <div className="text-center">
-            <p className="text-red-400 text-lg mb-4">Reservation not found</p>
+            <p className="text-red-400 text-lg mb-4">{t('details.reservationNotFound')}</p>
             <Link
               href="/reservations"
               className="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
-              Back to Reservations
+              {t('details.backToReservations')}
             </Link>
           </div>
         </div>
@@ -1172,7 +1175,7 @@ export default function EditReservationPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-xl sm:text-3xl font-bold text-white">Edit Reservation</h1>
+            <h1 className="text-xl sm:text-3xl font-bold text-white">{t('edit.title')}</h1>
             <Link
               href={`/reservations/${reservationId}`}
               className="text-white/70 hover:text-white transition-colors self-start sm:self-auto"
@@ -1219,7 +1222,7 @@ export default function EditReservationPage() {
               disabled={step === 1}
               className="px-4 py-2 text-sm font-medium text-white bg-white/10 border border-white/20 rounded-lg shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors backdrop-blur-sm w-full sm:w-auto"
             >
-              Previous
+              {t('edit.navigation.previous')}
             </button>
             
             {step < steps.length ? (
@@ -1229,7 +1232,7 @@ export default function EditReservationPage() {
                 disabled={step === 1 && !selectedClient}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
               >
-                Next
+                {t('edit.navigation.next')}
               </button>
             ) : (
               <ApprovalHandler
@@ -1264,7 +1267,7 @@ export default function EditReservationPage() {
                   await handleSubmit();
                 }}
                 onSuccess={() => {
-                  toast.success('Reservation updated successfully');
+                  toast.success(t('edit.messages.updateSuccess'));
                   router.push(`/reservations/${reservationId}`);
                 }}
               >
@@ -1276,7 +1279,7 @@ export default function EditReservationPage() {
                   {loading && (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   )}
-                  {loading ? 'Updating...' : 'Update Reservation'}
+                  {loading ? t('edit.navigation.updating') : t('edit.navigation.updateReservation')}
                 </button>
               </ApprovalHandler>
             )}

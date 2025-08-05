@@ -1,0 +1,10 @@
+{
+  "dashboard": "Dashboard",
+  "customers": "Customers",
+  "reservations": "Reservations",
+  "payments": "Payments",
+  "products": "Products",
+  "costs": "Costs",
+  "approvals": "Approvals",
+  "settings": "Settings"
+}

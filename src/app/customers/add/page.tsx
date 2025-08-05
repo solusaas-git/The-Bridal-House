@@ -8,6 +8,7 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import AttachmentsSection from '@/components/shared/AttachmentsSection';
 import PhoneInput from '@/components/ui/PhoneInput';
 import Layout from '@/components/Layout';
+import { useTranslation } from 'react-i18next';
 
 interface CustomerFormData {
   firstName: string;
@@ -26,6 +27,7 @@ interface CustomerFormData {
 
 const AddCustomerPage = () => {
   const router = useRouter();
+  const { t } = useTranslation('customers');
   const [loading, setLoading] = useState(false);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState<CustomerFormData>({
@@ -91,17 +93,17 @@ const AddCustomerPage = () => {
       });
       
       if (response.data.success) {
-        toast.success('Customer added successfully!');
+        toast.success(t('add.messages.addSuccess'));
         router.push('/customers');
       } else {
-        toast.error(response.data.message || 'Failed to add customer');
+        toast.error(response.data.message || t('add.messages.addFailed'));
       }
     } catch (error) {
       console.error('Error adding customer:', error);
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data.message || 'Failed to add customer');
+        toast.error(error.response.data.message || t('add.messages.addFailed'));
       } else {
-        toast.error('Failed to add customer');
+        toast.error(t('add.messages.addFailed'));
       }
     } finally {
       setLoading(false);
@@ -118,8 +120,8 @@ const AddCustomerPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Add New Customer</h1>
-          <p className="text-sm sm:text-base text-gray-300">Create a new customer profile</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('add.title')}</h1>
+          <p className="text-sm sm:text-base text-gray-300">{t('add.subtitle')}</p>
         </div>
         <button
           onClick={handleCancel}
@@ -136,7 +138,7 @@ const AddCustomerPage = () => {
             {/* Left Column */}
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">First Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.firstName')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="firstName"
@@ -148,7 +150,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Last Name *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.lastName')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="lastName"
@@ -160,7 +162,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Address *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.address')} {t('edit.form.required')}</label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -172,7 +174,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">CIN/PASSPORT ID *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.cinPassport')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="idNumber"
@@ -184,7 +186,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Email</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.email')}</label>
                 <input
                   type="email"
                   name="email"
@@ -198,7 +200,7 @@ const AddCustomerPage = () => {
             {/* Right Column */}
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Phone *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.phone')} {t('edit.form.required')}</label>
                 <PhoneInput
                   name="phone"
                   value={formData.phone}
@@ -208,7 +210,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">WhatsApp</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.whatsapp')}</label>
                 <PhoneInput
                   name="whatsapp"
                   value={formData.whatsapp}
@@ -218,7 +220,7 @@ const AddCustomerPage = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Date</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingDate')}</label>
                   <input
                     type="date"
                     name="weddingDate"
@@ -229,7 +231,7 @@ const AddCustomerPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Time</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingTime')}</label>
                   <input
                     type="time"
                     name="weddingTime"
@@ -241,7 +243,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding Location</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingLocation')}</label>
                 <input
                   type="text"
                   name="weddingLocation"
@@ -252,7 +254,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Wedding City *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingCity')} {t('edit.form.required')}</label>
                 <input
                   type="text"
                   name="weddingCity"
@@ -264,7 +266,7 @@ const AddCustomerPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">Type *</label>
+                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.type')} {t('edit.form.required')}</label>
                 <select
                   name="type"
                   value={formData.type}
@@ -272,8 +274,8 @@ const AddCustomerPage = () => {
                   required
                   className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Client">Client</option>
-                  <option value="Prospect">Prospect</option>
+                  <option value="Client">{t('edit.types.client')}</option>
+                  <option value="Prospect">{t('edit.types.prospect')}</option>
                 </select>
               </div>
             </div>
@@ -294,14 +296,14 @@ const AddCustomerPage = () => {
               onClick={handleCancel}
               className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white hover:bg-white/20 transition-colors text-sm w-full sm:w-auto"
             >
-              Cancel
+{t('add.buttons.cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
             >
-              {loading ? 'Adding...' : 'Add Customer'}
+{loading ? t('add.buttons.adding') : t('add.buttons.addCustomer')}
             </button>
           </div>
         </form>

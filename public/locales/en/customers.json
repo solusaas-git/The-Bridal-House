@@ -1,0 +1,155 @@
+{
+  "title": "Customers",
+  "subtitle": "Manage your customer database",
+  "addCustomer": "Add Customer",
+  "editCustomer": "Edit Customer",
+  "searchPlaceholder": "Search customers...",
+  "columns": "Columns",
+  "showHideColumns": "Show/Hide Columns",
+  "saving": "Saving...",
+  "loadingCustomers": "Loading customers...",
+  "noCustomersFound": "No customers found",
+  "adjustSearchCriteria": "Try adjusting your search criteria",
+  "deleteConfirm": "Are you sure you want to delete this customer?",
+  "deleteSuccess": "Customer deleted successfully",
+  "deleteFailed": "Failed to delete customer",
+  "loadFailed": "Failed to load customers",
+  "networkError": "Network error",
+  "preferencesSaved": "Column preferences saved!",
+  "preferencesFailed": "Failed to save preferences",
+  "fields": {
+    "id": "#",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "address": "Address",
+    "idNumber": "CIN/Passport",
+    "phone": "Phone",
+    "weddingDate": "Wedding Date",
+    "weddingTime": "Wedding Time",
+    "weddingLocation": "Wedding Location",
+    "weddingCity": "Wedding City",
+    "type": "Type",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "createdBy": "Created By",
+    "actions": "Actions"
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "details": {
+    "title": "Customer Details",
+    "subtitle": "View and manage customer information",
+    "editButton": "Edit Customer",
+    "tabs": {
+      "details": "Customer Details",
+      "reservations": "Reservations",
+      "payments": "Payments",
+      "attachments": "Attachments"
+    },
+    "personalInfo": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "whatsapp": "WhatsApp",
+      "type": "Type",
+      "address": "Address",
+      "cinPassport": "CIN/Passport ID",
+      "weddingDate": "Wedding Date",
+      "weddingTime": "Wedding Time",
+      "weddingLocation": "Wedding Location",
+      "weddingCity": "Wedding City"
+    },
+    "reservations": {
+      "noReservations": "No reservations found for this customer.",
+      "headers": {
+        "id": "Id",
+        "items": "Items",
+        "date": "Date",
+        "time": "Time",
+        "service": "Service",
+        "status": "Status"
+      },
+      "noItems": "No items found for this reservation",
+      "moreItems": "more items",
+      "unknownItem": "Unknown Item"
+    },
+    "payments": {
+      "noPayments": "No payments found for this customer.",
+      "headers": {
+        "id": "Id",
+        "date": "Date",
+        "amount": "Amount",
+        "method": "Method"
+      },
+      "noData": "Payment data not available"
+    },
+    "attachments": {
+      "noAttachments": "No attachments found for this customer.",
+      "images": "Images",
+      "documents": "Documents",
+      "preview": "Preview",
+      "download": "Download",
+      "close": "Close",
+      "noPreview": "Preview not available for this file type",
+      "downloadToView": "Download to View",
+      "file": "file"
+    },
+    "errors": {
+      "error": "Error",
+      "customerNotFound": "Customer not found",
+      "customerNotExist": "The customer you're looking for doesn't exist.",
+      "backToCustomers": "Back to Customers",
+      "loadFailed": "Failed to load customer data"
+    }
+  },
+  "edit": {
+    "title": "Edit Customer",
+    "subtitle": "Update customer information",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "address": "Address",
+      "cinPassport": "CIN/PASSPORT ID",
+      "email": "Email",
+      "phone": "Phone",
+      "whatsapp": "WhatsApp",
+      "weddingDate": "Wedding Date",
+      "weddingTime": "Wedding Time",
+      "weddingLocation": "Wedding Location",
+      "weddingCity": "Wedding City",
+      "type": "Type",
+      "required": "*"
+    },
+    "types": {
+      "client": "Client",
+      "prospect": "Prospect"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    },
+    "messages": {
+      "customerNotFound": "Customer not found",
+      "loadFailed": "Failed to load customer",
+      "updateSuccess": "Customer updated successfully!",
+      "updateFailed": "Failed to update customer"
+    }
+  },
+  "add": {
+    "title": "Add New Customer",
+    "subtitle": "Create a new customer profile",
+    "buttons": {
+      "cancel": "Cancel",
+      "addCustomer": "Add Customer",
+      "adding": "Adding..."
+    },
+    "messages": {
+      "addSuccess": "Customer added successfully!",
+      "addFailed": "Failed to add customer"
+    }
+  }
+}

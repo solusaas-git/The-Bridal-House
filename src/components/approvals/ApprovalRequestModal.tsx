@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ApprovalRequestModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
   resourceName 
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation('approvals');
 
   if (!isOpen) return null;
 
@@ -38,9 +40,9 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
 
   const getActionText = () => {
     const actionMap = {
-      edit: 'edit',
-      delete: 'delete',
-      create: 'create',
+      edit: t('actionTypes.edit').toLowerCase(),
+      delete: t('actionTypes.delete').toLowerCase(),
+      create: t('actionTypes.create').toLowerCase(),
     };
     return actionMap[actionType] || actionType;
   };
@@ -51,7 +53,7 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <h2 className="text-xl font-semibold text-white">
-            Request Approval
+            {t('requestModal.title')}
           </h2>
           <button
             onClick={onClose}
@@ -65,11 +67,14 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
             <p className="text-blue-400 text-sm">
-              You are requesting permission to <strong>{getActionText()}</strong> the {resourceType}: 
-              <strong> {resourceName}</strong>
+              {t('requestModal.description', { 
+                action: getActionText(), 
+                resourceType: t(`resourceTypes.${resourceType}`), 
+                resourceName 
+              })}
             </p>
             <p className="text-gray-400 text-xs mt-2">
-              An admin will review your request and you'll be notified of the decision.
+              {t('requestModal.reviewNote')}
             </p>
           </div>
 
@@ -79,14 +84,14 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
               onClick={onClose}
               className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors"
             >
-              Cancel
+              {t('requestModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:opacity-50 rounded-lg text-white font-medium transition-colors"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Request'}
+              {isSubmitting ? t('requestModal.submitting') : t('requestModal.submitRequest')}
             </button>
           </div>
         </form>

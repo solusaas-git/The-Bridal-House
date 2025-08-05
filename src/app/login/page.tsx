@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { EyeOpenIcon, EyeClosedIcon } from '@radix-ui/react-icons';
 import axios, { AxiosError } from 'axios';
 import { setCurrentUser } from '@/store/reducers/authSlice';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorResponse {
   message?: string;
@@ -21,6 +22,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const { t } = useTranslation('auth');
 
   useEffect(() => {
     if (localStorage.getItem('isAuthenticated')) {
@@ -40,7 +42,7 @@ export default function LoginPage() {
     e.preventDefault();
     
     if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
+              toast.error(t('fillAllFields'));
       return;
     }
 
@@ -60,17 +62,17 @@ export default function LoginPage() {
       if (response.data.success) {
         localStorage.setItem('isAuthenticated', 'true');
         dispatch(setCurrentUser(response.data.user));
-        toast.success('Login successful!');
+        toast.success(t('loginSuccess'));
         router.push('/dashboard');
       } else {
-        toast.error(response.data.message || 'Login failed');
+        toast.error(response.data.message || t('loginError'));
       }
     } catch (error) {
       console.error('Login error:', error);
       const axiosError = error as AxiosError<ErrorResponse>;
       const errorMessage = axiosError.response?.data?.message ||
                           axiosError.message ||
-                          'An error occurred during login';
+                                                          t('loginErrorGeneric');
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -95,17 +97,17 @@ export default function LoginPage() {
               The Bridal House
             </h1>
             <p className="text-sm sm:text-base text-gray-200">
-              Please enter your details to sign in
+                                   {t('loginSubtitle')}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-200">Email</label>
+                                   <label className="text-sm font-medium text-gray-200">{t('email')}</label>
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email"
+                                       placeholder={t('emailPlaceholder')}
                 className="flex h-10 sm:h-11 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={formData.email}
                 onChange={handleChange}
@@ -116,13 +118,13 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-200">
-                Password
+                                       {t('password')}
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Enter your password"
+                                           placeholder={t('passwordPlaceholder')}
                   className="flex h-10 sm:h-11 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={formData.password}
                   onChange={handleChange}
@@ -149,13 +151,13 @@ export default function LoginPage() {
                   type="checkbox"
                   className="rounded border-gray-400 bg-white/10 text-blue-600"
                 />
-                <span className="text-xs sm:text-sm text-gray-200">Remember me</span>
+                                       <span className="text-xs sm:text-sm text-gray-200">{t('rememberMe')}</span>
               </label>
               <a
                 href="#forgot-password"
                 className="text-xs sm:text-sm text-blue-300 hover:text-blue-200"
               >
-                Forgot password?
+                                       {t('forgotPassword')}
               </a>
             </div>
 
@@ -167,10 +169,10 @@ export default function LoginPage() {
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  <span className="text-xs sm:text-sm">Signing in...</span>
+                                           <span className="text-xs sm:text-sm">{t('signingIn')}</span>
                 </div>
               ) : (
-                "Sign in"
+                                       t('loginButton')
               )}
             </button>
           </form>

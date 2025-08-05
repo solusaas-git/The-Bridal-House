@@ -1,0 +1,131 @@
+{
+  "title": "Approbations",
+  "subtitle": "Gérer les demandes d'approbation en attente",
+  "myRequestsTitle": "Mes Demandes d'Approbation",
+  "myRequestsSubtitle": "Voir vos demandes d'approbation soumises",
+  "search": {
+    "placeholder": "Rechercher des approbations...",
+    "filters": "Filtres",
+    "actionType": "Type d'Action",
+    "resourceType": "Type de Ressource",
+    "status": "Statut",
+    "requestedBy": "Demandé par",
+    "allActionTypes": "Tous les Types d'Action",
+    "allResourceTypes": "Tous les Types de Ressource",
+    "allStatuses": "Tous les Statuts",
+    "allUsers": "Tous les Utilisateurs"
+  },
+  "table": {
+    "resource": "Ressource",
+    "requestedBy": "Demandé par",
+    "actionType": "Type d'Action",
+    "status": "Statut",
+    "date": "Date",
+    "actions": "Actions"
+  },
+  "actionTypes": {
+    "create": "Créer",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "resourceTypes": {
+    "customer": "Client",
+    "item": "Article",
+    "product": "Produit",
+    "payment": "Paiement",
+    "reservation": "Réservation",
+    "cost": "Coût"
+  },
+  "statuses": {
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté"
+  },
+  "actions": {
+    "view": "Voir",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "viewDetails": "Voir les Détails"
+  },
+  "badges": {
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté"
+  },
+  "summary": {
+    "showingApprovals": "Affichage de {{count}} sur {{total}} approbations",
+    "noApprovals": "Aucune approbation trouvée",
+    "emptyState": "Aucune approbation en attente pour le moment"
+  },
+  "messages": {
+    "loading": "Chargement des approbations...",
+    "loadFailed": "Échec du chargement des approbations",
+    "approveSuccess": "Demande approuvée avec succès",
+    "approveFailed": "Échec de l'approbation de la demande",
+    "rejectSuccess": "Demande rejetée avec succès",
+    "rejectFailed": "Échec du rejet de la demande",
+    "deleteSuccess": "Approbation supprimée avec succès",
+    "deleteFailed": "Échec de la suppression de l'approbation",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette demande d'approbation ? Cette action ne peut pas être annulée."
+  },
+  "modal": {
+    "title": "Détails de l'Approbation",
+    "requestInfo": "Informations de la Demande",
+    "resourceInfo": "Informations de la Ressource",
+    "changes": "Modifications",
+    "originalData": "Données Originales",
+    "newData": "Nouvelles Données",
+    "reason": "Raison",
+    "status": "Statut",
+    "requestedBy": "Demandé par",
+    "requestedAt": "Demandé le",
+    "reviewedBy": "Examiné par",
+    "reviewedAt": "Examiné le",
+    "reviewComment": "Commentaire d'Examen",
+    "close": "Fermer",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "addComment": "Ajouter un Commentaire",
+    "commentPlaceholder": "Ajoutez un commentaire sur cet examen...",
+    "newPrimaryPhotoUploaded": "Nouvelle photo principale téléchargée",
+    "newSecondaryPhotosUploaded": "Nouvelles photos secondaires téléchargées",
+    "newVideosUploaded": "Nouvelles vidéos téléchargées",
+    "dataToBeDeleted": "Données à supprimer :",
+    "proposedChanges": "Modifications Proposées",
+    "currentValue": "Valeur Actuelle :",
+    "newValue": "Nouvelle Valeur :",
+    "noChangesDetected": "Aucune modification détectée dans la demande d'approbation",
+    "requestType": "Type de Demande",
+    "requestDate": "Date de Demande",
+    "reviewDate": "Date d'Examen",
+    "allUpcomingApprovals": "Toutes les Approbations à Venir",
+    "relatedResource": "Ressource Associée",
+    "viewCustomer": "Voir le Client",
+    "viewResource": "Voir {{resourceType}}",
+    "approveRequest": "Approuver la Demande",
+    "rejectRequest": "Rejeter la Demande",
+    "commentOptional": "Commentaire (optionnel)",
+    "addCommentDecision": "Ajoutez un commentaire sur votre décision...",
+    "charactersRemaining": "{{count}}/500 caractères",
+    "processing": "Traitement...",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "cancel": "Annuler",
+    "unknownUser": "Utilisateur Inconnu",
+    "previewImage": "Aperçu de l'Image",
+    "previewDocument": "Aperçu du Document",
+    "documentPreviewNotAvailable": "Aperçu du document non disponible",
+    "openDocument": "Ouvrir le Document"
+  },
+  "handler": {
+    "requestSubmittedSuccess": "Demande d'approbation soumise avec succès. Les modifications seront appliquées une fois approuvées."
+  },
+  "requestModal": {
+    "title": "Demander une Approbation",
+    "description": "Vous demandez la permission de {{action}} le {{resourceType}} : {{resourceName}}",
+    "reviewNote": "Un administrateur examinera votre demande et vous serez notifié de la décision.",
+    "cancel": "Annuler",
+    "submitRequest": "Soumettre la Demande",
+    "submitting": "Soumission..."
+  }
+}

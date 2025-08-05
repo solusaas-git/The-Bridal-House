@@ -1,0 +1,155 @@
+{
+  "title": "Clients",
+  "subtitle": "Gérez votre base de données clients",
+  "addCustomer": "Ajouter un Client",
+  "editCustomer": "Modifier le Client",
+  "searchPlaceholder": "Rechercher des clients...",
+  "columns": "Colonnes",
+  "showHideColumns": "Afficher/Masquer les Colonnes",
+  "saving": "Enregistrement...",
+  "loadingCustomers": "Chargement des clients...",
+  "noCustomersFound": "Aucun client trouvé",
+  "adjustSearchCriteria": "Essayez d'ajuster vos critères de recherche",
+  "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce client ?",
+  "deleteSuccess": "Client supprimé avec succès",
+  "deleteFailed": "Échec de la suppression du client",
+  "loadFailed": "Échec du chargement des clients",
+  "networkError": "Erreur réseau",
+  "preferencesSaved": "Préférences de colonnes sauvegardées !",
+  "preferencesFailed": "Échec de la sauvegarde des préférences",
+  "fields": {
+    "id": "#",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "address": "Adresse",
+    "idNumber": "CIN/Passeport",
+    "phone": "Téléphone",
+    "weddingDate": "Date de mariage",
+    "weddingTime": "Heure du mariage",
+    "weddingLocation": "Lieu du mariage",
+    "weddingCity": "Ville du mariage",
+    "type": "Type",
+    "createdAt": "Créé le",
+    "updatedAt": "Mis à jour le",
+    "createdBy": "Créé par",
+    "actions": "Actions"
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "details": {
+    "title": "Détails du Client",
+    "subtitle": "Voir et gérer les informations client",
+    "editButton": "Modifier le Client",
+    "tabs": {
+      "details": "Détails du Client",
+      "reservations": "Réservations",
+      "payments": "Paiements",
+      "attachments": "Pièces Jointes"
+    },
+    "personalInfo": {
+      "fullName": "Nom Complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "whatsapp": "WhatsApp",
+      "type": "Type",
+      "address": "Adresse",
+      "cinPassport": "CIN/Passeport",
+      "weddingDate": "Date de Mariage",
+      "weddingTime": "Heure du Mariage",
+      "weddingLocation": "Lieu du Mariage",
+      "weddingCity": "Ville du Mariage"
+    },
+    "reservations": {
+      "noReservations": "Aucune réservation trouvée pour ce client.",
+      "headers": {
+        "id": "Id",
+        "items": "Articles",
+        "date": "Date",
+        "time": "Heure",
+        "service": "Service",
+        "status": "Statut"
+      },
+      "noItems": "Aucun article trouvé pour cette réservation",
+      "moreItems": "articles de plus",
+      "unknownItem": "Article Inconnu"
+    },
+    "payments": {
+      "noPayments": "Aucun paiement trouvé pour ce client.",
+      "headers": {
+        "id": "Id",
+        "date": "Date",
+        "amount": "Montant",
+        "method": "Méthode"
+      },
+      "noData": "Données de paiement non disponibles"
+    },
+    "attachments": {
+      "noAttachments": "Aucune pièce jointe trouvée pour ce client.",
+      "images": "Images",
+      "documents": "Documents",
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "close": "Fermer",
+      "noPreview": "Aperçu non disponible pour ce type de fichier",
+      "downloadToView": "Télécharger pour Voir",
+      "file": "fichier"
+    },
+    "errors": {
+      "error": "Erreur",
+      "customerNotFound": "Client non trouvé",
+      "customerNotExist": "Le client que vous recherchez n'existe pas.",
+      "backToCustomers": "Retour aux Clients",
+      "loadFailed": "Échec du chargement des données client"
+    }
+  },
+  "edit": {
+    "title": "Modifier le Client",
+    "subtitle": "Mettre à jour les informations client",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "address": "Adresse",
+      "cinPassport": "CIN/PASSEPORT",
+      "email": "Email",
+      "phone": "Téléphone",
+      "whatsapp": "WhatsApp",
+      "weddingDate": "Date de Mariage",
+      "weddingTime": "Heure du Mariage",
+      "weddingLocation": "Lieu du Mariage",
+      "weddingCity": "Ville du Mariage",
+      "type": "Type",
+      "required": "*"
+    },
+    "types": {
+      "client": "Client",
+      "prospect": "Prospect"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "saveChanges": "Sauvegarder les Modifications",
+      "saving": "Enregistrement..."
+    },
+    "messages": {
+      "customerNotFound": "Client non trouvé",
+      "loadFailed": "Échec du chargement du client",
+      "updateSuccess": "Client mis à jour avec succès !",
+      "updateFailed": "Échec de la mise à jour du client"
+    }
+  },
+  "add": {
+    "title": "Ajouter un Nouveau Client",
+    "subtitle": "Créer un nouveau profil client",
+    "buttons": {
+      "cancel": "Annuler",
+      "addCustomer": "Ajouter un Client",
+      "adding": "Ajout en cours..."
+    },
+    "messages": {
+      "addSuccess": "Client ajouté avec succès !",
+      "addFailed": "Échec de l'ajout du client"
+    }
+  }
+}

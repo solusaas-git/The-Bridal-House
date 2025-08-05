@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Customer {
   _id: string;
@@ -36,6 +37,8 @@ const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({
   items,
   reservations,
 }) => {
+  const { t } = useTranslation('dashboard');
+  
   // Calculate system health metrics
   const draftItems = items?.filter(item => item.status === 'Draft').length || 0;
   const pendingReservations = reservations?.filter(
@@ -83,7 +86,7 @@ const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white">System Health</h3>
+        <h3 className="text-lg font-semibold text-white">{t('widgets.systemHealth.title')}</h3>
         
         <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
           overallHealth === 'healthy' 
