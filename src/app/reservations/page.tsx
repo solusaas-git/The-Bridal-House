@@ -692,7 +692,7 @@ function ReservationsContent() {
                           }}
                           className="mr-2 rounded"
                         />
-{t(`reservations.filters.paymentStatuses.${status.toLowerCase().replace(' ', '')}`)}
+{getTranslatedPaymentStatus(status)}
                       </label>
                     ))}
                     
