@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
-import { Cross2Icon, MagnifyingGlassIcon, PlusIcon, CheckIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, MagnifyingGlassIcon, PlusIcon, CheckIcon, CalendarIcon } from '@radix-ui/react-icons';
 import { format, addDays, subDays, differenceInDays } from 'date-fns';
 import axios from 'axios';
 import { RootState } from '@/store/store';
@@ -620,148 +620,189 @@ export default function EditReservationPage() {
                     {t('edit.datesSection.bufferSettings')}
                   </p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">{t('edit.datesSection.weddingDate')}</label>
-                  <input
-                    type="date"
-                    value={formData.weddingDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, weddingDate: e.target.value })
-                    }
-                    className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10 flex flex-col items-center">
+                  <label className="block text-sm font-medium text-gray-300 mb-2 text-center">{t('edit.datesSection.weddingDate')} *</label>
+                  <div className="relative w-full max-w-xs">
+                    <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="date"
+                      value={formData.weddingDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, weddingDate: e.target.value })
+                      }
+                      className="w-full pl-8 pr-2.5 py-2 rounded-md border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                    />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-400">{t('edit.datesSection.pickupDate')}</p>
-                      <p className="text-lg font-medium text-white">
-                        {formData.pickupDate
-                          ? format(new Date(formData.pickupDate), 'dd/MM/yyyy')
-                          : ''}
-                      </p>
+                {/* Mobile-optimized dates layout */}
+                <div className="space-y-6 sm:space-y-4">
+                  {/* Mobile: Stack all date sections vertically, Desktop: 3 columns */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-4">
+                    
+                    {/* Pickup Date Section */}
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/10 flex flex-col items-center">
+                      <div className="space-y-3 w-full max-w-xs">
+                        {/* Date Display */}
+                        <div className="text-center">
+                          <p className="text-xs text-gray-400 mb-1">{t('edit.datesSection.pickupDate')}</p>
+                          <p className="text-base font-medium text-blue-400">
+                            {formData.pickupDate
+                              ? format(new Date(formData.pickupDate), 'dd/MM/yyyy')
+                              : '—'}
+                          </p>
+                        </div>
+                        
+                        {/* Time Input */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            {t('edit.datesSection.pickupTime')} *
+                          </label>
+                          <div className="relative">
+                            <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                            <input
+                              type="time"
+                              value={formData.pickupTime}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  pickupTime: e.target.value,
+                                }))
+                              }
+                              className="w-full pl-8 pr-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Buffer Before */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            {t('edit.datesSection.bufferBefore')} (days)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={formData.bufferBefore}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                bufferBefore: parseInt(e.target.value) || 0,
+                              })
+                            }
+                            className="w-full px-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        {t('edit.datesSection.pickupTime')}
-                      </label>
-                      <input
-                        type="time"
-                        value={formData.pickupTime}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            pickupTime: e.target.value,
-                          }))
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        {t('edit.datesSection.bufferBefore')}
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.bufferBefore}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bufferBefore: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-400">{t('edit.datesSection.returnDate')}</p>
-                      <p className="text-lg font-medium text-white">
-                        {formData.returnDate
-                          ? format(new Date(formData.returnDate), 'dd/MM/yyyy')
-                          : ''}
-                      </p>
+                    {/* Return Date Section */}
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/10 flex flex-col items-center">
+                      <div className="space-y-3 w-full max-w-xs">
+                        {/* Date Display */}
+                        <div className="text-center">
+                          <p className="text-xs text-gray-400 mb-1">{t('edit.datesSection.returnDate')}</p>
+                          <p className="text-base font-medium text-green-400">
+                            {formData.returnDate
+                              ? format(new Date(formData.returnDate), 'dd/MM/yyyy')
+                              : '—'}
+                          </p>
+                        </div>
+                        
+                        {/* Time Input */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            {t('edit.datesSection.returnTime')} *
+                          </label>
+                          <div className="relative">
+                            <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                            <input
+                              type="time"
+                              value={formData.returnTime}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  returnTime: e.target.value,
+                                }))
+                              }
+                              className="w-full pl-8 pr-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Buffer After */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            Days After Wedding (days)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={formData.bufferAfter}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                bufferAfter: parseInt(e.target.value) || 0,
+                              })
+                            }
+                            className="w-full px-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        {t('edit.datesSection.returnTime')}
-                      </label>
-                      <input
-                        type="time"
-                        value={formData.returnTime}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            returnTime: e.target.value,
-                          }))
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        Days After Wedding
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.bufferAfter}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            bufferAfter: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-400">Availability Date</p>
-                      <p className="text-lg font-medium text-white">
-                        {formData.availabilityDate
-                          ? format(new Date(formData.availabilityDate), 'dd/MM/yyyy')
-                          : ''}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        Availability Time
-                      </label>
-                      <input
-                        type="time"
-                        value={formData.availabilityTime}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            availabilityTime: e.target.value,
-                          }))
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300">
-                        Availability Duration
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={formData.availability}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            availability: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                    {/* Availability Date Section */}
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/10 flex flex-col items-center">
+                      <div className="space-y-3 w-full max-w-xs">
+                        {/* Date Display */}
+                        <div className="text-center">
+                          <p className="text-xs text-gray-400 mb-1">Availability Date</p>
+                          <p className="text-base font-medium text-purple-400">
+                            {formData.availabilityDate
+                              ? format(new Date(formData.availabilityDate), 'dd/MM/yyyy')
+                              : '—'}
+                          </p>
+                        </div>
+                        
+                        {/* Time Input */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            Availability Time *
+                          </label>
+                          <div className="relative">
+                            <CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                            <input
+                              type="time"
+                              value={formData.availabilityTime}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  availabilityTime: e.target.value,
+                                }))
+                              }
+                              className="w-full pl-8 pr-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Availability Days */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1.5 text-center">
+                            Availability Duration (days)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={formData.availability}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                availability: parseInt(e.target.value) || 0,
+                              })
+                            }
+                            className="w-full px-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -810,7 +851,7 @@ export default function EditReservationPage() {
                         <p className="text-sm text-gray-400">
                           {typeof item.category === 'object' && (item.category as any)?.name 
                             ? (item.category as any).name 
-                            : item.category || 'No category'}
+                            : 'No category'}
                         </p>
                         <p className="text-sm font-medium text-white mt-1">
                           {formatCurrency(item.rentalCost || 0, currencySettings)}
@@ -853,40 +894,49 @@ export default function EditReservationPage() {
                     </button>
                   </div>
 
-                  {/* Category Tabs */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <button
-                      onClick={() => setSelectedCategoryTab('all')}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        selectedCategoryTab === 'all'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
-                      }`}
-                    >
-                      All ({products.filter(p => isItemAvailable(p)).length})
-                    </button>
-                    {getCategories().map((category) => {
-                      const categoryCount = products.filter(p => {
-                        const categoryName = typeof p.category === 'object' && (p.category as any)?.name
-                          ? (p.category as any).name
-                          : p.category;
-                        return categoryName === category && isItemAvailable(p);
-                      }).length || 0;
-                      
-                      return (
+                  {/* Category Tabs - Mobile Optimized */}
+                  <div className="mb-4">
+                    {/* Mobile: Horizontal Scroll for Tabs */}
+                    <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
+                      <div className="flex gap-2 min-w-max sm:flex-wrap">
                         <button
-                          key={category}
-                          onClick={() => setSelectedCategoryTab(category)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                            selectedCategoryTab === category
-                              ? 'bg-blue-500 text-white'
+                          onClick={() => setSelectedCategoryTab('all')}
+                          className={`px-3 py-2 sm:px-4 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                            selectedCategoryTab === 'all'
+                              ? 'bg-blue-500 text-white shadow-lg'
                               : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
                           }`}
                         >
-                          {category} ({categoryCount})
+                          All ({products.filter(p => isItemAvailable(p)).length})
                         </button>
-                      );
-                    })}
+                        {getCategories().map((category) => {
+                          const categoryCount = products.filter(p => {
+                            const categoryName = typeof p.category === 'object' && (p.category as any)?.name
+                              ? (p.category as any).name
+                              : p.category;
+                            return categoryName === category && isItemAvailable(p);
+                          }).length || 0;
+                          
+                          return (
+                            <button
+                              key={category}
+                              onClick={() => setSelectedCategoryTab(category)}
+                              className={`px-3 py-2 sm:px-4 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                                selectedCategoryTab === category
+                                  ? 'bg-blue-500 text-white shadow-lg'
+                                  : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {category} ({categoryCount})
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {/* Mobile indicator */}
+                    <div className="text-xs text-gray-500 mt-1 sm:hidden text-center">
+                      ← Swipe to see more categories →
+                    </div>
                   </div>
 
                   {/* Item Search */}
@@ -901,8 +951,8 @@ export default function EditReservationPage() {
                     />
                   </div>
 
-                  {/* Available Items Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                  {/* Available Items Grid - Mobile Optimized */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
                     {filteredProducts.map((product: any) => {
                       const isSelected = selectedItems.some(item => item._id === product._id);
                       const isAvailable = isItemAvailable(product);
@@ -969,7 +1019,8 @@ export default function EditReservationPage() {
                   </div>
 
                   {filteredProducts.length === 0 && (
-                    <div className="text-center py-8">
+                    <div className="col-span-full text-center py-12">
+                      <div className="text-gray-400 mb-2">🔍</div>
                       <p className="text-gray-400">No available items found for the selected criteria</p>
                       <p className="text-sm text-gray-500 mt-2">
                         Try adjusting your search terms, category filter, or wedding date
@@ -1186,25 +1237,62 @@ export default function EditReservationPage() {
           </div>
         </div>
 
-        {/* Step Indicator */}
+        {/* Step Indicator - Mobile Optimized */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-0">
+          {/* Mobile: Horizontal Progress Bar */}
+          <div className="sm:hidden mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-gray-300">Step {step} of {steps.length}</span>
+              <span className="text-xs text-gray-400">{Math.round((step / steps.length) * 100)}% Complete</span>
+            </div>
+            <div className="relative">
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${(step / steps.length) * 100}%` }}
+                />
+              </div>
+              {/* Step dots */}
+              <div className="absolute -top-1 left-0 right-0 flex justify-between">
+                {steps.map((stepItem) => (
+                  <div
+                    key={stepItem.number}
+                    className={`w-4 h-4 rounded-full border-2 transition-all ${
+                      step >= stepItem.number
+                        ? 'bg-blue-500 border-blue-500'
+                        : 'bg-gray-800 border-white/20'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="mt-3 text-center">
+              <h3 className="text-sm font-medium text-white">{steps[step - 1]?.title}</h3>
+            </div>
+          </div>
+
+          {/* Desktop: Full Step Indicator */}
+          <div className="hidden sm:flex items-center justify-center gap-0">
             {steps.map((stepItem, index) => (
               <div key={stepItem.number} className="flex items-center">
                 <div
-                  className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-colors ${
                     step >= stepItem.number
                       ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
                       : 'bg-white/10 text-white/70 border border-white/20'
                   }`}
                 >
-                  {stepItem.number}
+                  {step > stepItem.number ? (
+                    <CheckIcon className="w-5 h-5" />
+                  ) : (
+                    stepItem.number
+                  )}
                 </div>
-                <div className="ml-2 text-xs sm:text-sm font-medium text-white">
+                <div className="ml-2 text-sm font-medium text-white">
                   {stepItem.title}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="mx-2 sm:mx-4 w-4 sm:w-8 h-px bg-white/30" />
+                  <div className="mx-4 w-8 h-px bg-white/30" />
                 )}
               </div>
             ))}
