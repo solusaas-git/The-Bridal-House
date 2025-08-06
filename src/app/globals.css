@@ -1,9 +1,5 @@
-/* Tailwind CSS directives */
-/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
-/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind components;
-/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
 :root {
@@ -130,7 +126,10 @@ body {
   }
   
   /* Prevent touch callouts and highlights that can interfere with scrolling */
-  * {
+  /* Only apply to non-interactive elements to preserve button/link functionality */
+  img, 
+  .fixed:not(button):not(a):not([role="button"]):not([tabindex]),
+  div:not([role]):not([tabindex]):not(.clickable) {
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
   }
