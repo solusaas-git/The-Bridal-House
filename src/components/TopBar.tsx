@@ -37,7 +37,7 @@ const TopBar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: TopBarProps) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-lg border-b border-white/10 supports-[height:100dvh]:top-[env(safe-area-inset-top)]">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-lg border-b border-white/10">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left - Mobile Menu Toggle (mobile only) */}
         <div className="flex items-center lg:hidden">

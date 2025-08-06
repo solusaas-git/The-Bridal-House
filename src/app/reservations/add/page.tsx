@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -369,11 +369,17 @@ export default function AddReservationPage() {
     });
   }, [products, reservations, selectedCategoryTab, itemSearchTerm, isItemAvailable]);
 
-  // Memoized filtered products to trigger re-renders when dependencies change
-  const filteredProducts = useMemo(() => getFilteredProducts(), [getFilteredProducts]);
+  // Memoized filtered products to prevent unnecessary re-calculations
+  const filteredProducts = useMemo(() => getFilteredProducts(), [
+    products, 
+    reservations, 
+    selectedCategoryTab, 
+    itemSearchTerm, 
+    isItemAvailable
+  ]);
 
-  // Calculate financial details
-  const calculateFinancials = () => {
+  // Memoized financial calculations to prevent recalculation on every render
+  const calculateFinancials = useMemo(() => {
     // Only count items from the main category (677ee9fdd52d692ac0ea6339) in totals
     const mainCategoryItems = selectedItems.filter(item => {
       // Handle both populated and non-populated category references
@@ -404,7 +410,7 @@ export default function AddReservationPage() {
       advance,
       total,
     };
-  };
+  }, [selectedItems, customItemsTotal, formData.additionalCost, formData.securityDepositAmount, formData.advanceAmount]);
 
   const handleItemsTotalChange = (value: string) => {
     const numValue = parseFloat(value);
@@ -499,7 +505,7 @@ export default function AddReservationPage() {
       return;
     }
 
-    const financials = calculateFinancials();
+    const financials = calculateFinancials;
 
     try {
       setLoading(true);
@@ -944,7 +950,7 @@ export default function AddReservationPage() {
   );
 
   const renderFinancialDetails = () => {
-    const financials = calculateFinancials();
+    const financials = calculateFinancials;
 
     return (
       <div className="space-y-6">

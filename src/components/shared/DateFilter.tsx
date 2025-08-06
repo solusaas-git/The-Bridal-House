@@ -64,22 +64,12 @@ const DateFilter: React.FC<DateFilterProps> = ({
 
     if (showDatePicker) {
       updatePosition();
-      
-      // Use passive listeners and throttling for mobile optimization
-      const throttledUpdate = (() => {
-        let timeoutId: NodeJS.Timeout;
-        return () => {
-          clearTimeout(timeoutId);
-          timeoutId = setTimeout(updatePosition, 16); // ~60fps
-        };
-      })();
-      
-      window.addEventListener('scroll', throttledUpdate, { passive: true });
-      window.addEventListener('resize', throttledUpdate, { passive: true });
+      window.addEventListener('scroll', updatePosition);
+      window.addEventListener('resize', updatePosition);
       
       return () => {
-        window.removeEventListener('scroll', throttledUpdate);
-        window.removeEventListener('resize', throttledUpdate);
+        window.removeEventListener('scroll', updatePosition);
+        window.removeEventListener('resize', updatePosition);
       };
     }
   }, [showDatePicker]);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -360,7 +360,8 @@ export default function EditReservationPage() {
     }
   };
 
-  const calculateFinancials = () => {
+  // Memoized financial calculations for better performance
+  const calculateFinancials = useMemo(() => {
     // Check if items have been changed from original reservation
     const originalItemIds = reservation?.items?.map((item: any) => item._id).sort() || [];
     const currentItemIds = selectedItems.map(item => item._id).sort();
@@ -405,7 +406,7 @@ export default function EditReservationPage() {
       advance,
       total,
     };
-  };
+  }, [reservation, selectedItems, customItemsTotal, formData.additionalCost, formData.securityDepositAmount, formData.advanceAmount]);
 
   const handleItemsTotalChange = (value: string) => {
     const numValue = parseFloat(value);
@@ -453,7 +454,7 @@ export default function EditReservationPage() {
       return;
     }
 
-    const financials = calculateFinancials();
+    const financials = calculateFinancials;
 
     const reservationData = {
       type: formData.type,
@@ -997,7 +998,7 @@ export default function EditReservationPage() {
         );
 
       case 3:
-        const financials = calculateFinancials();
+        const financials = calculateFinancials;
         return (
           <div className="space-y-6">
             {/* Status */}
@@ -1242,7 +1243,7 @@ export default function EditReservationPage() {
                 resourceName={`Reservation #${reservationId}`}
                 originalData={reservation}
                 newData={(() => {
-                  const financials = calculateFinancials();
+                  const financials = calculateFinancials;
                   return {
                     type: formData.type,
                     client: selectedClient._id,
