@@ -121,6 +121,7 @@
     },
     "paymentsSection": {
       "title": "Payment Progress",
+      "associatedPayments": "Associated Payments",
       "addPayment": "Add Payment",
       "totalPaid": "Total Paid",
       "remaining": "Remaining",

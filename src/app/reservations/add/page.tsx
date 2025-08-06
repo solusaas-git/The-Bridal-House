@@ -665,8 +665,8 @@ export default function AddReservationPage() {
           onChange={(e) => setFormData({ ...formData, type: e.target.value })}
           className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
         >
-          <option value="Final">Final</option>
-          <option value="Fitting">Fitting</option>
+                          <option value="Final">{t('details.types.final')}</option>
+                <option value="Fitting">{t('details.types.fitting')}</option>
         </select>
       </div>
     </div>
@@ -960,9 +960,9 @@ export default function AddReservationPage() {
             }
             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="Draft">Draft</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Cancelled">Cancelled</option>
+            <option value="Draft">{t('details.statuses.draft')}</option>
+            <option value="Confirmed">{t('details.statuses.confirmed')}</option>
+            <option value="Cancelled">{t('details.statuses.cancelled')}</option>
           </select>
         </div>
 
@@ -1002,7 +1002,7 @@ export default function AddReservationPage() {
 
         {/* Financial Summary */}
         <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-          <h3 className="text-lg font-medium text-white">Financial Summary</h3>
+                      <h3 className="text-lg font-medium text-white">{t('details.financialSummary.title')}</h3>
 
           <div className="space-y-4">
             {/* Items Total - Editable */}

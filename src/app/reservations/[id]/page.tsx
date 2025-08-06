@@ -498,13 +498,13 @@ export default function ViewReservationPage() {
         return (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h4 className="text-base sm:text-lg font-medium text-white">Associated Payments</h4>
+              <h4 className="text-base sm:text-lg font-medium text-white">{t('details.paymentsSection.associatedPayments')}</h4>
               <button
                 onClick={handleAddPayment}
                 className="inline-flex items-center justify-center px-3 py-2 border border-blue-500/30 text-sm leading-4 font-medium rounded-md text-blue-400 bg-blue-500/20 hover:bg-blue-500/30 w-full sm:w-auto"
               >
                 <PlusIcon className="w-4 h-4 mr-1" />
-                Add Payment
+                                  {t('details.paymentsSection.addPayment')}
               </button>
             </div>
 
@@ -837,7 +837,7 @@ const AddPaymentModal = ({
       <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-md">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Add Payment</h3>
+                          <h3 className="text-lg font-semibold text-white">{t('details.paymentModal.addTitle')}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white"

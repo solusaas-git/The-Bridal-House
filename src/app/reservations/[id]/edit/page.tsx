@@ -600,8 +600,8 @@ export default function EditReservationPage() {
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               >
-                <option value="Final" className="bg-gray-800">Final</option>
-                <option value="Fitting" className="bg-gray-800">Fitting</option>
+                <option value="Final" className="bg-gray-800">{t('details.types.final')}</option>
+                <option value="Fitting" className="bg-gray-800">{t('details.types.fitting')}</option>
               </select>
             </div>
           </div>
@@ -1054,7 +1054,7 @@ export default function EditReservationPage() {
 
             {/* Financial Summary */}
             <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-medium text-white">Financial Summary</h3>
+              <h3 className="text-lg font-medium text-white">{t('details.financialSummary.title')}</h3>
 
               <div className="space-y-4">
                 {/* Items Total - Editable */}

@@ -121,6 +121,7 @@
     },
     "paymentsSection": {
       "title": "Progression des Paiements",
+      "associatedPayments": "Paiements Associés",
       "addPayment": "Ajouter un Paiement",
       "totalPaid": "Total Payé",
       "remaining": "Restant",
