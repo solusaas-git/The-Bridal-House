@@ -108,8 +108,6 @@
     "addCommentDecision": "Add a comment about your decision...",
     "charactersRemaining": "{{count}}/500 characters",
     "processing": "Processing...",
-    "approve": "Approve",
-    "reject": "Reject",
     "cancel": "Cancel",
     "unknownUser": "Unknown User",
     "previewImage": "Preview Image",
