@@ -130,17 +130,7 @@
       "paid": "Payé",
       "remaining": "Restant",
       "paymentStatus": "Statut de Paiement",
-      "noPayments": "Aucun paiement trouvé"
-    },
-    "paymentStatuses": {
-      "paid": "Payé",
-      "partiallyPaid": "Partiellement Payé",
-      "notPaid": "Non Payé", 
-      "pending": "En Attente",
-      "unpaid": "Non Payé",
-      "partial": "Partiel"
-    },
-    "paymentsSection": {
+      "noPayments": "Aucun paiement trouvé",
       "paymentDate": "Date de Paiement",
       "paymentMethod": "Méthode de Paiement",
       "paymentType": "Type de Paiement",
@@ -149,6 +139,14 @@
       "note": "Note",
       "attachments": "Pièces Jointes",
       "viewDetails": "Voir les Détails"
+    },
+    "paymentStatuses": {
+      "paid": "Payé",
+      "partiallyPaid": "Partiellement Payé",
+      "notPaid": "Non Payé", 
+      "pending": "En Attente",
+      "unpaid": "Non Payé",
+      "partial": "Partiel"
     },
     "paymentModal": {
       "addTitle": "Ajouter un Paiement",
