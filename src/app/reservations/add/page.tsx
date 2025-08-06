@@ -678,9 +678,9 @@ export default function AddReservationPage() {
       {selectedClient && (
         <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
           <div className="mb-4">
-            <h3 className="text-lg font-medium text-white mb-2">{t('edit.dateTimeSection.title')}</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('add.dateTimeSection.title')}</h3>
             <p className="text-sm text-gray-400">
-              {t('edit.dateTimeSection.subtitle')}
+              {t('add.dateTimeSection.subtitle')}
             </p>
           </div>
           
@@ -724,7 +724,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  {t('edit.bufferBefore')}
+                  {t('edit.datesSection.bufferBefore')}
                 </label>
                 <input
                   type="number"
@@ -768,7 +768,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  {t('edit.bufferAfter')}
+                  {t('edit.datesSection.bufferAfter')}
                 </label>
                 <input
                   type="number"
@@ -796,7 +796,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  {t('edit.availabilityTime')} *
+                  {t('edit.datesSection.availabilityTime')} *
                 </label>
                 <input
                   type="time"
