@@ -46,6 +46,7 @@ export default function EditReservationPage() {
   const reservationId = params.id as string;
   const { t } = useTranslation('reservations');
   const { t: tCommon } = useTranslation('common');
+  const { t: tCommon } = useTranslation('common');
   
   const customers = useSelector((state: RootState) => state.customer.customers);
   const products = useSelector((state: RootState) => state.item.items);
@@ -1060,10 +1061,10 @@ export default function EditReservationPage() {
                 {/* Items Total - Editable */}
                 <div className="flex justify-between text-sm items-center">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-300">Items Total</span>
+                    <span className="text-gray-300">{t('edit.financialSection.itemsTotal')}</span>
                     {financials.calculatedItemsTotal !== financials.itemsTotal && (
                       <span className="text-xs text-blue-400">
-                        (Calculated: {formatCurrency(financials.calculatedItemsTotal, currencySettings)})
+                        ({tCommon('calculated')}: {formatCurrency(financials.calculatedItemsTotal, currencySettings)})
                       </span>
                     )}
                   </div>
@@ -1082,12 +1083,12 @@ export default function EditReservationPage() {
                 </div>
 
                 <div className="flex justify-between text-sm text-gray-300">
-                  <span>Additional Cost</span>
+                  <span>{t('edit.financialSection.additionalCost')}</span>
                   <span>{formatCurrency(financials.additionalCost, currencySettings)}</span>
                 </div>
 
                 <div className="flex justify-between text-base font-medium text-white border-t border-white/10 pt-2">
-                  <span>Subtotal</span>
+                  <span>{t('edit.financialSection.subtotal')}</span>
                   <span>{formatCurrency(financials.subtotal, currencySettings)}</span>
                 </div>
 

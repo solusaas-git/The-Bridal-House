@@ -253,6 +253,18 @@ export default function ViewReservationPage() {
     }
   };
 
+  const getTranslatedPaymentStatus = (paymentStatus: string) => {
+    // Map specific values first
+    if (paymentStatus === 'Partially Paid') return t('details.paymentStatuses.partiallyPaid');
+    if (paymentStatus === 'Not Paid') return t('details.paymentStatuses.notPaid');
+    
+    // For other values, clean and map
+    const statusKey = paymentStatus?.toLowerCase()
+      .replace(/\s+/g, ''); // Remove spaces
+    
+    return t(`details.paymentStatuses.${statusKey}`) || paymentStatus;
+  };
+
   const getPaymentStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'Paid': return 'bg-green-500/20 text-green-400 border border-green-500/30';
@@ -486,7 +498,7 @@ export default function ViewReservationPage() {
             {financials && (
               <div className="mt-6 pt-4 border-t border-white/20">
                 <div className="flex justify-between font-medium text-lg text-white">
-                  <span className="text-gray-400">Total Items Cost:</span>
+                  <span className="text-gray-400">{t('details.financialSummary.itemsTotal')}:</span>
                   <span>{formatCurrency(financials.itemsTotal, currencySettings)}</span>
                 </div>
               </div>
@@ -514,7 +526,7 @@ export default function ViewReservationPage() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-gray-400">{t('details.paymentsSection.paymentStatus')}</span>
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentStatusBadgeColor(paymentDetails.paymentStatus)}`}>
-                    {paymentDetails.paymentStatus}
+                    {getTranslatedPaymentStatus(paymentDetails.paymentStatus)}
                   </span>
                 </div>
                 <div className="space-y-2 text-sm text-white">
