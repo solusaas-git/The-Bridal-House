@@ -118,7 +118,8 @@
       "itemDetails": "Item Details",
       "rentalCost": "Rental Cost",
       "size": "Size",
-      "category": "Category"
+      "category": "Category",
+      "availableForDates": "Available for selected dates"
     },
     "paymentsSection": {
       "title": "Payment Progress",

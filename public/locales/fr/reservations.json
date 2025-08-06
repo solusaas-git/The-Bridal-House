@@ -118,7 +118,8 @@
       "itemDetails": "Détails de l'Article",
       "rentalCost": "Coût de Location",
       "size": "Taille",
-      "category": "Catégorie"
+      "category": "Catégorie",
+      "availableForDates": "Disponible pour les dates sélectionnées"
     },
     "paymentsSection": {
       "title": "Progression des Paiements",
@@ -216,7 +217,15 @@
     },
     "messages": {
       "noAvailableItems": "Aucun article disponible trouvé pour les critères sélectionnés",
-      "tryAdjusting": "Essayez d'ajuster vos termes de recherche, filtre de catégorie, ou date de mariage"
+      "tryAdjusting": "Essayez d'ajuster vos termes de recherche, filtre de catégorie, ou date de mariage",
+      "createSuccess": "Réservation créée avec succès",
+      "createError": "Échec de la création de la réservation"
+    },
+    "navigation": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "createReservation": "Créer la Réservation",
+      "creating": "Création..."
     }
   },
   "edit": {
@@ -300,20 +309,6 @@
       "updateError": "Échec de la mise à jour de la réservation",
       "fetchError": "Échec de la récupération des données",
       "validationError": "Veuillez remplir tous les champs obligatoires"
-    }
-  },
-  "add": {
-    "title": "Nouvelle Réservation",
-    "subtitle": "Créer une nouvelle réservation",
-    "navigation": {
-      "previous": "Précédent",
-      "next": "Suivant",
-      "createReservation": "Créer la Réservation",
-      "creating": "Création..."
-    },
-    "messages": {
-      "createSuccess": "Réservation créée avec succès",
-      "createError": "Échec de la création de la réservation"
     }
   }
 }

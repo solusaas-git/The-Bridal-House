@@ -86,9 +86,9 @@ export default function AddReservationPage() {
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
 
   const steps = [
-    { number: 1, title: t('edit.steps.clientSelection') },
-    { number: 2, title: t('edit.steps.itemsAndDates') },
-    { number: 3, title: t('edit.steps.financialDetails') },
+            { number: 1, title: t('add.steps.clientSelection') },
+        { number: 2, title: t('add.steps.itemsAndDates') },
+        { number: 3, title: t('add.steps.financialDetails') },
   ];
 
   // Fetch initial data
@@ -560,7 +560,7 @@ export default function AddReservationPage() {
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          {t('add.clientSection.searchClient')}
+          {t('edit.clientSection.title')}
         </label>
         <div className="relative customer-search-container">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -570,7 +570,7 @@ export default function AddReservationPage() {
             type="text"
             value={customerSearch}
             onChange={(e) => handleCustomerSearch(e.target.value)}
-            placeholder={selectedClient ? t('add.clientSection.customerSelected') : t('add.clientSection.searchPlaceholder')}
+            placeholder={selectedClient ? "Customer selected - type to search for another" : t('edit.clientSection.searchPlaceholder')}
             className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           />
           
@@ -579,7 +579,7 @@ export default function AddReservationPage() {
               {searchLoading ? (
                 <div className="px-4 py-3 text-center text-gray-400">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto mb-2"></div>
-                  {t('add.clientSection.searching')}
+                  Searching...
                 </div>
               ) : (
                 filteredCustomers.map((customer) => (
@@ -603,7 +603,7 @@ export default function AddReservationPage() {
           {showCustomerDropdown && !searchLoading && filteredCustomers.length === 0 && customerSearch.length >= 2 && !selectedClient && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-50">
               <div className="px-4 py-3 text-center text-gray-400">
-                                  {t('add.clientSection.noResults')}
+                                  No customers found
               </div>
             </div>
           )}
@@ -631,16 +631,16 @@ export default function AddReservationPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-gray-400">{t('add.clientSection.phone')}</label>
+              <label className="text-sm text-gray-400">{tCommon('phone')}</label>
               <p className="text-white">{selectedClient.phone}</p>
             </div>
             <div>
-              <label className="text-sm text-gray-400">{t('add.clientSection.email')}</label>
+              <label className="text-sm text-gray-400">{tCommon('email')}</label>
               <p className="text-white">{selectedClient.email || 'N/A'}</p>
             </div>
             {selectedClient.weddingDate && (
               <div>
-                <label className="text-sm text-gray-400">{t('add.clientSection.weddingDate')}</label>
+                <label className="text-sm text-gray-400">{t('details.clientInfo.weddingDate')}</label>
                 <p className="text-white">
                   {format(new Date(selectedClient.weddingDate), 'dd/MM/yyyy')}
                 </p>
@@ -648,7 +648,7 @@ export default function AddReservationPage() {
             )}
             {selectedClient.weddingCity && (
               <div>
-                <label className="text-sm text-gray-400">Wedding City</label>
+                <label className="text-sm text-gray-400">{tCommon('city')}</label>
                 <p className="text-white">{selectedClient.weddingCity}</p>
               </div>
             )}
@@ -658,7 +658,7 @@ export default function AddReservationPage() {
 
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          {t('add.reservationType.label')}
+          {tCommon('type')}
         </label>
         <select
           value={formData.type}
@@ -678,14 +678,14 @@ export default function AddReservationPage() {
       {selectedClient && (
         <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
           <div className="mb-4">
-            <h3 className="text-lg font-medium text-white mb-2">{t('add.dateTimeSection.title')}</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('edit.dateTimeSection.title')}</h3>
             <p className="text-sm text-gray-400">
-              {t('add.dateTimeSection.subtitle')}
+              {t('edit.dateTimeSection.subtitle')}
             </p>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">{t('add.dateTimeSection.weddingDate')}</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">{t('details.clientInfo.weddingDate')}</label>
             <input
               type="date"
               value={formData.weddingDate}
@@ -699,7 +699,7 @@ export default function AddReservationPage() {
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <div>
-                <p className="text-sm text-gray-400">Pickup Date</p>
+                <p className="text-sm text-gray-400">{t('columns.pickupDate')}</p>
                 <p className="text-lg font-medium text-white">
                   {formData.pickupDate
                     ? format(new Date(formData.pickupDate), 'dd/MM/yyyy')
@@ -708,7 +708,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Pickup Time *
+                  {t('columns.pickupDate')} {tCommon('time')} *
                 </label>
                 <input
                   type="time"
@@ -724,7 +724,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Days Before Wedding
+                  {t('edit.bufferBefore')}
                 </label>
                 <input
                   type="number"
@@ -743,7 +743,7 @@ export default function AddReservationPage() {
 
             <div className="space-y-2">
               <div>
-                <p className="text-sm text-gray-400">Return Date</p>
+                <p className="text-sm text-gray-400">{t('columns.returnDate')}</p>
                 <p className="text-lg font-medium text-white">
                   {formData.returnDate
                     ? format(new Date(formData.returnDate), 'dd/MM/yyyy')
@@ -752,7 +752,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Return Time *
+                  {t('columns.returnDate')} {tCommon('time')} *
                 </label>
                 <input
                   type="time"
@@ -768,7 +768,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Days After Wedding
+                  {t('edit.bufferAfter')}
                 </label>
                 <input
                   type="number"
@@ -787,7 +787,7 @@ export default function AddReservationPage() {
 
             <div className="space-y-2">
               <div>
-                <p className="text-sm text-gray-400">Availability Date</p>
+                <p className="text-sm text-gray-400">{t('columns.availabilityDate')}</p>
                 <p className="text-lg font-medium text-white">
                   {formData.availabilityDate
                     ? format(new Date(formData.availabilityDate), 'dd/MM/yyyy')
@@ -796,7 +796,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Availability Time *
+                  {t('edit.availabilityTime')} *
                 </label>
                 <input
                   type="time"
@@ -843,7 +843,7 @@ export default function AddReservationPage() {
                 : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
             }`}
           >
-                         All ({filteredProducts.length})
+                         {tCommon('all')} ({filteredProducts.length})
           </button>
           {getCategories().map((category) => {
             const categoryCount = filteredProducts.filter(p => {
@@ -876,7 +876,7 @@ export default function AddReservationPage() {
             type="text"
             value={itemSearchTerm}
             onChange={(e) => setItemSearchTerm(e.target.value)}
-            placeholder="Search items..."
+            placeholder={`${tCommon('search')} items...`}
             className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -923,7 +923,7 @@ export default function AddReservationPage() {
                    <p className="text-sm text-gray-400">
                      {typeof product.category === 'object' && (product.category as any)?.name 
                        ? (product.category as any).name 
-                       : product.category || 'No category'}
+                       : product.category || tCommon('noCategory')}
                    </p>
                    <p className="text-sm font-medium text-white mt-2">
                      {formatCurrency(product.rentalCost || 0, currencySettings)}
@@ -931,7 +931,7 @@ export default function AddReservationPage() {
                    {/* Availability status */}
                    <div className="mt-2 text-xs">
                      <span className="px-2 py-1 rounded-full bg-green-500/10 text-green-400">
-                       Available for selected dates
+                       {t('details.itemsSection.availableForDates')}
                      </span>
                    </div>
                  </div>

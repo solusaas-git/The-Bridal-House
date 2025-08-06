@@ -300,7 +300,7 @@ const CostCategories = () => {
 
           {costCategories.length === 0 && (
             <div className="text-center py-8 text-gray-400">
-                              {t('categories.noCategoriesFound')}
+                              No cost categories found
             </div>
           )}
         </div>

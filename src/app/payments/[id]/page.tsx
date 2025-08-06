@@ -463,7 +463,7 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
       <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
         <div className="text-center py-12">
           <FileIcon className="h-12 w-12 text-white/40 mx-auto mb-4" />
-                        <p className="text-gray-400">{t('details.noAttachmentsFound')}</p>
+                        <p className="text-gray-400">No attachments found</p>
         </div>
       </div>
     );
