@@ -46,7 +46,6 @@ export default function EditReservationPage() {
   const reservationId = params.id as string;
   const { t } = useTranslation('reservations');
   const { t: tCommon } = useTranslation('common');
-  const { t: tCommon } = useTranslation('common');
   
   const customers = useSelector((state: RootState) => state.customer.customers);
   const products = useSelector((state: RootState) => state.item.items);

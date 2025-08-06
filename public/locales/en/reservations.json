@@ -139,6 +139,8 @@
       "pending": "Pending",
       "unpaid": "Unpaid",
       "partial": "Partial"
+    },
+    "paymentsSection": {
       "paymentDate": "Payment Date",
       "paymentMethod": "Payment Method",
       "paymentType": "Payment Type",
