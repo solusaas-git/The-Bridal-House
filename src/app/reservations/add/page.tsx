@@ -37,6 +37,133 @@ interface FormData {
   notes: string;
 }
 
+// Optimized ProductCard component with React.memo
+const ProductCard = memo(({ product, isSelected, isAvailable, onToggle, currencySettings }: {
+  product: any;
+  isSelected: boolean;
+  isAvailable: boolean;
+  onToggle: (product: any) => void;
+  currencySettings: any;
+}) => {
+  return (
+    <div
+      className={`relative bg-white/5 rounded-lg border transition-all hover:bg-white/10 ${
+        isSelected 
+          ? 'border-blue-500/50 bg-blue-500/10' 
+          : isAvailable 
+            ? 'border-white/20 hover:border-white/30' 
+            : 'border-red-500/30 bg-red-500/5 opacity-75'
+      }`}
+    >
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium text-white truncate">{product.name}</h4>
+            <p className="text-sm text-gray-400 mt-1">
+              {typeof product.category === 'object' && product.category?.name 
+                ? product.category.name 
+                : product.category || 'No Category'}
+            </p>
+            {product.size && (
+              <p className="text-xs text-gray-500 mt-1">Size: {product.size}</p>
+            )}
+          </div>
+          <div className="text-right ml-4 flex-shrink-0">
+            <span className="text-lg font-medium text-white">
+              {formatCurrency(product.rentalCost || 0, currencySettings)}
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            {!isAvailable && (
+              <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded border border-red-500/30">
+                Unavailable
+              </span>
+            )}
+          </div>
+          
+          <button
+            onClick={() => onToggle(product)}
+            disabled={!isAvailable}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isSelected
+                ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
+                : isAvailable
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30'
+                  : 'bg-gray-500/20 text-gray-500 border border-gray-500/30 cursor-not-allowed'
+            }`}
+          >
+            {isSelected ? 'Remove' : 'Add'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+ProductCard.displayName = 'ProductCard';
+
+// Optimized ProductGridCard component with React.memo
+const ProductGridCard = memo(({ product, isSelected, onToggle, currencySettings }: {
+  product: any;
+  isSelected: boolean;
+  onToggle: (product: any) => void;
+  currencySettings: any;
+}) => {
+  return (
+    <div
+      className={`relative rounded-lg border ${
+        isSelected
+          ? 'border-blue-500'
+          : 'border-white/10'
+      } overflow-hidden group cursor-pointer`}
+      onClick={() => onToggle(product)}
+    >
+      <div className="aspect-[4/3] relative">
+        {product.primaryPhoto ? (
+          <img
+            src={`/api/uploads/${product.primaryPhoto}`}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbGw9IiMzNzQxNTEiLz4KPHR7d3QgeD0iMTI4IiB5PSIxMjgiIGZpbGw9IiM2QjcyODkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pgo8L3N2Zz4=';
+            }}
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gray-600 flex items-center justify-center">
+            <span className="text-gray-400 text-sm">No Image</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        {/* Selection overlay */}
+        {isSelected && (
+          <div className="absolute inset-0 bg-blue-500/20 border-2 border-blue-500">
+            <div className="absolute top-2 right-2">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <CheckIcon className="w-4 h-4 text-white" />
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Product info overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-3">
+          <h3 className="text-white font-medium text-sm truncate">{product.name}</h3>
+          <p className="text-gray-300 text-xs mt-1">
+            {formatCurrency(product.rentalCost || 0, currencySettings)}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+ProductGridCard.displayName = 'ProductGridCard';
+
 export default function AddReservationPage() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -889,9 +1016,15 @@ export default function AddReservationPage() {
 
         {/* Available Items Grid */}
         <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-          {filteredProducts.map((product: any) => {
-            const isSelected = selectedItems.some(item => item._id === product._id);
-            return (
+          {filteredProducts.map((product: any) => (
+            <ProductGridCard
+              key={product._id}
+              product={product}
+              isSelected={selectedItems.some(item => item._id === product._id)}
+              onToggle={handleItemToggle}
+              currencySettings={currencySettings}
+            />
+          ))}
               <div
                 key={product._id}
                 className={`relative rounded-lg border ${
