@@ -302,19 +302,5 @@
       "fetchError": "Failed to fetch data",
       "validationError": "Please fill in all required fields"
     }
-  },
-  "add": {
-    "title": "New Reservation",
-    "subtitle": "Create a new reservation",
-    "navigation": {
-      "previous": "Previous",
-      "next": "Next",
-      "createReservation": "Create Reservation",
-      "creating": "Creating..."
-    },
-    "messages": {
-      "createSuccess": "Reservation created successfully",
-      "createError": "Failed to create reservation"
-    }
   }
 }
