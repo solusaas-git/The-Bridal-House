@@ -126,6 +126,8 @@
       "associatedPayments": "Paiements Associés",
       "addPayment": "Ajouter un Paiement",
       "totalPaid": "Total Payé",
+      "totalAmount": "Montant Total",
+      "paid": "Payé",
       "remaining": "Restant",
       "paymentStatus": "Statut de Paiement",
       "noPayments": "Aucun paiement trouvé",

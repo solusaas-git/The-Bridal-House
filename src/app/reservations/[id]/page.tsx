@@ -512,22 +512,22 @@ export default function ViewReservationPage() {
             {paymentDetails && (
               <div className="bg-white/5 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-400">Payment Status</span>
+                  <span className="text-sm font-medium text-gray-400">{t('details.paymentsSection.paymentStatus')}</span>
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentStatusBadgeColor(paymentDetails.paymentStatus)}`}>
                     {paymentDetails.paymentStatus}
                   </span>
                 </div>
                 <div className="space-y-2 text-sm text-white">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Total Amount:</span>
+                    <span className="text-gray-400">{t('details.paymentsSection.totalAmount')}:</span>
                     <span>{formatCurrency(financials?.total || 0, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Paid:</span>
+                    <span className="text-gray-400">{t('details.paymentsSection.paid')}:</span>
                     <span className="text-green-400">{formatCurrency(paymentDetails.totalPaid, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Remaining:</span>
+                    <span className="text-gray-400">{t('details.paymentsSection.remaining')}:</span>
                     <span className={paymentDetails.remaining > 0 ? 'text-red-400' : 'text-green-400'}>
                       {formatCurrency(paymentDetails.remaining, currencySettings)}
                     </span>
@@ -541,7 +541,7 @@ export default function ViewReservationPage() {
                     />
                   </div>
                   <p className="text-xs text-gray-400 mt-1">
-                    {paymentDetails.percentage.toFixed(1)}% paid
+                    {paymentDetails.percentage.toFixed(1)}% {t('details.paymentsSection.paid')}
                   </p>
                 </div>
               </div>
@@ -583,13 +583,13 @@ export default function ViewReservationPage() {
                             onClick={() => handleViewPayment(payment)}
                             className="text-blue-400 hover:text-blue-300 text-sm"
                           >
-                            View
+                            {tCommon('view')}
                           </button>
                           <Link
                             href={`/payments/${payment._id}/edit`}
                             className="text-green-400 hover:text-green-300 text-sm"
                           >
-                            Edit
+                            {tCommon('edit')}
                           </Link>
                         </div>
                       </div>
@@ -850,7 +850,7 @@ const AddPaymentModal = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Amount
+                {tCommon('amount')}
               </label>
               <input
                 type="number"
@@ -864,39 +864,39 @@ const AddPaymentModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Payment Method
+                {t('details.paymentModal.paymentMethod')}
               </label>
               <select
                 value={formData.paymentMethod}
                 onChange={(e) => setFormData({...formData, paymentMethod: e.target.value})}
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="Cash">Cash</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Check">Check</option>
+                <option value="Cash">{t('details.paymentModal.methods.cash')}</option>
+                <option value="Bank Transfer">{t('details.paymentModal.methods.bankTransfer')}</option>
+                <option value="Credit Card">{t('details.paymentModal.methods.creditCard')}</option>
+                <option value="Check">{t('details.paymentModal.methods.check')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Payment Type
+                {t('details.paymentModal.paymentType')}
               </label>
               <select
                 value={formData.paymentType}
                 onChange={(e) => setFormData({...formData, paymentType: e.target.value})}
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="Advance">Advance</option>
-                <option value="Security">Security Deposit</option>
-                <option value="Final">Final Payment</option>
-                <option value="Other">Other</option>
+                <option value="Advance">{t('details.paymentModal.types.advance')}</option>
+                <option value="Security">{t('details.paymentModal.types.security')}</option>
+                <option value="Final">{t('details.paymentModal.types.final')}</option>
+                <option value="Other">{t('details.paymentModal.types.other')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Payment Date
+                {t('details.paymentModal.paymentDate')}
               </label>
               <input
                 type="date"
@@ -909,7 +909,7 @@ const AddPaymentModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Reference
+                {t('details.paymentModal.reference')}
               </label>
               <input
                 type="text"
@@ -921,7 +921,7 @@ const AddPaymentModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Note
+                {t('details.paymentModal.note')}
               </label>
               <textarea
                 value={formData.note}
@@ -933,7 +933,7 @@ const AddPaymentModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">
-                Attachments
+                {tCommon('attachments')}
               </label>
               <input
                 type="file"

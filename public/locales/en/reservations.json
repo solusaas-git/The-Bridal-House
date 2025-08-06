@@ -126,6 +126,8 @@
       "associatedPayments": "Associated Payments",
       "addPayment": "Add Payment",
       "totalPaid": "Total Paid",
+      "totalAmount": "Total Amount",
+      "paid": "Paid",
       "remaining": "Remaining",
       "paymentStatus": "Payment Status",
       "noPayments": "No payments found",
