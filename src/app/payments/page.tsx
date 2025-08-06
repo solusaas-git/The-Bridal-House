@@ -240,12 +240,22 @@ const PaymentsContent = () => {
 
     if (isDropdownOpen) {
       updatePosition();
-      window.addEventListener('scroll', updatePosition);
-      window.addEventListener('resize', updatePosition);
+      
+      // Use passive listeners and throttling for mobile optimization
+      const throttledUpdate = (() => {
+        let timeoutId: NodeJS.Timeout;
+        return () => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(updatePosition, 16); // ~60fps
+        };
+      })();
+      
+      window.addEventListener('scroll', throttledUpdate, { passive: true });
+      window.addEventListener('resize', throttledUpdate, { passive: true });
       
       return () => {
-        window.removeEventListener('scroll', updatePosition);
-        window.removeEventListener('resize', updatePosition);
+        window.removeEventListener('scroll', throttledUpdate);
+        window.removeEventListener('resize', throttledUpdate);
       };
     }
   }, [isDropdownOpen]);

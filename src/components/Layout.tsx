@@ -117,7 +117,7 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
       {/* Floating Impersonation Banner */}
       {isImpersonating && originalAdminInfo && (
         <div className="fixed top-4 right-4 bg-yellow-600 text-black px-4 py-2 text-sm font-medium rounded-lg shadow-lg z-[60] max-w-sm animate-in slide-in-from-right-5 fade-in duration-300">
@@ -143,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
       )}
       <TopBar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
-      <main className="pt-16 lg:pt-24 lg:ml-56 transition-all duration-300">
+      <main className="pt-16 lg:pt-24 lg:ml-56 transition-all duration-300 pb-4 sm:pb-8">
         <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           {children}
         </div>
