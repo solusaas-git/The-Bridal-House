@@ -117,7 +117,7 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 min-h-[100dvh]">
       {/* Floating Impersonation Banner */}
       {isImpersonating && originalAdminInfo && (
         <div className="fixed top-4 right-4 bg-yellow-600 text-black px-4 py-2 text-sm font-medium rounded-lg shadow-lg z-[60] max-w-sm animate-in slide-in-from-right-5 fade-in duration-300">
