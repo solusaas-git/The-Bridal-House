@@ -812,7 +812,7 @@ export default function AddReservationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300">
-                  Availability Duration
+                  {t('edit.datesSection.availability')}
                 </label>
                 <input
                   type="number"
@@ -969,7 +969,7 @@ export default function AddReservationPage() {
         {/* Additional Costs */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">
-            Additional Cost
+            {t('edit.financialSection.additionalCost')}
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
@@ -989,14 +989,14 @@ export default function AddReservationPage() {
         {/* Notes */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Notes
+            {tCommon('notes')}
           </label>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            placeholder="Enter any additional notes..."
+            placeholder={t('edit.generalSettings.notesPlaceholder')}
           />
         </div>
 
@@ -1008,10 +1008,10 @@ export default function AddReservationPage() {
             {/* Items Total - Editable */}
             <div className="flex justify-between text-sm items-center">
               <div className="flex items-center gap-2">
-                <span className="text-gray-300">Items Total</span>
+                <span className="text-gray-300">{t('edit.financialSection.itemsTotal')}</span>
                 {financials.calculatedItemsTotal !== financials.itemsTotal && (
                   <span className="text-xs text-blue-400">
-                    (Calculated: {formatCurrency(financials.calculatedItemsTotal, currencySettings)})
+                    ({tCommon('calculated')}: {formatCurrency(financials.calculatedItemsTotal, currencySettings)})
                   </span>
                 )}
               </div>
@@ -1032,7 +1032,7 @@ export default function AddReservationPage() {
 
             {/* Security Deposit */}
             <div className="flex justify-between text-sm items-center">
-              <span className="text-gray-300">Security Deposit</span>
+              <span className="text-gray-300">{t('edit.financialSection.securityDeposit')}</span>
               <div className="relative w-40">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                   {getCurrencySymbol(currencySettings)}
@@ -1049,7 +1049,7 @@ export default function AddReservationPage() {
 
             {/* Advance Amount */}
             <div className="flex justify-between text-sm items-center">
-              <span className="text-gray-300">Advance Amount</span>
+              <span className="text-gray-300">{t('details.financialSummary.advance')}</span>
               <div className="relative w-40">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                   {getCurrencySymbol(currencySettings)}
@@ -1066,7 +1066,7 @@ export default function AddReservationPage() {
 
             {/* Additional Costs */}
             <div className="flex justify-between text-sm">
-              <span className="text-gray-300">Additional Cost</span>
+              <span className="text-gray-300">{t('edit.financialSection.additionalCost')}</span>
               <span className="text-white">
                 {formatCurrency(financials.additionalCost, currencySettings)}
               </span>
@@ -1074,7 +1074,7 @@ export default function AddReservationPage() {
 
             {/* Subtotal */}
             <div className="flex justify-between text-sm font-medium border-t border-white/10 pt-4">
-              <span className="text-gray-300">Subtotal</span>
+              <span className="text-gray-300">{t('edit.financialSection.subtotal')}</span>
               <span className="text-white">
                 {formatCurrency(financials.subtotal, currencySettings)}
               </span>
@@ -1082,7 +1082,7 @@ export default function AddReservationPage() {
 
             {/* Total */}
             <div className="flex justify-between text-lg font-bold border-t border-white/10 pt-4">
-              <span className="text-white">Total</span>
+              <span className="text-white">{tCommon('total')}</span>
               <span className="text-white">
                 {formatCurrency(financials.total, currencySettings)}
               </span>

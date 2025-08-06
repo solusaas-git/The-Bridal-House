@@ -37,6 +37,8 @@
   "type": "Type",
   "amount": "Montant",
   "total": "Total",
+  "calculated": "Calculé",
+  "notes": "Notes",
   "balance": "Solde",
   "createdBy": "Créé par",
   "createdAt": "Créé le",
