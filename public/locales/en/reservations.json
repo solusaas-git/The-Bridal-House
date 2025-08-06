@@ -181,14 +181,6 @@
       "draft": "Draft", 
       "cancelled": "Cancelled"
     },
-    "paymentStatuses": {
-      "paid": "Paid",
-      "partial": "Partial",
-      "unpaid": "Unpaid",
-      "partiallyPaid": "Partially Paid",
-      "notPaid": "Not Paid",
-      "pending": "Pending"
-    },
     "types": {
       "final": "Final",
       "fitting": "Fitting"
