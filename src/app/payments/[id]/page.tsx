@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
@@ -22,7 +23,6 @@ import {
 import Layout from '@/components/Layout';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
-import { useTranslation } from 'react-i18next';
 
 // Types
 interface Customer {
@@ -323,6 +323,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
 
 // Payment Attachments Component
 const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
+  const { t } = useTranslation('payments');
   const [previewFile, setPreviewFile] = useState<{ file: Attachment; url: string; type: string } | null>(null);
   
 
@@ -462,7 +463,7 @@ const PaymentAttachments = ({ attachments }: { attachments: Attachment[] }) => {
       <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-6">
         <div className="text-center py-12">
           <FileIcon className="h-12 w-12 text-white/40 mx-auto mb-4" />
-          <p className="text-gray-400">No attachments found</p>
+                        <p className="text-gray-400">{t('details.noAttachmentsFound')}</p>
         </div>
       </div>
     );

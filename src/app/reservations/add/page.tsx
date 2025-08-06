@@ -560,7 +560,7 @@ export default function AddReservationPage() {
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          Search Client
+          {t('add.clientSection.searchClient')}
         </label>
         <div className="relative customer-search-container">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -570,7 +570,7 @@ export default function AddReservationPage() {
             type="text"
             value={customerSearch}
             onChange={(e) => handleCustomerSearch(e.target.value)}
-            placeholder={selectedClient ? "Customer selected - type to search for another" : "Search customers by name, phone, or email..."}
+            placeholder={selectedClient ? t('add.clientSection.customerSelected') : t('add.clientSection.searchPlaceholder')}
             className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           />
           
@@ -579,7 +579,7 @@ export default function AddReservationPage() {
               {searchLoading ? (
                 <div className="px-4 py-3 text-center text-gray-400">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto mb-2"></div>
-                  Searching...
+                  {t('add.clientSection.searching')}
                 </div>
               ) : (
                 filteredCustomers.map((customer) => (
@@ -603,7 +603,7 @@ export default function AddReservationPage() {
           {showCustomerDropdown && !searchLoading && filteredCustomers.length === 0 && customerSearch.length >= 2 && !selectedClient && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl z-50">
               <div className="px-4 py-3 text-center text-gray-400">
-                No customers found
+                                  {t('add.clientSection.noResults')}
               </div>
             </div>
           )}
@@ -631,16 +631,16 @@ export default function AddReservationPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-gray-400">Phone</label>
+              <label className="text-sm text-gray-400">{t('add.clientSection.phone')}</label>
               <p className="text-white">{selectedClient.phone}</p>
             </div>
             <div>
-              <label className="text-sm text-gray-400">Email</label>
+              <label className="text-sm text-gray-400">{t('add.clientSection.email')}</label>
               <p className="text-white">{selectedClient.email || 'N/A'}</p>
             </div>
             {selectedClient.weddingDate && (
               <div>
-                <label className="text-sm text-gray-400">Wedding Date</label>
+                <label className="text-sm text-gray-400">{t('add.clientSection.weddingDate')}</label>
                 <p className="text-white">
                   {format(new Date(selectedClient.weddingDate), 'dd/MM/yyyy')}
                 </p>
@@ -658,7 +658,7 @@ export default function AddReservationPage() {
 
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          Reservation Type
+          {t('add.reservationType.label')}
         </label>
         <select
           value={formData.type}
@@ -678,14 +678,14 @@ export default function AddReservationPage() {
       {selectedClient && (
         <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
           <div className="mb-4">
-            <h3 className="text-lg font-medium text-white mb-2">Date & Time Selection</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('add.dateTimeSection.title')}</h3>
             <p className="text-sm text-gray-400">
-              Select both date and time for pickup, return, and availability. Times will be stored with the reservation.
+              {t('add.dateTimeSection.subtitle')}
             </p>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Wedding Date</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">{t('add.dateTimeSection.weddingDate')}</label>
             <input
               type="date"
               value={formData.weddingDate}

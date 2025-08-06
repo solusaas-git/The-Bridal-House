@@ -969,9 +969,9 @@ export default function EditReservationPage() {
 
                   {filteredProducts.length === 0 && (
                     <div className="text-center py-8">
-                      <p className="text-gray-400">No available items found for the selected criteria</p>
+                      <p className="text-gray-400">{t('add.messages.noAvailableItems')}</p>
                       <p className="text-sm text-gray-500 mt-2">
-                        Try adjusting your search terms, category filter, or wedding date
+                        {t('add.messages.tryAdjusting')}
                       </p>
                     </div>
                   )}

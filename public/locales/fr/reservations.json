@@ -76,6 +76,7 @@
     "backToReservations": "Retour aux Réservations",
     "loadingReservation": "Chargement de la réservation...",
     "reservationNotFound": "Réservation non trouvée",
+    "noItemsFound": "Aucun article trouvé pour cette réservation.",
     "error": "Erreur",
     "tabs": {
       "general": "Informations Générales",
@@ -180,6 +181,42 @@
     "types": {
       "final": "Final",
       "fitting": "Essayage"
+    }
+  },
+  "add": {
+    "title": "Ajouter une Nouvelle Réservation",
+    "subtitle": "Créer une nouvelle réservation",
+    "steps": {
+      "clientSelection": "Sélection du Client",
+      "itemsAndDates": "Articles et Dates",
+      "financialDetails": "Détails Financiers"
+    },
+    "clientSection": {
+      "searchClient": "Rechercher un Client",
+      "customerSelected": "Client sélectionné - tapez pour rechercher un autre",
+      "searchPlaceholder": "Rechercher des clients par nom, téléphone ou email...",
+      "searching": "Recherche...",
+      "noResults": "Aucun client trouvé",
+      "selectCustomer": "Sélectionnez un client pour continuer",
+      "phone": "Téléphone",
+      "email": "Email",
+      "weddingDate": "Date de Mariage",
+      "city": "Ville"
+    },
+    "reservationType": {
+      "label": "Type de Réservation"
+    },
+    "dateTimeSection": {
+      "title": "Sélection de Date et Heure",
+      "subtitle": "Sélectionnez la date et l'heure pour le retrait, le retour et la disponibilité. Les heures seront stockées avec la réservation.",
+      "weddingDate": "Date de Mariage",
+      "pickupDate": "Date de Retrait",
+      "returnDate": "Date de Retour",
+      "availabilityDate": "Date de Disponibilité"
+    },
+    "messages": {
+      "noAvailableItems": "Aucun article disponible trouvé pour les critères sélectionnés",
+      "tryAdjusting": "Essayez d'ajuster vos termes de recherche, filtre de catégorie, ou date de mariage"
     }
   },
   "edit": {

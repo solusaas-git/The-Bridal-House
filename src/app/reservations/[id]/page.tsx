@@ -480,7 +480,7 @@ export default function ViewReservationPage() {
                 })}
               </div>
             ) : (
-              <p className="text-gray-400">No items found for this reservation.</p>
+                              <p className="text-gray-400">{t('details.noItemsFound')}</p>
             )}
             
             {financials && (

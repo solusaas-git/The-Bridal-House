@@ -60,6 +60,7 @@
     "unknownCustomer": "Unknown Customer",
     "loadingPayment": "Loading payment data...",
     "paymentNotFound": "Payment not found",
+    "noAttachmentsFound": "No attachments found",
     "tabs": {
       "details": "Details",
       "attachments": "Attachments"

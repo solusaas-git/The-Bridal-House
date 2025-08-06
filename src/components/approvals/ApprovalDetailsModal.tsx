@@ -238,36 +238,45 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
   };
 
   const formatFieldName = (fieldName: string) => {
-    // Special cases for better readability
+    // Check if we have a translation for this field
+    const translationKey = `fieldLabels.${fieldName}`;
+    const translated = t(translationKey);
+    
+    // If translation exists (doesn't return the key), use it
+    if (translated !== translationKey) {
+      return translated;
+    }
+    
+    // Fallback to formatting the field name
     const fieldNameMap: Record<string, string> = {
-      pickupDate: 'Pickup Date & Time',
-      returnDate: 'Return Date & Time',
-      availabilityDate: 'Availability Date & Time',
-      pickupTime: 'Pickup Time',
-      returnTime: 'Return Time',
-      availabilityTime: 'Availability Time',
-      weddingDate: 'Wedding Date',
-      clientId: 'Client',
-      items: 'Items',
-      reservationType: 'Reservation Type',
-      status: 'Status',
-      additionalCost: 'Additional Cost',
-      bufferBefore: 'Buffer Before',
-      bufferAfter: 'Buffer After',
-      availability: 'Availability',
-      securityDepositAmount: 'Security Deposit',
-      advanceAmount: 'Advance Amount',
-      notes: 'Notes',
-      firstName: 'First Name',
-      lastName: 'Last Name',
-      email: 'Email',
-      phone: 'Phone',
-      address: 'Address',
-      idNumber: 'ID Number',
-      weddingLocation: 'Wedding Location',
-      weddingCity: 'Wedding City',
-      customerType: 'Type',
-      whatsapp: 'WhatsApp',
+      pickupDate: t('fieldLabels.pickupDate'),
+      returnDate: t('fieldLabels.returnDate'),
+      availabilityDate: t('fieldLabels.availabilityDate'),
+      pickupTime: t('fieldLabels.pickupTime'),
+      returnTime: t('fieldLabels.returnTime'),
+      availabilityTime: t('fieldLabels.availabilityTime'),
+      weddingDate: t('fieldLabels.weddingDate'),
+      clientId: t('fieldLabels.clientId'),
+      items: t('fieldLabels.items'),
+      reservationType: t('fieldLabels.reservationType'),
+      status: t('fieldLabels.status'),
+      additionalCost: t('fieldLabels.additionalCost'),
+      bufferBefore: t('fieldLabels.bufferBefore'),
+      bufferAfter: t('fieldLabels.bufferAfter'),
+      availability: t('fieldLabels.availability'),
+      securityDepositAmount: t('fieldLabels.securityDepositAmount'),
+      advanceAmount: t('fieldLabels.advanceAmount'),
+      notes: t('fieldLabels.notes'),
+      firstName: t('fieldLabels.firstName'),
+      lastName: t('fieldLabels.lastName'),
+      email: t('fieldLabels.email'),
+      phone: t('fieldLabels.phone'),
+      address: t('fieldLabels.address'),
+      idNumber: t('fieldLabels.idNumber'),
+      weddingLocation: t('fieldLabels.weddingLocation'),
+      weddingCity: t('fieldLabels.weddingCity'),
+      customerType: t('fieldLabels.customerType'),
+      whatsapp: t('fieldLabels.whatsapp'),
       attachments: 'Attachments',
       newFiles: 'New Files',
       deletedAttachments: 'Deleted Attachments',

@@ -60,6 +60,7 @@
       "categoryName": "Nom de la Catégorie",
       "color": "Couleur",
       "description": "Description",
+      "noCategoriesFound": "Aucune catégorie de coût trouvée",
       "selectColor": "Sélectionner une couleur",
       "colorRequired": "La couleur est requise",
       "descriptionOptional": "Description (optionnelle)",

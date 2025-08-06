@@ -76,6 +76,7 @@
     "backToReservations": "Back to Reservations",
     "loadingReservation": "Loading reservation...",
     "reservationNotFound": "Reservation not found",
+    "noItemsFound": "No items found for this reservation.",
     "error": "Error",
     "tabs": {
       "general": "General Info",
@@ -180,6 +181,42 @@
     "types": {
       "final": "Final",
       "fitting": "Fitting"
+    }
+  },
+  "add": {
+    "title": "Add New Reservation",
+    "subtitle": "Create a new reservation booking",
+    "steps": {
+      "clientSelection": "Client Selection",
+      "itemsAndDates": "Items & Dates",
+      "financialDetails": "Financial Details"
+    },
+    "clientSection": {
+      "searchClient": "Search Client",
+      "customerSelected": "Customer selected - type to search for another",
+      "searchPlaceholder": "Search customers by name, phone, or email...",
+      "searching": "Searching...",
+      "noResults": "No customers found",
+      "selectCustomer": "Select a customer to continue",
+      "phone": "Phone",
+      "email": "Email",
+      "weddingDate": "Wedding Date",
+      "city": "City"
+    },
+    "reservationType": {
+      "label": "Reservation Type"
+    },
+    "dateTimeSection": {
+      "title": "Date & Time Selection",
+      "subtitle": "Select both date and time for pickup, return, and availability. Times will be stored with the reservation.",
+      "weddingDate": "Wedding Date",
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "availabilityDate": "Availability Date"
+    },
+    "messages": {
+      "noAvailableItems": "No available items found for the selected criteria",
+      "tryAdjusting": "Try adjusting your search terms, category filter, or wedding date"
     }
   },
   "edit": {

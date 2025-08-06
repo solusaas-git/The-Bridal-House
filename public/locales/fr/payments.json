@@ -60,6 +60,7 @@
     "unknownCustomer": "Client Inconnu",
     "loadingPayment": "Chargement des données de paiement...",
     "paymentNotFound": "Paiement non trouvé",
+    "noAttachmentsFound": "Aucune pièce jointe trouvée",
     "tabs": {
       "details": "Détails",
       "attachments": "Pièces Jointes"
