@@ -736,6 +736,7 @@ const AddPaymentModal = ({
   clientId?: string;
 }) => {
   const { t } = useTranslation('reservations');
+  const { t: tCommon } = useTranslation('common');
   const [formData, setFormData] = useState({
     amount: '',
     paymentMethod: 'Cash',
