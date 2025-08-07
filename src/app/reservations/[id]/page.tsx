@@ -37,7 +37,7 @@ interface Reservation {
     _id: string;
     name: string;
     rentalCost: number;
-    category: string;
+    category: string | { _id: string; name: string };
     primaryPhoto?: string;
     size?: number;
   }>;
@@ -479,7 +479,13 @@ export default function ViewReservationPage() {
                                   <span className="text-gray-400 ml-2">({item.size})</span>
                                 )}
                               </h5>
-                              <p className="text-sm text-gray-400">{item.category}</p>
+                              <p className="text-sm text-gray-400">
+                                {typeof item.category === 'object' && item.category?.name 
+                                  ? item.category.name 
+                                  : typeof item.category === 'string' 
+                                    ? item.category 
+                                    : 'No category'}
+                              </p>
                             </div>
                             <span className="text-sm font-medium text-white ml-4 flex-shrink-0">
                               {formatCurrency(item.rentalCost || 0, currencySettings)}
