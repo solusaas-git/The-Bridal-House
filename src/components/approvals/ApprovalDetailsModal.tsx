@@ -212,12 +212,12 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
         const date = new Date(value);
         if (!isNaN(date.getTime())) {
           return date.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
             year: 'numeric',
-            month: 'short',
-            day: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false
+            hour12: false,
           });
         }
       } catch (e) {
@@ -752,7 +752,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestDate')}</label>
                   <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                    {new Date(approval.createdAt).toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', year: 'numeric', month: 'short', day: 'numeric', hour12: false })}
+                    {new Date(approval.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}
                   </div>
                 </div>
 
@@ -776,7 +776,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                       <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewDate')}</label>
                       <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                         <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                        {new Date(approval.reviewedAt!).toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', year: 'numeric', month: 'short', day: 'numeric', hour12: false })}
+                        {new Date(approval.reviewedAt!).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}
                       </div>
                     </div>
 
