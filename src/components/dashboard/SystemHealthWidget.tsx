@@ -123,7 +123,7 @@ const SystemHealthWidget: React.FC<SystemHealthWidgetProps> = ({
 
       <div className="mt-4 pt-3 border-t border-white/20">
         <p className="text-xs text-gray-400 text-center">
-          Last updated: {new Date().toLocaleTimeString()}
+          Last updated: {new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
         </p>
       </div>
     </div>

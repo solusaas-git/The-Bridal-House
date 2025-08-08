@@ -321,7 +321,7 @@ export default function ApprovalsPage() {
             </h1>
             {!userIsEmployee && lastUpdated && (
               <p className="text-sm text-gray-400 mt-1">
-                {tCommon('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
+                {tCommon('lastUpdated')}: {lastUpdated.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                 {isAutoRefresh && (
                   <span className="ml-2 inline-flex items-center">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-1"></span>
