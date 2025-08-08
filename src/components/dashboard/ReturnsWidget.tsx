@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, Undo2, Clock, Package, Eye, X } from 'lucide-react';
-import { format, isWithinInterval } from 'date-fns';
+import { format, isWithinInterval, startOfDay } from 'date-fns';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -49,10 +49,13 @@ const ReturnsWidget: React.FC<ReturnsWidgetProps> = ({
   
   const upcomingReturns = reservations?.filter((reservation) => {
     const returnDate = new Date(reservation.returnDate);
-    return isWithinInterval(returnDate, {
+    const inSelectedRange = isWithinInterval(returnDate, {
       start: dateRange.startDate,
       end: dateRange.endDate,
     });
+    // Exclude any returns strictly before today (keep today and future)
+    const notInPast = returnDate >= startOfDay(new Date());
+    return inSelectedRange && notInPast;
   }) || [];
 
   const formatDateForInput = (date: Date) => {

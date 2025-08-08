@@ -257,6 +257,9 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
       availability: 'Availability',
       securityDepositAmount: 'Security Deposit',
       advanceAmount: 'Advance Amount',
+      itemsTotal: 'Items Total',
+      subtotal: 'Subtotal',
+      total: 'Total',
       notes: 'Notes',
       firstName: 'First Name',
       lastName: 'Last Name',
@@ -292,6 +295,9 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
       paymentTime: 'Payment Time',
       client: 'Client',
       reservation: 'Reservation'
+      ,relatedReservation: 'Related Reservation'
+      ,relatedProduct: 'Related Product'
+      ,note: 'Note'
     };
 
     return fieldNameMap[fieldName] || fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
@@ -577,6 +583,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
     const actionMap = {
       edit: t('actionTypes.edit'),
       delete: t('actionTypes.delete'),
+      create: t('actionTypes.create'),
     };
     const resourceMap = {
       customer: t('resourceTypes.customer'),
@@ -646,7 +653,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
           </h3>
           
           {changes.length > 0 ? (
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="space-y-4">
               {changes.map((change, index) => (
                 <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-4">
                   <div className="font-medium text-white mb-3">
@@ -706,7 +713,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
       <div className="bg-gray-900 rounded-lg border border-white/20 w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
           <h2 className="text-lg sm:text-xl font-semibold text-white">
             {t('modal.title')}
           </h2>
@@ -719,7 +726,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-140px)]">
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-140px)]">
           <div className="space-y-4 sm:space-y-6">
             {/* Request Info */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -811,69 +818,22 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
             {/* Data Comparison */}
             {renderDataComparison()}
 
-            {/* Review Form */}
-            {showReviewForm && approval.status === 'pending' && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4">
-                <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                  {reviewAction === 'approve' ? t('modal.approveRequest') : t('modal.rejectRequest')}
-                </h3>
-                
-                <div className="space-y-3 sm:space-y-4">
-                  <div>
-                    <label className="block text-xs sm:text-sm text-gray-400 mb-2">
-                      {t('modal.commentOptional')}
-                    </label>
-                    <textarea
-                      value={reviewComment}
-                      onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder={t('modal.addCommentDecision')}
-                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
-                      rows={3}
-                      maxLength={500}
-                    />
-                    <div className="text-xs text-gray-400 mt-1">
-                      {t('modal.charactersRemaining', { count: reviewComment.length })}
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button
-                      onClick={() => handleReviewSubmit(reviewAction)}
-                      disabled={reviewingId === approval._id}
-                      className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 text-sm ${
-                        reviewAction === 'approve'
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-red-600 hover:bg-red-700 text-white'
-                      }`}
-                    >
-                      {reviewingId === approval._id ? t('modal.processing') : 
-                       reviewAction === 'approve' ? t('modal.approve') : t('modal.reject')}
-                    </button>
-                    <button
-                      onClick={() => setShowReviewForm(false)}
-                      className="px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors text-sm"
-                    >
-                      {t('modal.cancel')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Review form removed for one-click actions */}
           </div>
         </div>
 
-        {/* Footer */}
-        {!userIsEmployee && approval.status === 'pending' && !showReviewForm && (
-          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10">
+        {/* Footer with one-click approve/reject */}
+        {!userIsEmployee && approval.status === 'pending' && (
+          <div className="sticky bottom-0 bg-gray-900/95 backdrop-blur flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10 z-10">
             <button
-              onClick={() => startReview('reject')}
+              onClick={() => handleReviewSubmit('reject')}
               className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <X className="h-3 w-3 sm:h-4 sm:w-4" />
               {t('modal.reject')}
             </button>
             <button
-              onClick={() => startReview('approve')}
+              onClick={() => handleReviewSubmit('approve')}
               className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <Check className="h-3 w-3 sm:h-4 sm:w-4" />

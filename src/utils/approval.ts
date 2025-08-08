@@ -57,35 +57,29 @@ export const reviewApproval = async (approvalId: string, action: 'approve' | 're
 };
 
 // Helper function to get item names from database
+// NOTE: We fetch each product by id to avoid pagination issues from /api/products list
 const getItemNames = async (itemIds: string[]) => {
   try {
-    const response = await axios.get('/api/products');
-    const products = response.data.products; // Access the products array from the response
-    
-    if (!Array.isArray(products)) {
-      console.error('Products API did not return an array:', response.data);
-      return itemIds.map((itemId: string) => ({
-        id: itemId,
-        name: `Item ${itemId}`,
-        image: null
-      }));
-    }
-    
-    return itemIds.map((itemId: string) => {
-      const product = products.find((p: any) => p._id === itemId);
-      return {
-        id: itemId,
-        name: product?.name || `Item ${itemId}`,
-        image: product?.primaryPhoto ? `/api/uploads/${product.primaryPhoto}` : null
-      };
-    });
+    const results = await Promise.all(
+      itemIds.map(async (itemId: string) => {
+        try {
+          const response = await axios.get(`/api/products/${itemId}`);
+          const product = response.data;
+          return {
+            id: itemId,
+            name: product?.name || `Item ${itemId}`,
+            image: product?.primaryPhoto ? `/api/uploads/${product.primaryPhoto}` : null,
+          };
+        } catch (innerError) {
+          // Fallback to generic label if a product cannot be fetched
+          return { id: itemId, name: `Item ${itemId}`, image: null };
+        }
+      })
+    );
+    return results;
   } catch (error) {
     console.error('Error fetching item names:', error);
-    return itemIds.map((itemId: string) => ({
-      id: itemId,
-      name: `Item ${itemId}`,
-      image: null
-    }));
+    return itemIds.map((itemId: string) => ({ id: itemId, name: `Item ${itemId}`, image: null }));
   }
 };
 
@@ -123,43 +117,76 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
       }
     }
     
-    // Compare dates and times - only if they actually changed
+    // Compare dates and times - support both split (date + time) and combined ISO-like strings
+    const buildNewDateString = (dateValue?: string, timeValue?: string) => {
+      if (!dateValue) return '';
+      // If already includes time component, use as-is
+      if (dateValue.includes('T') && !timeValue) return dateValue;
+      return `${dateValue}T${timeValue || '00:00'}`;
+    };
+
+    // Normalize a Date object to a timezone-agnostic yyyy-MM-ddTHH:mm string for comparison
+    const toMinuteString = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
     if (originalReservation.pickupDate && newFormData.pickupDate) {
       const originalPickupDate = new Date(originalReservation.pickupDate);
-      const newPickupDate = new Date(`${newFormData.pickupDate}T${newFormData.pickupTime || '00:00'}`);
-      
-      if (originalPickupDate.getTime() !== newPickupDate.getTime()) {
-        changes.pickupDate = `${newFormData.pickupDate}T${newFormData.pickupTime || '00:00'}`;
+      const newPickupDateString = buildNewDateString(newFormData.pickupDate, newFormData.pickupTime);
+      const newPickupDate = new Date(newPickupDateString);
+
+      if (!isNaN(originalPickupDate.getTime()) && !isNaN(newPickupDate.getTime())) {
+        // Compare using minute precision string to avoid timezone offset false positives
+        if (toMinuteString(originalPickupDate) !== toMinuteString(newPickupDate)) {
+          changes.pickupDate = newPickupDateString;
+        }
       }
     }
-    
+
     if (originalReservation.returnDate && newFormData.returnDate) {
       const originalReturnDate = new Date(originalReservation.returnDate);
-      const newReturnDate = new Date(`${newFormData.returnDate}T${newFormData.returnTime || '00:00'}`);
-      
-      if (originalReturnDate.getTime() !== newReturnDate.getTime()) {
-        changes.returnDate = `${newFormData.returnDate}T${newFormData.returnTime || '00:00'}`;
+      const newReturnDateString = buildNewDateString(newFormData.returnDate, newFormData.returnTime);
+      const newReturnDate = new Date(newReturnDateString);
+
+      if (!isNaN(originalReturnDate.getTime()) && !isNaN(newReturnDate.getTime())) {
+        if (toMinuteString(originalReturnDate) !== toMinuteString(newReturnDate)) {
+          changes.returnDate = newReturnDateString;
+        }
       }
     }
-    
+
     if (originalReservation.availabilityDate && newFormData.availabilityDate) {
       const originalAvailabilityDate = new Date(originalReservation.availabilityDate);
-      const newAvailabilityDate = new Date(`${newFormData.availabilityDate}T${newFormData.availabilityTime || '00:00'}`);
-      
-      if (originalAvailabilityDate.getTime() !== newAvailabilityDate.getTime()) {
-        changes.availabilityDate = `${newFormData.availabilityDate}T${newFormData.availabilityTime || '00:00'}`;
+      const newAvailabilityDateString = buildNewDateString(newFormData.availabilityDate, newFormData.availabilityTime);
+      const newAvailabilityDate = new Date(newAvailabilityDateString);
+
+      if (!isNaN(originalAvailabilityDate.getTime()) && !isNaN(newAvailabilityDate.getTime())) {
+        if (toMinuteString(originalAvailabilityDate) !== toMinuteString(newAvailabilityDate)) {
+          changes.availabilityDate = newAvailabilityDateString;
+        }
       }
     }
     
     // Compare other fields - only if they actually changed
     const fieldsToCompare = [
-      'type', 'status', 'additionalCost', 'bufferBefore', 'bufferAfter', 
-      'availability', 'securityDepositAmount', 'advanceAmount', 'notes'
+      'type', 'status', 'additionalCost', 'bufferBefore', 'bufferAfter',
+      'availability', 'securityDepositAmount', 'advanceAmount', 'notes',
+      'itemsTotal', 'subtotal', 'total'
     ];
     
     for (const field of fieldsToCompare) {
       const originalValue = originalReservation[field];
       const newValue = newFormData[field];
+
+      // Skip when the field is not provided in the new form data
+      if (typeof newValue === 'undefined') {
+        continue;
+      }
       
       // Handle numeric comparisons
       if (typeof originalValue === 'number' && typeof newValue === 'number') {
@@ -175,7 +202,21 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
       }
       // Handle mixed types or undefined values
       else if (originalValue !== newValue) {
-        changes[field] = newValue;
+        // Normalize empty string and null/undefined equivalence
+        const normalizedOriginal = originalValue === null || typeof originalValue === 'undefined' ? '' : originalValue;
+        const normalizedNew = newValue === null || typeof newValue === 'undefined' ? '' : newValue;
+        if (normalizedOriginal !== normalizedNew) {
+          changes[field] = newValue;
+        }
+      }
+    }
+
+    // Compare client (by id) if provided
+    if (originalReservation.client || newFormData.client) {
+      const originalClientId = originalReservation.client?._id || originalReservation.client;
+      const newClientId = newFormData.client?._id || newFormData.client;
+      if (typeof newClientId !== 'undefined' && originalClientId !== newClientId) {
+        changes.client = newFormData.client;
       }
     }
     
