@@ -376,7 +376,7 @@ function ReservationsContent() {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return tCommon('notAvailable');
-    return new Date(dateString).toLocaleDateString();
+    return new Date(dateString).toLocaleDateString('en-GB');
   };
 
   const handleImageHover = (e: React.MouseEvent, imageUrl: string, alt: string) => {

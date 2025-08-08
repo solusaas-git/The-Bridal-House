@@ -188,7 +188,7 @@ const CustomerDetails = ({ customer }: { customer: Customer }) => {
       </div>
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingDate')}</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : t('common.notAvailable')}</p>
+        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString('en-GB') : t('common.notAvailable')}</p>
       </div>
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingTime')}</label>

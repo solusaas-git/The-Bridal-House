@@ -287,7 +287,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
             {payment.reservation && (
               <>
                 <div className="text-sm text-gray-400 mt-1">
-                  {payment.reservation.eventDate && new Date(payment.reservation.eventDate).toLocaleDateString()}
+            {payment.reservation.eventDate && new Date(payment.reservation.eventDate).toLocaleDateString('en-GB')}
                   {payment.reservation.eventTime && ` at ${payment.reservation.eventTime}`}
                 </div>
                 {payment.reservation.eventLocation && (
@@ -309,7 +309,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
                 </div>
                 {payment.reservation.pickupDate && payment.reservation.returnDate && (
                   <div className="mt-2 text-xs text-gray-400">
-                    {new Date(payment.reservation.pickupDate).toLocaleDateString()} - {new Date(payment.reservation.returnDate).toLocaleDateString()}
+            {new Date(payment.reservation.pickupDate).toLocaleDateString('en-GB')} - {new Date(payment.reservation.returnDate).toLocaleDateString('en-GB')}
                   </div>
                 )}
               </>

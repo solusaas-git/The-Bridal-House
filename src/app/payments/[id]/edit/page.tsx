@@ -834,11 +834,11 @@ const EditPaymentPage = () => {
                                     <div className="text-sm text-gray-400 mt-1">
                                       {/* Try different date fields - eventDate, pickupDate, or weddingDate */}
                                       {reservation.eventDate ? 
-                                        new Date(reservation.eventDate).toLocaleDateString() : 
+                new Date(reservation.eventDate).toLocaleDateString('en-GB') :
                                         reservation.pickupDate ? 
-                                        new Date(reservation.pickupDate).toLocaleDateString() :
+                new Date(reservation.pickupDate).toLocaleDateString('en-GB') :
                                         reservation.weddingDate ?
-                                        new Date(reservation.weddingDate).toLocaleDateString() :
+                new Date(reservation.weddingDate).toLocaleDateString('en-GB') :
                                         t('edit.form.dateNotSet')
                                       }
                                       {reservation.eventTime && ` at ${reservation.eventTime}`}

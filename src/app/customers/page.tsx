@@ -570,7 +570,7 @@ const CustomersPage = () => {
                       )}
                       {columnVisibility.weddingDate && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString() : '-'}
+                    {customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString('en-GB') : '-'}
                         </td>
                       )}
                       {columnVisibility.weddingTime && (
@@ -595,12 +595,12 @@ const CustomersPage = () => {
                       )}
                       {columnVisibility.createdAt && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {new Date(customer.createdAt).toLocaleDateString()}
+                    {new Date(customer.createdAt).toLocaleDateString('en-GB')}
                         </td>
                       )}
                       {columnVisibility.updatedAt && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {new Date(customer.updatedAt).toLocaleDateString()}
+                    {new Date(customer.updatedAt).toLocaleDateString('en-GB')}
                         </td>
                       )}
                       {columnVisibility.createdBy && (

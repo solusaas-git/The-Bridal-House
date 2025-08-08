@@ -447,7 +447,7 @@ export default function ApprovalsPage() {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
                         <div className="text-sm text-white">
-                          {new Date(approval.createdAt).toLocaleDateString()}
+                          {new Date(approval.createdAt).toLocaleDateString('en-GB')}
                         </div>
                       </div>
                     </td>
