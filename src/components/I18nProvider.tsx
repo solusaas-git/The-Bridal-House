@@ -26,19 +26,22 @@ export function I18nProvider({ children }: I18nProviderProps) {
         // Now reinitialize with the preloaded resources
         await i18n.reloadResources();
         
-        // Set the current language - check localStorage first, then i18n default
+        // Set the current language - normalize browser language, prefer stored value
         let currentLang = 'fr'; // Default fallback
-        
-        // Check localStorage for user's explicit choice
         const storedLanguage = localStorage.getItem('i18nextLng');
-        if (storedLanguage && ['fr', 'en'].includes(storedLanguage)) {
-          currentLang = storedLanguage;
-        } else {
-          // Fall back to i18n detected language
-          currentLang = i18n.language || 'fr';
+        if (storedLanguage) {
+          currentLang = storedLanguage.split('-')[0];
+        } else if (i18n.language) {
+          currentLang = i18n.language.split('-')[0];
+        } else if (typeof navigator !== 'undefined' && navigator.language) {
+          currentLang = navigator.language.split('-')[0];
+        }
+        if (!['fr', 'en'].includes(currentLang)) {
+          currentLang = 'fr';
         }
         
         await i18n.changeLanguage(currentLang);
+        localStorage.setItem('i18nextLng', currentLang);
         
         setIsInitialized(true);
       } catch (error) {

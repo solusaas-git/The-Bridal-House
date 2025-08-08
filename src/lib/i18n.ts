@@ -125,19 +125,21 @@ export const loadTranslations = async (language: string) => {
 // Function to change language
 export const changeLanguage = async (language: string) => {
   try {
+    // Normalize to base language (e.g., en-US -> en)
+    const normalized = (language || '').split('-')[0] || 'fr';
     // Check if any namespace is missing and load translations if needed
-    const missingNamespaces = namespaces.filter(ns => !i18n.hasResourceBundle(language, ns));
+    const missingNamespaces = namespaces.filter(ns => !i18n.hasResourceBundle(normalized, ns));
     
     if (missingNamespaces.length > 0) {
-      await loadTranslations(language);
+      await loadTranslations(normalized);
     }
     
     // Change language
-    await i18n.changeLanguage(language);
+    await i18n.changeLanguage(normalized);
     
     // Store in localStorage (only on client side)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('i18nextLng', language);
+      localStorage.setItem('i18nextLng', normalized);
     }
     
     return true;
