@@ -210,6 +210,8 @@
       "dateNotSet": "Date non définie",
       "type": "Type",
       "wedding": "Mariage",
+      "amount": "Montant",
+      "paymentDate": "Date de Paiement",
       "paymentMethods": {
         "cash": "Espèces",
         "bankTransfer": "Virement Bancaire",
