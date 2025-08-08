@@ -4,6 +4,47 @@ import { Approval, User, Customer, Product, Payment, Reservation, Cost, getFileT
 import { put, del } from '@vercel/blob';
 import { list } from '@vercel/blob';
 
+// Normalize reservation fields coming from approvals UI to DB-friendly shapes
+function normalizeReservationUpdate(update: any) {
+  if (!update || typeof update !== 'object') return update;
+  const normalized: any = { ...update };
+
+  // Ensure items is an array of ObjectId strings
+  if (Array.isArray(normalized.items)) {
+    normalized.items = normalized.items.map((item: any) => {
+      if (typeof item === 'string') return item; // already an id
+      if (item && typeof item === 'object') {
+        return item.id || item._id || String(item);
+      }
+      return item;
+    });
+  }
+
+  // Normalize client to id string
+  if (normalized.client && typeof normalized.client === 'object') {
+    normalized.client = normalized.client._id || normalized.client.id || normalized.client;
+  }
+
+  // Parse numeric fields that may arrive as strings
+  const numericFields = [
+    'additionalCost',
+    'securityDepositAmount',
+    'advanceAmount',
+    'itemsTotal',
+    'subtotal',
+    'total',
+  ];
+  for (const field of numericFields) {
+    if (field in normalized && normalized[field] !== null && normalized[field] !== undefined) {
+      const value = normalized[field];
+      const num = typeof value === 'string' ? parseFloat(value) : value;
+      if (!Number.isNaN(num)) normalized[field] = num;
+    }
+  }
+
+  return normalized;
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -347,6 +388,8 @@ async function executeApprovedAction(approval: any) {
           }
           break;
         case 'reservation':
+          // Convert UI-friendly shapes (items as objects with {id,name,image}) to DB schema
+          fieldsToUpdate = normalizeReservationUpdate(fieldsToUpdate);
           const updatedReservation = await Reservation.findByIdAndUpdate(
             approval.resourceId, 
             { $set: fieldsToUpdate },
