@@ -513,7 +513,7 @@ export default function EditReservationPage() {
                     >
                       <div>
                         <span className="font-medium text-white">{client.firstName} {client.lastName}</span>
-                        <span className="text-white/70 ml-2">{client.email}</span>
+                        
                       </div>
                       <div className="text-sm text-white/50">{client.phone}</div>
                     </div>
@@ -547,10 +547,7 @@ export default function EditReservationPage() {
                     <label className="text-sm text-gray-400">{tCommon('phone')}</label>
                     <p className="text-white">{selectedClient.phone}</p>
                   </div>
-                  <div>
-                    <label className="text-sm text-gray-400">{tCommon('email')}</label>
-                    <p className="text-white">{selectedClient.email || tCommon('notAvailable')}</p>
-                  </div>
+                  
                   {selectedClient.weddingDate && (
                     <div>
                       <label className="text-sm text-gray-400">{t('edit.datesSection.weddingDate')}</label>

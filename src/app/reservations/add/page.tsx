@@ -194,7 +194,7 @@ export default function AddReservationPage() {
     pickupTime: '09:00',
     returnTime: '18:00',
     availabilityTime: '10:00',
-    status: 'Draft',
+    status: 'Confirmed',
     additionalCost: 0,
     bufferBefore: 0,
     bufferAfter: 1,
@@ -732,7 +732,7 @@ export default function AddReservationPage() {
                   >
                     <div className="flex-1">
                       <div className="font-medium">{customer.firstName} {customer.lastName}</div>
-                      <div className="text-sm text-gray-400">{customer.phone} • {customer.email}</div>
+              <div className="text-sm text-gray-400">{customer.phone}</div>
                     </div>
                   </button>
                 ))
@@ -775,10 +775,7 @@ export default function AddReservationPage() {
               <label className="text-sm text-gray-400">{tCommon('phone')}</label>
               <p className="text-white">{selectedClient.phone}</p>
             </div>
-            <div>
-              <label className="text-sm text-gray-400">{tCommon('email')}</label>
-              <p className="text-white">{selectedClient.email || 'N/A'}</p>
-            </div>
+                  
             {selectedClient.weddingDate && (
               <div>
                 <label className="text-sm text-gray-400">{t('details.clientInfo.weddingDate')}</label>

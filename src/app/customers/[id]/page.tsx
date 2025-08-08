@@ -160,10 +160,7 @@ const CustomerDetails = ({ customer }: { customer: Customer }) => {
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.fullName')}</label>
         <p className="text-white text-sm sm:text-base">{customer.firstName} {customer.lastName}</p>
       </div>
-      <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.email')}</label>
-        <p className="text-white text-sm sm:text-base">{customer.email || t('common.notAvailable')}</p>
-      </div>
+      
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.phone')}</label>
         <p className="text-white text-sm sm:text-base">{customer.phone}</p>
@@ -190,10 +187,7 @@ const CustomerDetails = ({ customer }: { customer: Customer }) => {
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingDate')}</label>
         <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString('en-GB') : t('common.notAvailable')}</p>
       </div>
-      <div>
-        <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingTime')}</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingTime || t('common.notAvailable')}</p>
-      </div>
+      
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingLocation')}</label>
         <p className="text-white text-sm sm:text-base">{customer.weddingLocation || t('common.notAvailable')}</p>

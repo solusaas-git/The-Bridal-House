@@ -907,7 +907,7 @@ const AddPaymentModal = ({
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Advance">{t('details.paymentModal.types.advance')}</option>
-                <option value="Security">{t('details.paymentModal.types.security')}</option>
+                  
                 <option value="Final">{t('details.paymentModal.types.final')}</option>
                 <option value="Other">{t('details.paymentModal.types.other')}</option>
               </select>

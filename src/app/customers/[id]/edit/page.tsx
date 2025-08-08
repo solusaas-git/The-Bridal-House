@@ -18,12 +18,10 @@ interface Customer {
   _id: string;
   firstName: string;
   lastName: string;
-  email?: string;
   phone: string;
   address: string;
   idNumber: string;
   weddingDate?: string;
-  weddingTime?: string;
   weddingLocation?: string;
   weddingCity: string;
   whatsapp?: string;
@@ -50,11 +48,9 @@ const EditCustomerPage = () => {
     idNumber: '',
     phone: '',
     weddingDate: '',
-    weddingTime: '00:00',
     weddingLocation: '',
     weddingCity: '',
     type: 'Client',
-    email: '',
     whatsapp: '',
     attachments: [],
   });
@@ -75,11 +71,9 @@ const EditCustomerPage = () => {
             idNumber: customer.idNumber || '',
             phone: customer.phone || '',
             weddingDate: customer.weddingDate ? customer.weddingDate.split('T')[0] : '',
-            weddingTime: customer.weddingTime || '00:00',
             weddingLocation: customer.weddingLocation || '',
             weddingCity: customer.weddingCity || '',
             type: customer.type || 'Client',
-            email: customer.email || '',
             whatsapp: customer.whatsapp || '',
             attachments: customer.attachments || [],
           };
@@ -327,16 +321,7 @@ const EditCustomerPage = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.email')}</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              
             </div>
 
             {/* Right Column */}
@@ -372,16 +357,7 @@ const EditCustomerPage = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-medium text-gray-200">{t('edit.form.weddingTime')}</label>
-                  <input
-                    type="time"
-                    name="weddingTime"
-                    value={formData.weddingTime}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                
               </div>
 
               <div className="space-y-2">

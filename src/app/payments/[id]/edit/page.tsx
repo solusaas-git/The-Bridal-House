@@ -945,7 +945,7 @@ const EditPaymentPage = () => {
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="Advance">{t('edit.form.paymentTypes.advance')}</option>
-                    <option value="Security">{t('edit.form.paymentTypes.security')}</option>
+            
                     <option value="Final">{t('edit.form.paymentTypes.final')}</option>
                     <option value="Other">{t('edit.form.paymentTypes.other')}</option>
                   </select>

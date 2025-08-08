@@ -230,9 +230,9 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
     const originalCustomer = originalData;
     const newCustomer = newData;
     
-    // Compare basic fields
+    // Compare basic fields (email and weddingTime removed from UI)
     const fieldsToCompare = [
-      'firstName', 'lastName', 'email', 'phone', 'address', 'idNumber',
+      'firstName', 'lastName', 'phone', 'address', 'idNumber',
       'weddingLocation', 'weddingCity', 'type', 'whatsapp'
     ];
     
@@ -242,16 +242,13 @@ export const getChangedFields = async (originalData: any, newData: any): Promise
       }
     }
     
-    // Compare wedding date and time
+    // Compare wedding date only (weddingTime removed from UI)
     if (originalCustomer.weddingDate || newCustomer.weddingDate) {
       const originalDate = originalCustomer.weddingDate ? originalCustomer.weddingDate.split('T')[0] : '';
       const newDate = newCustomer.weddingDate || '';
-      const originalTime = originalCustomer.weddingTime || '00:00';
-      const newTime = newCustomer.weddingTime || '00:00';
       
-      if (originalDate !== newDate || originalTime !== newTime) {
+      if (originalDate !== newDate) {
         changes.weddingDate = newDate;
-        changes.weddingTime = newTime;
       }
     }
     

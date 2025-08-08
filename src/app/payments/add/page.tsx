@@ -743,7 +743,7 @@ const AddPaymentPage = () => {
                   className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="Advance" className="bg-gray-800">{t('add.form.paymentTypes.advance')}</option>
-                  <option value="Security" className="bg-gray-800">{t('add.form.paymentTypes.security')}</option>
+            
                   <option value="Final" className="bg-gray-800">{t('add.form.paymentTypes.final')}</option>
                   <option value="Other" className="bg-gray-800">{t('add.form.paymentTypes.other')}</option>
                 </select>
