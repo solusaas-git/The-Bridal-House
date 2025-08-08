@@ -69,10 +69,13 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
   const userIsEmployee = currentUser?.role?.toLowerCase() === 'employee';
   const { t } = useTranslation('approvals');
   const { t: tCommon } = useTranslation('common');
+  const [actionTaken, setActionTaken] = useState(false);
 
   if (!isOpen || !approval) return null;
 
   const handleReviewSubmit = (action: 'approve' | 'reject') => {
+    // Immediately hide action buttons
+    setActionTaken(true);
     onReview(approval._id, action, reviewComment);
     setShowReviewForm(false);
     setReviewComment('');
@@ -823,8 +826,8 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
           </div>
         </div>
 
-        {/* Footer with one-click approve/reject */}
-        {!userIsEmployee && approval.status === 'pending' && (
+        {/* Footer with one-click approve/reject (hidden once action is triggered) */}
+        {!userIsEmployee && approval.status === 'pending' && !actionTaken && (
           <div className="sticky bottom-0 bg-gray-900/95 backdrop-blur flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-white/10 z-10">
             <button
               onClick={() => handleReviewSubmit('reject')}
