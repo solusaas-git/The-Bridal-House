@@ -224,12 +224,30 @@ export default function ApprovalsPage() {
         resourceName = originalData?.name || tCommon('unknownProduct');
         break;
       case 'payment':
-        const paymentId = originalData?.paymentNumber || originalData?._id || tCommon('unknown');
-        resourceName = `#${paymentId}`;
+        // Prefer customer name if available
+        if (originalData?.client) {
+          const c = originalData.client;
+          const name = `${c?.firstName || ''} ${c?.lastName || ''}`.trim();
+          resourceName = name || tCommon('unknownCustomer');
+        } else if (originalData?.reservation?.client) {
+          const c = originalData.reservation.client;
+          const name = `${c?.firstName || ''} ${c?.lastName || ''}`.trim();
+          resourceName = name || tCommon('unknownCustomer');
+        } else {
+          const paymentId = originalData?.paymentNumber || originalData?._id || tCommon('unknown');
+          resourceName = `#${paymentId}`;
+        }
         break;
       case 'reservation':
-        const reservationId = originalData?.reservationNumber || originalData?._id || tCommon('unknown');
-        resourceName = `#${reservationId}`;
+        // Prefer customer name if available
+        if (originalData?.client) {
+          const c = originalData.client;
+          const name = `${c?.firstName || ''} ${c?.lastName || ''}`.trim();
+          resourceName = name || tCommon('unknownCustomer');
+        } else {
+          const reservationId = originalData?.reservationNumber || originalData?._id || tCommon('unknown');
+          resourceName = `#${reservationId}`;
+        }
         break;
       case 'cost':
         const costAmount = originalData?.amount ? `$${originalData.amount}` : '';
