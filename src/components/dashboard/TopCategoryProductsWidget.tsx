@@ -111,7 +111,7 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('widgets.topReservedProducts.searchPlaceholder')}
+            placeholder={t('widgets.topReservedProducts.searchPlaceholder', { defaultValue: 'Search other products in category...' })}
             className="pl-9 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-md text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
