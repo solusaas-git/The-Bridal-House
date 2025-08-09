@@ -15,6 +15,16 @@
     "custom": "Personnalisé"
   },
   "widgets": {
+    "stats": {
+      "title": "Statistiques",
+      "totalCustomers": "Total des Clients",
+      "publishedProducts": "Produits Publiés",
+      "activeReservations": "Réservations Actives",
+      "totalPayments": "Total des Paiements",
+      "totalCosts": "Total des Coûts",
+      "margin": "Marge",
+      "upcomingPayments": "Paiements à Venir"
+    },
     "pickups": {
       "title": "Enlèvements à Venir",
       "noPickups": "Aucun enlèvement programmé pour cette période",
@@ -56,14 +66,15 @@
         "description": "Ajouter un enregistrement de paiement"
       }
     },
-    "stats": {
-      "totalCustomers": "Total des Clients",
-      "publishedProducts": "Produits Publiés",
-      "activeReservations": "Réservations Actives",
-      "totalPayments": "Total des Paiements",
-      "totalCosts": "Total des Coûts",
-      "margin": "Marge",
-      "upcomingPayments": "Paiements à Venir"
+    
+    "topReservedProducts": {
+      "robesTitle": "Produits les plus réservés (Robes)",
+      "accessoriesTitle": "Produits les plus réservés (Accessoires)",
+      "searchPlaceholder": "Rechercher d'autres produits dans la catégorie...",
+      "searching": "Recherche...",
+      "noReservations": "Aucune réservation trouvée pour cette catégorie.",
+      "noMatches": "Aucun produit correspondant.",
+      "reservationsCount": "{{count}} réservations"
     },
     "systemHealth": {
       "title": "État du Système",

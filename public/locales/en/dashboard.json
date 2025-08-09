@@ -15,6 +15,16 @@
     "custom": "Custom"
   },
   "widgets": {
+    "stats": {
+      "title": "Statistics",
+      "totalCustomers": "Total Customers",
+      "publishedProducts": "Published Products",
+      "activeReservations": "Active Reservations",
+      "totalPayments": "Total Payments",
+      "totalCosts": "Total Costs",
+      "margin": "Margin",
+      "upcomingPayments": "Upcoming Payments"
+    },
     "pickups": {
       "title": "Upcoming Pickups",
       "noPickups": "No pickups scheduled for this period",
@@ -56,14 +66,15 @@
         "description": "Add payment record"
       }
     },
-    "stats": {
-      "totalCustomers": "Total Customers",
-      "publishedProducts": "Published Products",
-      "activeReservations": "Active Reservations",
-      "totalPayments": "Total Payments",
-      "totalCosts": "Total Costs",
-      "margin": "Margin",
-      "upcomingPayments": "Upcoming Payments"
+    
+    "topReservedProducts": {
+      "robesTitle": "Top Reserved Products (Robes)",
+      "accessoriesTitle": "Top Reserved Products (Accessories)",
+      "searchPlaceholder": "Search other products in category...",
+      "searching": "Searching...",
+      "noReservations": "No reservations found for this category.",
+      "noMatches": "No matching products.",
+      "reservationsCount": "{{count}} reservations"
     },
     "systemHealth": {
       "title": "System Health",

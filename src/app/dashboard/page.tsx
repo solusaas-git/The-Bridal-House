@@ -302,8 +302,8 @@ const DashboardContent = () => {
       { id: 'returns', label: t('widgets.returns'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions'), width: 'half' },
       { id: 'systemHealth', label: t('widgets.systemHealth'), width: 'half' },
-      { id: 'topCategoryProductsRobes', label: 'Top Reserved Products (Robes)', width: 'half' },
-      { id: 'topCategoryProductsAccessories', label: 'Top Reserved Products (Accessories)', width: 'half' },
+      { id: 'topCategoryProductsRobes', label: t('widgets.topReservedProducts.robesTitle'), width: 'half' },
+      { id: 'topCategoryProductsAccessories', label: t('widgets.topReservedProducts.accessoriesTitle'), width: 'half' },
     ];
 
     // Filter out stats widget for employee role
