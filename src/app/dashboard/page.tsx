@@ -16,6 +16,7 @@ import PickupsWidget from '@/components/dashboard/PickupsWidget';
 import ReturnsWidget from '@/components/dashboard/ReturnsWidget';
 import QuickActionsWidget from '@/components/dashboard/QuickActionsWidget';
 import SystemHealthWidget from '@/components/dashboard/SystemHealthWidget';
+import TopCategoryProductsWidget from '@/components/dashboard/TopCategoryProductsWidget';
 import WidgetManager from '@/components/dashboard/WidgetManager';
 import { useWidgetVisibility } from '@/hooks/useWidgetVisibility';
 import Layout from '@/components/Layout';
@@ -301,6 +302,7 @@ const DashboardContent = () => {
       { id: 'returns', label: t('widgets.returns'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions'), width: 'half' },
       { id: 'systemHealth', label: t('widgets.systemHealth'), width: 'half' },
+      { id: 'topCategoryProducts', label: 'Top Reserved Products', width: 'half' },
     ];
 
     // Filter out stats widget for employee role
@@ -514,6 +516,14 @@ const DashboardContent = () => {
             items={items}
             reservations={reservations}
             payments={payments}
+          />
+        );
+      case 'topCategoryProducts':
+        return (
+          <TopCategoryProductsWidget
+            products={items as any}
+            reservations={reservations as any}
+            categoryId={'677ee9fdd52d692ac0ea6339'}
           />
         );
       default:
