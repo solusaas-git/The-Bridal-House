@@ -302,12 +302,18 @@ const DashboardContent = () => {
       { id: 'returns', label: t('widgets.returns.title'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions.title'), width: 'half' },
       { id: 'systemHealth', label: t('widgets.systemHealth.title'), width: 'half' },
-      { id: 'topCategoryProductsRobes', label: t('widgets.topReservedProducts.robesTitle'), width: 'half' },
-      { id: 'topCategoryProductsAccessories', label: t('widgets.topReservedProducts.accessoriesTitle'), width: 'half' },
     ];
 
-    // Filter out stats widget for employee role
-    if (currentUser?.role === 'employee') {
+    // Admin-only widgets
+    if (currentUser?.role?.toLowerCase() === 'admin') {
+      widgets.push(
+        { id: 'topCategoryProductsRobes', label: t('widgets.topReservedProducts.robesTitle'), width: 'half' },
+        { id: 'topCategoryProductsAccessories', label: t('widgets.topReservedProducts.accessoriesTitle'), width: 'half' },
+      );
+    }
+
+    // Hide stats widget for employee role
+    if (currentUser?.role?.toLowerCase() === 'employee') {
       return widgets.filter(widget => widget.id !== 'stats');
     }
 
