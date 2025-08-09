@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Search, Package } from 'lucide-react';
 
@@ -30,6 +31,9 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [preview, setPreview] = useState<{ open: boolean; src: string; alt: string }>(
+    { open: false, src: '', alt: '' }
+  );
 
   // Map of productId -> Product limited to given category
   const categoryProductsMap = useMemo(() => {
@@ -78,13 +82,10 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
       }
       try {
         setSearchLoading(true);
-        const res = await axios.get('/api/products', { params: { limit: 50, search: term } });
+        const res = await axios.get('/api/products', { params: { limit: 50, search: term, category: categoryId } });
         const results: Product[] = res.data?.products || [];
         const topIds = new Set(topTen.map(({ product }) => String(product._id)));
-        const filtered = results.filter((p) => {
-          const catId = typeof p.category === 'object' ? (p.category as any)?._id : p.category;
-          return String(catId) === String(categoryId) && !topIds.has(String(p._id));
-        });
+        const filtered = results.filter((p) => !topIds.has(String(p._id)));
         setSearchResults(filtered);
       } catch (e) {
         setSearchResults([]);
@@ -114,8 +115,9 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
                 <img
                   src={imageUrlFor(product.primaryPhoto)}
                   alt={product.name}
-                  className="w-12 h-12 rounded object-cover"
+                  className="w-12 h-12 rounded object-cover cursor-pointer"
                   onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+                  onClick={() => setPreview({ open: true, src: imageUrlFor(product.primaryPhoto), alt: product.name })}
                 />
               ) : (
                 <div className="w-12 h-12 rounded bg-gray-700 flex items-center justify-center">
@@ -161,8 +163,9 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
                     <img
                       src={imageUrlFor(p.primaryPhoto)}
                       alt={p.name}
-                      className="w-10 h-10 rounded object-cover"
+                      className="w-10 h-10 rounded object-cover cursor-pointer"
                       onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+                      onClick={() => setPreview({ open: true, src: imageUrlFor(p.primaryPhoto), alt: p.name })}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded bg-gray-700 flex items-center justify-center">
@@ -179,6 +182,16 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
           </div>
         )}
       </div>
+      {/* Image preview modal */}
+      {preview.open && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center" onClick={() => setPreview({ open: false, src: '', alt: '' })}>
+          <div className="max-w-3xl max-h-[85vh] p-2" onClick={(e) => e.stopPropagation()}>
+            <img src={preview.src} alt={preview.alt} className="max-w-full max-h-[80vh] rounded shadow-2xl" />
+            <div className="text-center text-gray-300 mt-2 text-sm">{preview.alt}</div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
