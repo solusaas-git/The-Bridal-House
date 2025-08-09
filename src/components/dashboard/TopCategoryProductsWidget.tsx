@@ -156,7 +156,7 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search other products in category..."
+            placeholder={t('widgets.topReservedProducts.searchPlaceholder', { defaultValue: 'Search other products in category...' })}
             className="pl-9 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-md text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -187,7 +187,7 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
                   )}
                   <div className="flex-1 text-sm text-white">{p.name}</div>
                   <div className="px-2 py-0.5 text-xs rounded bg-gray-500/20 text-gray-300 border border-gray-500/30">
-                    {countFor(p._id)} reservations
+                    {t('widgets.topReservedProducts.reservationsCount', { count: countFor(p._id) })}
                   </div>
                 </div>
               ))
