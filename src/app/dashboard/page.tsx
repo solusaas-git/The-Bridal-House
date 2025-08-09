@@ -297,11 +297,11 @@ const DashboardContent = () => {
   // Define widgets - matching original order and structure
   const availableWidgets = useMemo(() => {
     const widgets = [
-      { id: 'stats', label: t('widgets.statistics'), width: 'full' },
-      { id: 'pickups', label: t('widgets.pickups'), width: 'half' },
-      { id: 'returns', label: t('widgets.returns'), width: 'half' },
-      { id: 'quickActions', label: t('widgets.quickActions'), width: 'half' },
-      { id: 'systemHealth', label: t('widgets.systemHealth'), width: 'half' },
+      { id: 'stats', label: t('widgets.stats.title'), width: 'full' },
+      { id: 'pickups', label: t('widgets.pickups.title'), width: 'half' },
+      { id: 'returns', label: t('widgets.returns.title'), width: 'half' },
+      { id: 'quickActions', label: t('widgets.quickActions.title'), width: 'half' },
+      { id: 'systemHealth', label: t('widgets.systemHealth.title'), width: 'half' },
       { id: 'topCategoryProductsRobes', label: t('widgets.topReservedProducts.robesTitle'), width: 'half' },
       { id: 'topCategoryProductsAccessories', label: t('widgets.topReservedProducts.accessoriesTitle'), width: 'half' },
     ];
@@ -525,7 +525,7 @@ const DashboardContent = () => {
             products={items as any}
             reservations={reservations as any}
             categoryId={'677ee9fdd52d692ac0ea6339'}
-            title="Top Reserved Products (Robes)"
+            title={t('widgets.topReservedProducts.robesTitle')}
           />
         );
       case 'topCategoryProductsAccessories':
@@ -534,7 +534,7 @@ const DashboardContent = () => {
             products={items as any}
             reservations={reservations as any}
             categoryId={'677ff05d51a59d2f60f20b2d'}
-            title="Top Reserved Products (Accessories)"
+            title={t('widgets.topReservedProducts.accessoriesTitle')}
           />
         );
       default:
