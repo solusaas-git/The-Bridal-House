@@ -302,7 +302,8 @@ const DashboardContent = () => {
       { id: 'returns', label: t('widgets.returns'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions'), width: 'half' },
       { id: 'systemHealth', label: t('widgets.systemHealth'), width: 'half' },
-      { id: 'topCategoryProducts', label: 'Top Reserved Products', width: 'half' },
+      { id: 'topCategoryProductsRobes', label: 'Top Reserved Products (Robes)', width: 'half' },
+      { id: 'topCategoryProductsAccessories', label: 'Top Reserved Products (Accessories)', width: 'half' },
     ];
 
     // Filter out stats widget for employee role
@@ -518,12 +519,22 @@ const DashboardContent = () => {
             payments={payments}
           />
         );
-      case 'topCategoryProducts':
+      case 'topCategoryProductsRobes':
         return (
           <TopCategoryProductsWidget
             products={items as any}
             reservations={reservations as any}
             categoryId={'677ee9fdd52d692ac0ea6339'}
+            title="Top Reserved Products (Robes)"
+          />
+        );
+      case 'topCategoryProductsAccessories':
+        return (
+          <TopCategoryProductsWidget
+            products={items as any}
+            reservations={reservations as any}
+            categoryId={'677ff05d51a59d2f60f20b2d'}
+            title="Top Reserved Products (Accessories)"
           />
         );
       default:

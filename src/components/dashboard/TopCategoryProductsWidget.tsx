@@ -20,12 +20,13 @@ interface Props {
   products: Product[];
   reservations: Reservation[];
   categoryId: string;
+  title?: string;
 }
 
 const imageUrlFor = (primaryPhoto?: string) =>
   primaryPhoto ? `/api/uploads/${primaryPhoto}` : '';
 
-const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, categoryId }) => {
+const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, categoryId, title }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -99,7 +100,7 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Top Reserved Products (Category)</h3>
+        <h3 className="text-lg font-semibold text-white">{title || 'Top Reserved Products'}</h3>
       </div>
 
       {/* Top 10 list */}
