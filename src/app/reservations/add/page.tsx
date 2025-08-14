@@ -667,14 +667,18 @@ export default function AddReservationPage() {
       setLoading(true);
       const diffDays = differenceInDays(new Date(formData.weddingDate), new Date(selectedClient.weddingDate));
       
+      const pickupTime = formData.pickupTime && formData.pickupTime.trim() ? formData.pickupTime : '15:00';
+      const returnTime = formData.returnTime && formData.returnTime.trim() ? formData.returnTime : '15:00';
+      const availabilityTime = formData.availabilityTime && formData.availabilityTime.trim() ? formData.availabilityTime : '15:00';
+
       const reservationData = {
         client: selectedClient._id,
         type: formData.type,
         status: formData.status,
         paymentStatus: 'Pending',
-        pickupDate: `${formData.pickupDate}T${formData.pickupTime}`,
-        returnDate: `${formData.returnDate}T${formData.returnTime}`,
-        availabilityDate: `${formData.availabilityDate}T${formData.availabilityTime}`,
+        pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}` : undefined,
+        returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}` : undefined,
+        availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}` : undefined,
         items: selectedItems?.map((item) => item._id),
         additionalCost: Number(formData.additionalCost),
         // Store all calculated financial values

@@ -452,13 +452,17 @@ export default function EditReservationPage() {
 
     const financials = calculateFinancials;
 
+    const pickupTime = formData.pickupTime && formData.pickupTime.trim() ? formData.pickupTime : '15:00';
+    const returnTime = formData.returnTime && formData.returnTime.trim() ? formData.returnTime : '15:00';
+    const availabilityTime = formData.availabilityTime && formData.availabilityTime.trim() ? formData.availabilityTime : '15:00';
+
     const reservationData = {
       type: formData.type,
       client: selectedClient._id,
       items: selectedItems.map(item => item._id),
-      pickupDate: `${formData.pickupDate}T${formData.pickupTime}`,
-      returnDate: `${formData.returnDate}T${formData.returnTime}`,
-      availabilityDate: `${formData.availabilityDate}T${formData.availabilityTime}`,
+      pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}` : undefined,
+      returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}` : undefined,
+      availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}` : undefined,
       status: formData.status,
       notes: formData.notes,
       additionalCost: financials.additionalCost,
