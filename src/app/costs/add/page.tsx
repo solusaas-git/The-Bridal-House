@@ -59,7 +59,7 @@ export default function AddCostPage() {
   const currencySettings = useSelector((state: RootState) => state.settings);
 
   const [formData, setFormData] = useState<CostFormData>({
-    date: format(new Date(), 'yyyy-MM-dd'),
+    date: (()=>{ const d=new Date(); const yyyy=d.getUTCFullYear(); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const dd=String(d.getUTCDate()).padStart(2,'0'); return `${yyyy}-${mm}-${dd}`; })(),
     category: '',
     amount: '',
     relatedType: '',
@@ -512,7 +512,7 @@ export default function AddCostPage() {
                               </div>
                               {formData.relatedType === 'reservation' && (
                                 <div className="text-sm text-gray-400">
-                                  {item.client?.weddingDate ? format(new Date(item.client.weddingDate), 'dd/MM/yyyy') : 'No date set'}
+                        {item.client?.weddingDate ? (()=>{ const d=new Date(item.client.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })() : 'No date set'}
                                 </div>
                               )}
                             </div>
@@ -574,7 +574,7 @@ export default function AddCostPage() {
                           </div>
                           {formData.relatedType === 'reservation' && selectedItem.weddingDate && (
                             <div className="text-xs text-gray-400">
-                              {format(new Date(selectedItem.weddingDate), 'dd/MM/yyyy')}
+                    {(()=>{ const d=new Date(selectedItem.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })()}
                             </div>
                           )}
                         </div>
