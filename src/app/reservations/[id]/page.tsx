@@ -20,6 +20,7 @@ import { RootState } from '@/store/store';
 import { formatCurrency } from '@/utils/currency';
 import Layout from '@/components/Layout';
 import { useTranslation } from 'react-i18next';
+import AttachmentsSection from '@/components/shared/AttachmentsSection';
 
 interface Reservation {
   _id: string;
@@ -770,63 +771,30 @@ const AddPaymentModal = ({
     paymentDate: new Date().toISOString().split('T')[0]
   });
   const [loading, setLoading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setSelectedFiles(prev => [...prev, ...files]);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return [];
-
-    setUploading(true);
-    const uploadedFiles = [] as Array<{ name: string; size: number; url: string }>;
-
-    try {
-      for (const file of selectedFiles) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('uploadDir', 'uploads/payment');
-
-        const response = await fetch('/api/uploads', {
-          method: 'POST',
-          body: formData,
-        });
-
-        const data = await response.json();
-        
-        if (data.success && data.url) {
-          uploadedFiles.push({
-            name: file.name,
-            size: file.size,
-            url: data.url,
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error uploading files:', error);
-    } finally {
-      setUploading(false);
-    }
-
-    return uploadedFiles;
-  };
+  const handleAddFiles = (files: File[]) => setNewFiles(prev => [...prev, ...files]);
+  const handleRemoveExisting = (file: any, index: number) => setExistingFiles(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveNew = (index: number) => setNewFiles(prev => prev.filter((_, i) => i !== index));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Upload files first
-      const attachments = await uploadFiles();
+      // Upload new files first (reuse uploads API like other modules)
+      const attachments: Array<{ name: string; size: number; url: string }> = [];
+      for (const file of newFiles) {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('uploadDir', 'uploads/payment');
+        const res = await fetch('/api/uploads', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.success && data.url) {
+          attachments.push({ name: file.name, size: file.size, url: data.url });
+        }
+      }
 
       const response = await fetch('/api/payments', {
         method: 'POST',
@@ -957,37 +925,13 @@ const AddPaymentModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
-                {tCommon('attachments')}
-              </label>
-              <input
-                type="file"
-                multiple
-                onChange={handleFileSelect}
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+              <AttachmentsSection
+                existingFiles={existingFiles}
+                newFiles={newFiles}
+                onAddFiles={handleAddFiles}
+                onRemoveExisting={handleRemoveExisting}
+                onRemoveNew={handleRemoveNew}
               />
-              
-              {selectedFiles.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  {selectedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between bg-white/5 p-2 rounded">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-white">{file.name}</span>
-                        <span className="text-xs text-gray-400">
-                          ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="text-red-400 hover:text-red-300 text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">
@@ -1000,10 +944,10 @@ const AddPaymentModal = ({
               </button>
               <button
                 type="submit"
-                disabled={loading || uploading}
+                disabled={loading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
               >
-                {loading || uploading ? 'Creating...' : 'Create Payment'}
+                {loading ? 'Creating...' : 'Create Payment'}
               </button>
             </div>
           </form>
