@@ -125,10 +125,10 @@ export default function EditReservationPage() {
 
       setFormData(prev => ({
         ...prev,
-        weddingDate: format(weddingDate, 'yyyy-MM-dd'),
-        pickupDate: format(pickupDate, 'yyyy-MM-dd'),
-        returnDate: format(returnDate, 'yyyy-MM-dd'),
-        availabilityDate: format(availabilityDate, 'yyyy-MM-dd'),
+        weddingDate: weddingDate.toISOString().substring(0, 10),
+        pickupDate: pickupDate.toISOString().substring(0, 10),
+        returnDate: returnDate.toISOString().substring(0, 10),
+        availabilityDate: availabilityDate.toISOString().substring(0, 10),
       }));
     }
   }, [selectedClient?.weddingDate, formData.bufferBefore, formData.bufferAfter, formData.availability]);
@@ -144,9 +144,9 @@ export default function EditReservationPage() {
 
       setFormData(prev => ({
         ...prev,
-        pickupDate: format(pickupDate, 'yyyy-MM-dd'),
-        returnDate: format(returnDate, 'yyyy-MM-dd'),
-        availabilityDate: format(availabilityDate, 'yyyy-MM-dd'),
+        pickupDate: pickupDate.toISOString().substring(0, 10),
+        returnDate: returnDate.toISOString().substring(0, 10),
+        availabilityDate: availabilityDate.toISOString().substring(0, 10),
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,13 +178,13 @@ export default function EditReservationPage() {
           type: reservationData.type || 'Final',
           clientId: reservationData.client?._id || '',
           items: reservationData.items?.map((item: any) => item._id) || [],
-          weddingDate: reservationData.client?.weddingDate ? format(new Date(reservationData.client.weddingDate), 'yyyy-MM-dd') : '',
-          pickupDate: reservationData.pickupDate ? format(new Date(reservationData.pickupDate), 'yyyy-MM-dd') : '',
-          returnDate: reservationData.returnDate ? format(new Date(reservationData.returnDate), 'yyyy-MM-dd') : '',
-          availabilityDate: reservationData.availabilityDate ? format(new Date(reservationData.availabilityDate), 'yyyy-MM-dd') : '',
-          pickupTime: reservationData.pickupDate ? (() => { const d = new Date(reservationData.pickupDate); return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`; })() : '15:00',
-          returnTime: reservationData.returnDate ? (() => { const d = new Date(reservationData.returnDate); return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`; })() : '15:00',
-          availabilityTime: reservationData.availabilityDate ? (() => { const d = new Date(reservationData.availabilityDate); return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`; })() : '15:00',
+          weddingDate: reservationData.client?.weddingDate ? String(reservationData.client.weddingDate).substring(0,10) : '',
+          pickupDate: reservationData.pickupDate ? String(reservationData.pickupDate).substring(0,10) : '',
+          returnDate: reservationData.returnDate ? String(reservationData.returnDate).substring(0,10) : '',
+          availabilityDate: reservationData.availabilityDate ? String(reservationData.availabilityDate).substring(0,10) : '',
+          pickupTime: reservationData.pickupDate ? String(reservationData.pickupDate).substring(11,16) : '15:00',
+          returnTime: reservationData.returnDate ? String(reservationData.returnDate).substring(11,16) : '15:00',
+          availabilityTime: reservationData.availabilityDate ? String(reservationData.availabilityDate).substring(11,16) : '15:00',
           status: reservationData.status || 'Draft',
           additionalCost: reservationData.additionalCost || 0,
           bufferBefore: reservationData.bufferBefore || 0,
@@ -460,9 +460,9 @@ export default function EditReservationPage() {
       type: formData.type,
       client: selectedClient._id,
       items: selectedItems.map(item => item._id),
-      pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}` : undefined,
-      returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}` : undefined,
-      availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}` : undefined,
+      pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}:00.000Z` : undefined,
+      returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}:00.000Z` : undefined,
+      availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}:00.000Z` : undefined,
       status: formData.status,
       notes: formData.notes,
       additionalCost: financials.additionalCost,

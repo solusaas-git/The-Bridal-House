@@ -634,11 +634,11 @@ const AddPaymentPage = () => {
                                 <div className="text-sm text-gray-400 mt-1">
                                   {/* Try different date fields - eventDate, pickupDate, or weddingDate */}
                                   {reservation.eventDate ? 
-                (()=>{const d=new Date(reservation.eventDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
+                (()=>{const s=String(reservation.eventDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})() :
                                     reservation.pickupDate ? 
-                (()=>{const d=new Date(reservation.pickupDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
+                (()=>{const s=String(reservation.pickupDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})() :
                                     reservation.weddingDate ?
-                (()=>{const d=new Date(reservation.weddingDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
+                (()=>{const s=String(reservation.weddingDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})() :
                                     t('add.form.dateNotSet')
                                   }
                                   {reservation.eventTime && ` at ${reservation.eventTime}`}

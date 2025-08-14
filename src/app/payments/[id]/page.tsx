@@ -238,7 +238,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
           <div>
             <label className="text-sm font-medium text-gray-400">{t('details.info.paymentDate')}</label>
             <p className="text-white mt-1">
-              {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm') : tCommon('notAvailable')}
+              {payment.paymentDate ? (()=>{ const s=String(payment.paymentDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const HH=s.substring(11,13); const MI=s.substring(14,16); return `${dd}/${mm}/${yy}${HH&&MI?` ${HH}:${MI}`:''}`; })() : tCommon('notAvailable')}
             </p>
           </div>
 
@@ -287,7 +287,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
             {payment.reservation && (
               <>
                 <div className="text-sm text-gray-400 mt-1">
-            {payment.reservation.eventDate && (()=>{const d=new Date(payment.reservation.eventDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})()}
+            {payment.reservation.eventDate && (()=>{const s=String(payment.reservation.eventDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})()}
                   {payment.reservation.eventTime && ` at ${payment.reservation.eventTime}`}
                 </div>
                 {payment.reservation.eventLocation && (
@@ -309,7 +309,7 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
                 </div>
                 {payment.reservation.pickupDate && payment.reservation.returnDate && (
                   <div className="mt-2 text-xs text-gray-400">
-            {(()=>{const d=new Date(payment.reservation.pickupDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})()} - {(()=>{const d=new Date(payment.reservation.returnDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})()}
+            {(()=>{const s=String(payment.reservation.pickupDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})()} - {(()=>{const s=String(payment.reservation.returnDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})()}
                   </div>
                 )}
               </>

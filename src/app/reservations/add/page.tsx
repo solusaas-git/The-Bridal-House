@@ -676,9 +676,9 @@ export default function AddReservationPage() {
         type: formData.type,
         status: formData.status,
         paymentStatus: 'Pending',
-        pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}` : undefined,
-        returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}` : undefined,
-        availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}` : undefined,
+        pickupDate: formData.pickupDate ? `${formData.pickupDate}T${pickupTime}:00.000Z` : undefined,
+        returnDate: formData.returnDate ? `${formData.returnDate}T${returnTime}:00.000Z` : undefined,
+        availabilityDate: formData.availabilityDate ? `${formData.availabilityDate}T${availabilityTime}:00.000Z` : undefined,
         items: selectedItems?.map((item) => item._id),
         additionalCost: Number(formData.additionalCost),
         // Store all calculated financial values

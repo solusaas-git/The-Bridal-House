@@ -512,7 +512,7 @@ export default function AddCostPage() {
                               </div>
                               {formData.relatedType === 'reservation' && (
                                 <div className="text-sm text-gray-400">
-                        {item.client?.weddingDate ? (()=>{ const d=new Date(item.client.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })() : 'No date set'}
+                        {item.client?.weddingDate ? (()=>{ const s=String(item.client.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })() : 'No date set'}
                                 </div>
                               )}
                             </div>
@@ -574,7 +574,7 @@ export default function AddCostPage() {
                           </div>
                           {formData.relatedType === 'reservation' && selectedItem.weddingDate && (
                             <div className="text-xs text-gray-400">
-                    {(()=>{ const d=new Date(selectedItem.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })()}
+                    {(()=>{ const s=String(selectedItem.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                             </div>
                           )}
                         </div>

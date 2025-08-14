@@ -570,7 +570,7 @@ const CustomersPage = () => {
                       )}
                       {columnVisibility.weddingDate && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString('en-GB') : '-'}
+                    {customer.weddingDate ? (()=>{const s=String(customer.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`;})() : '-'}
                         </td>
                       )}
                       {columnVisibility.weddingTime && (
@@ -595,12 +595,12 @@ const CustomersPage = () => {
                       )}
                       {columnVisibility.createdAt && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {new Date(customer.createdAt).toLocaleDateString('en-GB')}
+                    {(()=>{const s=String(customer.createdAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`;})()}
                         </td>
                       )}
                       {columnVisibility.updatedAt && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {new Date(customer.updatedAt).toLocaleDateString('en-GB')}
+                    {(()=>{const s=String(customer.updatedAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`;})()}
                         </td>
                       )}
                       {columnVisibility.createdBy && (

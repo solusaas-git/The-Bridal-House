@@ -629,7 +629,7 @@ const PaymentsContent = () => {
                       )}
                       {columnVisibility.paymentDate && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {payment.paymentDate ? format(new Date(payment.paymentDate), 'dd/MM/yyyy') : '-'}
+                          {payment.paymentDate ? (()=>{ const s=String(payment.paymentDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })() : '-'}
                         </td>
                       )}
                       {columnVisibility.customer && (

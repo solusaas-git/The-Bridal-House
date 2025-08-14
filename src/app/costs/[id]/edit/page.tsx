@@ -638,7 +638,7 @@ export default function EditCostPage() {
                                     }
                                   </h3>
                                   <div className="text-sm text-gray-400">
-                {selectedItem.client?.weddingDate ? (()=>{ const d=new Date(selectedItem.client.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })() : tCommon('noDateSet')}
+                {selectedItem.client?.weddingDate ? (()=>{ const s=String(selectedItem.client.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })() : tCommon('noDateSet')}
                                   </div>
                                 </div>
                               </>
@@ -738,7 +738,7 @@ export default function EditCostPage() {
                                     {item.client ? `${item.client.firstName} ${item.client.lastName}` : tCommon('unknownCustomer')}
                                   </div>
                                   <div className="text-sm text-gray-400">
-              {item.client?.weddingDate ? (()=>{ const d=new Date(item.client.weddingDate); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })() : tCommon('noDateSet')}
+              {item.client?.weddingDate ? (()=>{ const s=String(item.client.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })() : tCommon('noDateSet')}
                                   </div>
                                   {item.items && item.items.length > 0 && (
                                     <div className="text-xs text-gray-500 mt-1">

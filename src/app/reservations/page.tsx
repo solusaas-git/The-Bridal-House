@@ -374,12 +374,11 @@ function ReservationsContent() {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return tCommon('notAvailable');
-    const d = new Date(dateString);
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const year = d.getUTCFullYear();
+  const formatDate = (iso: string) => {
+    if (!iso) return tCommon('notAvailable');
+    const day = iso.substring(8, 10);
+    const month = iso.substring(5, 7);
+    const year = iso.substring(0, 4);
     return `${day}/${month}/${year}`;
   };
 

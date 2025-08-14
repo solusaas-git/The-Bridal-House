@@ -238,9 +238,12 @@ export default function ProductsPage() {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-GB');
+  const formatDate = (iso: string) => {
+    if (!iso) return 'N/A';
+    const dd = iso.substring(8, 10);
+    const mm = iso.substring(5, 7);
+    const yy = iso.substring(0, 4);
+    return `${dd}/${mm}/${yy}`;
   };
 
   const getImageUrl = (imagePath: string) => {

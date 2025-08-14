@@ -292,7 +292,7 @@ const CostCategories = () => {
                 )}
                 
                 <div className="text-xs text-gray-400">
-                  Created: {new Date(category.createdAt).toLocaleDateString()}
+                  Created: {(() => { const s=String(category.createdAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                 </div>
               </div>
             ))}

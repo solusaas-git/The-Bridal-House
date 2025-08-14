@@ -185,7 +185,7 @@ const CustomerDetails = ({ customer }: { customer: Customer }) => {
       </div>
       <div>
         <label className="text-xs sm:text-sm font-medium text-gray-400">{t('details.personalInfo.weddingDate')}</label>
-        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? new Date(customer.weddingDate).toLocaleDateString('en-GB') : t('common.notAvailable')}</p>
+        <p className="text-white text-sm sm:text-base">{customer.weddingDate ? (()=>{const s=String(customer.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`;})() : t('common.notAvailable')}</p>
       </div>
       
       <div>

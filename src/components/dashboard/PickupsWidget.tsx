@@ -237,7 +237,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                 <div className="flex items-center gap-1 mt-1">
                   <Clock className="h-3 w-3 text-gray-400" />
                   <p className="text-xs text-gray-400">
-                    {format(new Date(reservation.pickupDate), 'dd/MM/yyyy • HH:mm')}
+                    {(() => { const s=String(reservation.pickupDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const HH=s.substring(11,13); const MI=s.substring(14,16); return `${dd}/${mm}/${yy}${HH&&MI?` • ${HH}:${MI}`:''}`; })()}
                   </p>
                 </div>
                 {reservation.items && reservation.items.length > 0 && (
@@ -306,7 +306,7 @@ const PickupsWidget: React.FC<PickupsWidgetProps> = ({
                       <div className="flex items-center gap-1 mt-1">
                         <Clock className="h-3 w-3 text-gray-400" />
                         <p className="text-xs text-gray-400">
-                          {format(new Date(reservation.pickupDate), 'dd/MM/yyyy • HH:mm')}
+                          {(() => { const s=String(reservation.pickupDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const HH=s.substring(11,13); const MI=s.substring(14,16); return `${dd}/${mm}/${yy}${HH&&MI?` • ${HH}:${MI}`:''}`; })()}
                         </p>
                       </div>
                       {reservation.items && reservation.items.length > 0 && (

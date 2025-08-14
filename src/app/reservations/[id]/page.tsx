@@ -211,15 +211,15 @@ export default function ViewReservationPage() {
     };
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return tCommon('notAvailable');
-    const d = new Date(dateString);
-    const dd = String(d.getUTCDate()).padStart(2, '0');
-    const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const yy = d.getUTCFullYear();
-    const hh = String(d.getUTCHours()).padStart(2, '0');
-    const mi = String(d.getUTCMinutes()).padStart(2, '0');
-    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+  const formatDate = (iso: string) => {
+    if (!iso) return tCommon('notAvailable');
+    // Display exactly what's saved, by slicing the ISO string
+    const dd = iso.substring(8, 10);
+    const mm = iso.substring(5, 7);
+    const yy = iso.substring(0, 4);
+    const HH = iso.substring(11, 13);
+    const MI = iso.substring(14, 16);
+    return `${dd}/${mm}/${yy}${HH && MI ? ` ${HH}:${MI}` : ''}`;
   };
 
   const handleImageHover = (e: React.MouseEvent, imageUrl: string, alt: string) => {

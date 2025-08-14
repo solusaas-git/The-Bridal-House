@@ -328,7 +328,7 @@ export default function ViewCostPage() {
                       {formatCurrency(cost.amount, currencySettings)}
                     </h2>
                     <p className="text-gray-300">
-            {(() => { const d=new Date(cost.date); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })()}
+            {(() => { const s=String(cost.date); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                     </p>
                   </div>
                 </div>
@@ -551,12 +551,12 @@ export default function ViewCostPage() {
                     <div className="grid grid-cols-1 gap-4">
                       <div>
                         <p className="text-sm text-gray-400">{t('details.info.createdAt')}</p>
-<p className="text-gray-400 text-sm">{t('details.info.createdAt')}: {(() => { const d=new Date(cost.createdAt); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}</p>
+<p className="text-gray-400 text-sm">{t('details.info.createdAt')}: {(() => { const s=String(cost.createdAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const hh=s.substring(11,13); const mi=s.substring(14,16); return `${dd}/${mm}/${yy}${hh && mi ? ` ${hh}:${mi}` : ''}`; })()}</p>
                       </div>
                       
                       <div>
                         <p className="text-sm text-gray-400">{t('details.info.lastUpdated')}</p>
-<p className="text-gray-400 text-sm">{t('details.info.lastUpdated')}: {(() => { const d=new Date(cost.updatedAt); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}</p>
+<p className="text-gray-400 text-sm">{t('details.info.lastUpdated')}: {(() => { const s=String(cost.updatedAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const hh=s.substring(11,13); const mi=s.substring(14,16); return `${dd}/${mm}/${yy}${hh && mi ? ` ${hh}:${mi}` : ''}`; })()}</p>
                       </div>
 
                       <div>

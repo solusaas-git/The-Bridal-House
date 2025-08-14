@@ -622,19 +622,19 @@ export default function ProductViewPage() {
                                 <div className="flex items-center gap-2">
                                   <Truck className="h-4 w-4 text-green-400" />
                                   <span className="text-gray-300">
-                                    Pickup: {format(parseISO(reservation.pickupDate), 'dd/MM/yyyy')}
+                                    Pickup: {(() => { const s=String(reservation.pickupDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Undo2 className="h-4 w-4 text-orange-400" />
                                   <span className="text-gray-300">
-                                    Return: {format(parseISO(reservation.returnDate), 'dd/MM/yyyy')}
+                                    Return: {(() => { const s=String(reservation.returnDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Calendar className="h-4 w-4 text-purple-400" />
                                   <span className="text-gray-300">
-                                    Wedding: {format(parseISO(reservation.client.weddingDate), 'dd/MM/yyyy')}
+                                    Wedding: {(() => { const s=String(reservation.client.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                   </span>
                                 </div>
                               </div>
@@ -673,19 +673,19 @@ export default function ProductViewPage() {
                                   <div className="flex items-center gap-2">
                                     <Truck className="h-4 w-4 text-green-400" />
                                     <span className="text-gray-300">
-                                      {t('details.availability.pickup')}: {format(parseISO(reservation.pickupDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.pickup')}: {(() => { const s=String(reservation.pickupDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Undo2 className="h-4 w-4 text-orange-400" />
                                     <span className="text-gray-300">
-                                      {t('details.availability.return')}: {format(parseISO(reservation.returnDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.return')}: {(() => { const s=String(reservation.returnDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-purple-400" />
                                     <span className="text-gray-300">
-                                      {t('details.availability.wedding')}: {format(parseISO(reservation.client.weddingDate), 'dd/MM/yyyy')}
+                                      {t('details.availability.wedding')}: {(() => { const s=String(reservation.client.weddingDate); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                                     </span>
                                   </div>
                                 </div>

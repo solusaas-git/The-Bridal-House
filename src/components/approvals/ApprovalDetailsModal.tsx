@@ -214,12 +214,13 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
       try {
         const date = new Date(value);
         if (!isNaN(date.getTime())) {
-          const dd = String(date.getUTCDate()).padStart(2, '0');
-          const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
-          const yy = date.getUTCFullYear();
-          const hh = String(date.getUTCHours()).padStart(2, '0');
-          const mi = String(date.getUTCMinutes()).padStart(2, '0');
-          return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+          const iso = String(value);
+          const dd = iso.substring(8,10);
+          const mm = iso.substring(5,7);
+          const yy = iso.substring(0,4);
+          const hh = iso.substring(11,13);
+          const mi = iso.substring(14,16);
+          return `${dd}/${mm}/${yy}${hh && mi ? ` ${hh}:${mi}` : ''}`;
         }
       } catch (e) {
         // Not a valid date, continue with normal string handling
@@ -753,7 +754,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestDate')}</label>
                   <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                    {(() => { const d=new Date(approval.createdAt); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}
+                    {(() => { const s=String(approval.createdAt); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const hh=s.substring(11,13); const mi=s.substring(14,16); return `${dd}/${mm}/${yy}${hh && mi ? ` ${hh}:${mi}` : ''}`; })()}
                   </div>
                 </div>
 
@@ -777,7 +778,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                       <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewDate')}</label>
                       <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                         <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                        {(() => { const d=new Date(approval.reviewedAt!); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}
+                        {(() => { const s=String(approval.reviewedAt!); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); const hh=s.substring(11,13); const mi=s.substring(14,16); return `${dd}/${mm}/${yy}${hh && mi ? ` ${hh}:${mi}` : ''}`; })()}
                       </div>
                     </div>
 

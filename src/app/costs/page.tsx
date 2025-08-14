@@ -382,7 +382,7 @@ function CostsContent() {
                         onClick={() => router.push(`/costs/${cost._id}`)}
                       >
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {(() => { const d=new Date(cost.date); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })()}
+                    {(() => { const s=String(cost.date); const dd=s.substring(8,10); const mm=s.substring(5,7); const yy=s.substring(0,4); return `${dd}/${mm}/${yy}`; })()}
                         </td>
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           <div className="flex items-center gap-2">
