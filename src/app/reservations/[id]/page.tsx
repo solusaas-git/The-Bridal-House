@@ -788,7 +788,7 @@ const AddPaymentModal = ({
     if (selectedFiles.length === 0) return [];
 
     setUploading(true);
-    const uploadedFiles = [];
+    const uploadedFiles = [] as Array<{ name: string; size: number; url: string }>;
 
     try {
       for (const file of selectedFiles) {
@@ -803,11 +803,11 @@ const AddPaymentModal = ({
 
         const data = await response.json();
         
-        if (data.success) {
+        if (data.success && data.url) {
           uploadedFiles.push({
             name: file.name,
             size: file.size,
-            url: data.path,
+            url: data.url,
           });
         }
       }
