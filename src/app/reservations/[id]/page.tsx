@@ -828,7 +828,7 @@ const AddPaymentModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-md">
+      <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
                           <h3 className="text-lg font-semibold text-white">{t('details.paymentModal.addTitle')}</h3>
@@ -975,7 +975,7 @@ const ViewPaymentModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-md">
+      <div className="bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-white">{t('details.paymentModal.viewTitle')}</h3>
