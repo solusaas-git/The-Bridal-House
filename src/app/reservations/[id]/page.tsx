@@ -213,7 +213,13 @@ export default function ViewReservationPage() {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return tCommon('notAvailable');
-    return format(new Date(dateString), 'dd/MM/yyyy HH:mm');
+    const d = new Date(dateString);
+    const dd = String(d.getUTCDate()).padStart(2, '0');
+    const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const yy = d.getUTCFullYear();
+    const hh = String(d.getUTCHours()).padStart(2, '0');
+    const mi = String(d.getUTCMinutes()).padStart(2, '0');
+    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
   };
 
   const handleImageHover = (e: React.MouseEvent, imageUrl: string, alt: string) => {
