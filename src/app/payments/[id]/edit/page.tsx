@@ -834,11 +834,11 @@ const EditPaymentPage = () => {
                                     <div className="text-sm text-gray-400 mt-1">
                                       {/* Try different date fields - eventDate, pickupDate, or weddingDate */}
                                       {reservation.eventDate ? 
-                new Date(reservation.eventDate).toLocaleDateString('en-GB') :
+                (()=>{const d=new Date(reservation.eventDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
                                         reservation.pickupDate ? 
-                new Date(reservation.pickupDate).toLocaleDateString('en-GB') :
+                (()=>{const d=new Date(reservation.pickupDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
                                         reservation.weddingDate ?
-                new Date(reservation.weddingDate).toLocaleDateString('en-GB') :
+                (()=>{const d=new Date(reservation.weddingDate);const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;})() :
                                         t('edit.form.dateNotSet')
                                       }
                                       {reservation.eventTime && ` at ${reservation.eventTime}`}
