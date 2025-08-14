@@ -214,14 +214,12 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
       try {
         const date = new Date(value);
         if (!isNaN(date.getTime())) {
-          return date.toLocaleString('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          });
+          const dd = String(date.getUTCDate()).padStart(2, '0');
+          const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+          const yy = date.getUTCFullYear();
+          const hh = String(date.getUTCHours()).padStart(2, '0');
+          const mi = String(date.getUTCMinutes()).padStart(2, '0');
+          return `${dd}/${mm}/${yy} ${hh}:${mi}`;
         }
       } catch (e) {
         // Not a valid date, continue with normal string handling
@@ -755,7 +753,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                   <label className="text-xs sm:text-sm text-gray-400">{t('modal.requestDate')}</label>
                   <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                    {new Date(approval.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}
+                    {(() => { const d=new Date(approval.createdAt); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}
                   </div>
                 </div>
 
@@ -779,7 +777,7 @@ const ApprovalDetailsModal: React.FC<ApprovalDetailsModalProps> = ({
                       <label className="text-xs sm:text-sm text-gray-400">{t('modal.reviewDate')}</label>
                       <div className="flex items-center gap-2 text-white text-sm sm:text-base">
                         <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                        {new Date(approval.reviewedAt!).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {(() => { const d=new Date(approval.reviewedAt!); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); const hh=String(d.getUTCHours()).padStart(2,'0'); const mi=String(d.getUTCMinutes()).padStart(2,'0'); return `${dd}/${mm}/${yy} ${hh}:${mi}`; })()}
                       </div>
                     </div>
 

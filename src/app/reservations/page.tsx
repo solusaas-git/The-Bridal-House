@@ -376,7 +376,11 @@ function ReservationsContent() {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return tCommon('notAvailable');
-    return new Date(dateString).toLocaleDateString('en-GB');
+    const d = new Date(dateString);
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const handleImageHover = (e: React.MouseEvent, imageUrl: string, alt: string) => {

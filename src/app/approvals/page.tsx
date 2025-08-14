@@ -465,7 +465,7 @@ export default function ApprovalsPage() {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
                         <div className="text-sm text-white">
-                          {new Date(approval.createdAt).toLocaleDateString('en-GB')}
+                          {(() => { const d=new Date(approval.createdAt); const dd=String(d.getUTCDate()).padStart(2,'0'); const mm=String(d.getUTCMonth()+1).padStart(2,'0'); const yy=d.getUTCFullYear(); return `${dd}/${mm}/${yy}`; })()}
                         </div>
                       </div>
                     </td>
