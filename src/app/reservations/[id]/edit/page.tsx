@@ -133,6 +133,25 @@ export default function EditReservationPage() {
     }
   }, [selectedClient?.weddingDate, formData.bufferBefore, formData.bufferAfter, formData.availability]);
 
+  // Recalculate dates live when buffers/availability change after initial load
+  useEffect(() => {
+    const baseWeddingDate = formData.weddingDate || selectedClient?.weddingDate;
+    if (baseWeddingDate) {
+      const weddingDate = new Date(baseWeddingDate);
+      const pickupDate = subDays(weddingDate, formData.bufferBefore || 0);
+      const returnDate = addDays(weddingDate, formData.bufferAfter || 0);
+      const availabilityDate = addDays(weddingDate, (formData.availability || 0) + (formData.bufferAfter || 0));
+
+      setFormData(prev => ({
+        ...prev,
+        pickupDate: format(pickupDate, 'yyyy-MM-dd'),
+        returnDate: format(returnDate, 'yyyy-MM-dd'),
+        availabilityDate: format(availabilityDate, 'yyyy-MM-dd'),
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.bufferBefore, formData.bufferAfter, formData.availability]);
+
   const fetchReservation = async () => {
     try {
       setFetchLoading(true);
