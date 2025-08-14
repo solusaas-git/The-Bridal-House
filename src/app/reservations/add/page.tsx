@@ -513,6 +513,27 @@ export default function AddReservationPage() {
     isItemAvailable
   ]);
 
+  // Compute per-category counts independent of the currently selected tab
+  const getCategoryCount = useCallback((categoryNameToCount: string) => {
+    if (!products) return 0;
+    return products.filter(product => {
+      // availability
+      const available = isItemAvailable(product);
+      // search match
+      const matchesSearch = !itemSearchTerm || 
+        product.name?.toLowerCase().includes(itemSearchTerm.toLowerCase()) ||
+        (typeof product.category === 'object' && (product.category as any)?.name
+          ? (product.category as any).name.toLowerCase().includes(itemSearchTerm.toLowerCase())
+          : product.category?.toString().toLowerCase().includes(itemSearchTerm.toLowerCase()));
+      // category match against the provided category
+      const categoryName = typeof product.category === 'object' && (product.category as any)?.name
+        ? (product.category as any).name
+        : product.category;
+      const matchesCategory = categoryName === categoryNameToCount;
+      return available && matchesSearch && matchesCategory;
+    }).length;
+  }, [products, itemSearchTerm, isItemAvailable]);
+
   // Memoized financial calculations to prevent recalculation on every render
   const calculateFinancials = useMemo(() => {
     // Only count items from the main category (677ee9fdd52d692ac0ea6339) in totals
@@ -1030,12 +1051,7 @@ export default function AddReservationPage() {
                 {tCommon('all')} ({filteredProducts.length})
               </button>
               {getCategories().map((category) => {
-                const categoryCount = filteredProducts.filter(p => {
-                  const categoryName = typeof p.category === 'object' && (p.category as any)?.name
-                    ? (p.category as any).name
-                    : p.category;
-                  return categoryName === category;
-                }).length || 0;
+                const categoryCount = getCategoryCount(category) || 0;
                 
                 return (
                   <button
