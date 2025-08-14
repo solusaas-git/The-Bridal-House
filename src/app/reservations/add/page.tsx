@@ -284,7 +284,7 @@ export default function AddReservationPage() {
       const weddingDate = new Date(selectedClient.weddingDate);
       setFormData(prev => ({
         ...prev,
-        weddingDate: format(weddingDate, 'yyyy-MM-dd'),
+        weddingDate: weddingDate.toISOString().substring(0, 10),
       }));
     }
   }, [selectedClient?.weddingDate]);
@@ -299,9 +299,9 @@ export default function AddReservationPage() {
 
       setFormData(prev => ({
         ...prev,
-        pickupDate: format(pickupDate, 'yyyy-MM-dd'),
-        returnDate: format(returnDate, 'yyyy-MM-dd'),
-        availabilityDate: format(availabilityDate, 'yyyy-MM-dd'),
+        pickupDate: pickupDate.toISOString().substring(0, 10),
+        returnDate: returnDate.toISOString().substring(0, 10),
+        availabilityDate: availabilityDate.toISOString().substring(0, 10),
       }));
     }
   }, [formData.weddingDate, formData.bufferBefore, formData.bufferAfter, formData.availability]);
