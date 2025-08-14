@@ -258,10 +258,10 @@ export async function POST(request: NextRequest) {
         note: formData.get('note') as string || '',
       };
 
-      // Combine date and time
+      // Combine date and time, preserving exact input time (append Z)
       const paymentDateTime = paymentData.paymentTime 
-        ? `${paymentData.paymentDate}T${paymentData.paymentTime}`
-        : paymentData.paymentDate;
+        ? `${paymentData.paymentDate}T${paymentData.paymentTime}:00.000Z`
+        : `${paymentData.paymentDate}T00:00:00.000Z`;
 
       // Handle file uploads
       const files = formData.getAll('attachments') as File[];
@@ -315,10 +315,10 @@ export async function POST(request: NextRequest) {
       // Handle JSON data
       const paymentData: PaymentFormData = await request.json();
 
-      // Combine date and time
+      // Combine date and time, preserving exact input time (append Z)
       const paymentDateTime = paymentData.paymentTime 
-        ? `${paymentData.paymentDate}T${paymentData.paymentTime}`
-        : paymentData.paymentDate;
+        ? `${paymentData.paymentDate}T${paymentData.paymentTime}:00.000Z`
+        : `${paymentData.paymentDate}T00:00:00.000Z`;
 
       const newPayment = new Payment({
         ...paymentData,

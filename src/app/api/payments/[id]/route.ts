@@ -158,10 +158,10 @@ export async function PUT(
         uploadedAt: new Date()
       }));
 
-      // Combine date and time if both are provided
+      // Combine date and time if both are provided, append Z to preserve time
       if (updateData.paymentDate && updateData.paymentTime) {
-        updateData.paymentDate = `${updateData.paymentDate}T${updateData.paymentTime}`;
-        delete updateData.paymentTime; // Remove the separate time field
+        updateData.paymentDate = `${updateData.paymentDate}T${updateData.paymentTime}:00.000Z`;
+        delete updateData.paymentTime;
       }
 
       // Combine existing and new attachments
@@ -215,6 +215,15 @@ export async function PUT(
     } else {
       // Handle JSON data
       const updateData: PaymentUpdateData = await request.json();
+
+      // If both date and time are provided, combine and append Z to preserve exact time
+      if (updateData.paymentDate && updateData.paymentTime) {
+        updateData.paymentDate = `${updateData.paymentDate}T${updateData.paymentTime}:00.000Z`;
+        delete updateData.paymentTime;
+      } else if (updateData.paymentDate && /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})(?!:)/.test(updateData.paymentDate)) {
+        // If an ISO-like without seconds/ms/Z arrives, normalize it
+        updateData.paymentDate = `${updateData.paymentDate}:00.000Z`;
+      }
 
       // Convert amount to number if provided
       if (updateData.amount) {

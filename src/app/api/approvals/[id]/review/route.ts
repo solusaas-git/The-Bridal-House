@@ -42,6 +42,22 @@ function normalizeReservationUpdate(update: any) {
     }
   }
 
+  // Normalize date-time fields to preserve exact input time by appending Z if missing
+  const dateTimeFields = ['pickupDate', 'returnDate', 'availabilityDate'];
+  for (const field of dateTimeFields) {
+    const val = normalized[field];
+    if (typeof val === 'string') {
+      // If it's a combined ISO-like without timezone, add seconds/ms and Z
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val)) {
+        normalized[field] = `${val}:00.000Z`;
+      } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(val)) {
+        normalized[field] = `${val}.000Z`;
+      } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}$/.test(val) && !val.endsWith('Z')) {
+        normalized[field] = `${val}Z`;
+      }
+    }
+  }
+
   return normalized;
 }
 
