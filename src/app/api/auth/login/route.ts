@@ -35,6 +35,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Block login for inactive users
+    if (user.status && user.status !== 'Active') {
+      return NextResponse.json({
+        success: false,
+        message: 'Account is disabled. Contact an administrator.',
+      }, { status: 403 });
+    }
+
     const userResponse = {
       _id: user._id,
       name: user.name,

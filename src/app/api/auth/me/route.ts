@@ -29,10 +29,10 @@ export async function GET(request: NextRequest) {
     // Find user by ID from session
     const user = await User.findById(sessionData.userId).select('-password');
 
-    if (!user) {
+    if (!user || (user.status && user.status !== 'Active')) {
       return NextResponse.json({
         success: false,
-        message: 'User not found',
+        message: 'Not authenticated',
       }, { status: 401 });
     }
 
