@@ -121,15 +121,17 @@ export async function POST(request: NextRequest) {
 
     // Add file URLs to product data
     if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
-      productData.primaryPhoto = uploadResults.primaryPhoto[0].url;
+      const f = uploadResults.primaryPhoto[0];
+      // Prefer pathname (uploads/...) so our /api/uploads proxy can resolve it
+      productData.primaryPhoto = f.pathname || f.url;
     }
 
     if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
-      productData.secondaryImages = uploadResults.secondaryImages.map(img => img.url);
+      productData.secondaryImages = uploadResults.secondaryImages.map(img => img.pathname || img.url);
     }
 
     if (uploadResults.videos && uploadResults.videos.length > 0) {
-      productData.videoUrls = uploadResults.videos.map(video => video.url);
+      productData.videoUrls = uploadResults.videos.map(video => video.pathname || video.url);
     }
 
     const product = new Product(productData);

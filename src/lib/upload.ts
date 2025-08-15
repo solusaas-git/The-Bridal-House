@@ -3,6 +3,7 @@ import { uploadToVercelBlob, uploadMultipleToVercelBlob, UPLOAD_FOLDERS, UploadR
 export interface UploadedFile {
   name: string;
   url: string;
+  pathname: string;
   size: number;
   type: string;
 }
@@ -24,6 +25,7 @@ export async function handleSingleFileUpload(
     return {
       name: file.name,
       url: result.url,
+      pathname: result.pathname,
       size: file.size,
       type: file.type
     };
@@ -50,6 +52,7 @@ export async function handleMultipleFileUpload(
     return results.map((result, index) => ({
       name: files[index].name,
       url: result.url,
+      pathname: result.pathname,
       size: files[index].size,
       type: files[index].type
     }));
