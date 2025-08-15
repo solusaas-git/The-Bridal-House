@@ -14,7 +14,15 @@ export const useApprovalsCount = () => {
 
     try {
       dispatch(setCountLoading(true));
-      const response = await axios.get('/api/approvals/count');
+      const response = await axios.get('/api/approvals/count', { validateStatus: () => true });
+      if (response.status === 401) {
+        // Unauthorized: clear count silently
+        dispatch(setPendingCount(0));
+        return;
+      }
+      if (response.status !== 200) {
+        throw new Error(response.data?.error || `HTTP ${response.status}`);
+      }
       dispatch(setPendingCount(response.data.count));
     } catch (error) {
       console.error('Error fetching pending approvals count:', error);

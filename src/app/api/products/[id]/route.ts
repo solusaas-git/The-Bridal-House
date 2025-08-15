@@ -74,7 +74,7 @@ export async function PUT(
         );
       }
       
-      const uploadResults = await handleMultipleFileFields(formData);
+      const uploadResults = await handleMultipleFileFields(formData, 'product');
 
       // Extract form data
       updateData = {
@@ -89,8 +89,26 @@ export async function PUT(
         status: formData.get('status') as 'Draft' | 'Published',
       };
 
+      // Parse client-provided lists of existing media to keep
+      const existingSecondaryImagesRaw = formData.get('existingSecondaryImages') as string | null;
+      const existingVideoUrlsRaw = formData.get('existingVideoUrls') as string | null;
+      let keptSecondaryImages: string[] | undefined;
+      let keptVideoUrls: string[] | undefined;
+
+      try {
+        keptSecondaryImages = existingSecondaryImagesRaw ? JSON.parse(existingSecondaryImagesRaw) : undefined;
+      } catch {
+        keptSecondaryImages = undefined;
+      }
+      try {
+        keptVideoUrls = existingVideoUrlsRaw ? JSON.parse(existingVideoUrlsRaw) : undefined;
+      } catch {
+        keptVideoUrls = undefined;
+      }
+
       // Handle file deletions when files are replaced
-      if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
+      const primary = uploadResults['product_primaryPhoto'] || uploadResults['primaryPhoto'];
+      if (primary && primary.length > 0) {
         // Delete old primary photo if it exists
         if (currentProduct.primaryPhoto) {
           try {
@@ -100,39 +118,54 @@ export async function PUT(
             console.error(`❌ Failed to delete old primary photo:`, deleteError);
           }
         }
-        updateData.primaryPhoto = uploadResults.primaryPhoto[0].url;
+        updateData.primaryPhoto = (primary[0].pathname || primary[0].url);
       }
 
-      if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
-        // Delete old secondary images if they exist
-        if (currentProduct.secondaryImages && currentProduct.secondaryImages.length > 0) {
-          console.log(`🗑️ Deleting ${currentProduct.secondaryImages.length} old secondary images`);
-          for (const oldImage of currentProduct.secondaryImages) {
+      // Merge secondary images: keep selected existing + append new uploads
+      const secondary = uploadResults['product_secondaryImages'] || uploadResults['secondaryImages'];
+      if (secondary || typeof keptSecondaryImages !== 'undefined') {
+        const newSecondary = (secondary || []).map((img: any) => img.pathname || img.url);
+        const currentSecondary: string[] = Array.isArray(currentProduct.secondaryImages) ? currentProduct.secondaryImages : [];
+        const kept = Array.isArray(keptSecondaryImages) ? keptSecondaryImages : currentSecondary;
+
+        // Delete only removed ones
+        const toDelete = currentSecondary.filter((path) => !kept.includes(path));
+        if (toDelete.length > 0) {
+          console.log(`🗑️ Deleting ${toDelete.length} removed secondary images`);
+          for (const oldImage of toDelete) {
             try {
               await deleteFromVercelBlob(oldImage);
-              console.log(`✅ Deleted old secondary image: ${oldImage}`);
+              console.log(`✅ Deleted secondary image: ${oldImage}`);
             } catch (deleteError) {
-              console.error(`❌ Failed to delete old secondary image:`, deleteError);
+              console.error(`❌ Failed to delete secondary image:`, deleteError);
             }
           }
         }
-        updateData.secondaryImages = uploadResults.secondaryImages.map(img => img.url);
+
+        updateData.secondaryImages = [...kept, ...newSecondary];
       }
 
-      if (uploadResults.videos && uploadResults.videos.length > 0) {
-        // Delete old videos if they exist
-        if (currentProduct.videoUrls && currentProduct.videoUrls.length > 0) {
-          console.log(`🗑️ Deleting ${currentProduct.videoUrls.length} old videos`);
-          for (const oldVideo of currentProduct.videoUrls) {
+      // Merge videos similarly
+      const vids = uploadResults['product_videos'] || uploadResults['videos'];
+      if (vids || typeof keptVideoUrls !== 'undefined') {
+        const newVideos = (vids || []).map((video: any) => video.pathname || video.url);
+        const currentVideos: string[] = Array.isArray(currentProduct.videoUrls) ? currentProduct.videoUrls : [];
+        const keptVideos = Array.isArray(keptVideoUrls) ? keptVideoUrls : currentVideos;
+
+        const toDeleteVideos = currentVideos.filter((path) => !keptVideos.includes(path));
+        if (toDeleteVideos.length > 0) {
+          console.log(`🗑️ Deleting ${toDeleteVideos.length} removed videos`);
+          for (const oldVideo of toDeleteVideos) {
             try {
               await deleteFromVercelBlob(oldVideo);
-              console.log(`✅ Deleted old video: ${oldVideo}`);
+              console.log(`✅ Deleted video: ${oldVideo}`);
             } catch (deleteError) {
-              console.error(`❌ Failed to delete old video:`, deleteError);
+              console.error(`❌ Failed to delete video:`, deleteError);
             }
           }
         }
-        updateData.videoUrls = uploadResults.videos.map(video => video.url);
+
+        updateData.videoUrls = [...keptVideos, ...newVideos];
       }
     } else {
       // Handle JSON updates (no file uploads)

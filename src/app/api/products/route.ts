@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     // Handle file uploads
     const formData = await request.formData();
-    const uploadResults = await handleMultipleFileFields(formData);
+    const uploadResults = await handleMultipleFileFields(formData, 'product');
 
     // Extract form data
     const productData: ProductFormData = {
@@ -120,18 +120,22 @@ export async function POST(request: NextRequest) {
     };
 
     // Add file URLs to product data
-    if (uploadResults.primaryPhoto && uploadResults.primaryPhoto.length > 0) {
-      const f = uploadResults.primaryPhoto[0];
+    // Match field names used in form-data
+    const primary = uploadResults['product_primaryPhoto'] || uploadResults['primaryPhoto'];
+    if (primary && primary.length > 0) {
+      const f = primary[0];
       // Prefer pathname (uploads/...) so our /api/uploads proxy can resolve it
       productData.primaryPhoto = f.pathname || f.url;
     }
 
-    if (uploadResults.secondaryImages && uploadResults.secondaryImages.length > 0) {
-      productData.secondaryImages = uploadResults.secondaryImages.map(img => img.pathname || img.url);
+    const secondary = uploadResults['product_secondaryImages'] || uploadResults['secondaryImages'];
+    if (secondary && secondary.length > 0) {
+      productData.secondaryImages = secondary.map(img => img.pathname || img.url);
     }
 
-    if (uploadResults.videos && uploadResults.videos.length > 0) {
-      productData.videoUrls = uploadResults.videos.map(video => video.pathname || video.url);
+    const vids = uploadResults['product_videos'] || uploadResults['videos'];
+    if (vids && vids.length > 0) {
+      productData.videoUrls = vids.map(video => video.pathname || video.url);
     }
 
     const product = new Product(productData);

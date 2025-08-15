@@ -84,6 +84,7 @@ export default function EditReservationPage() {
   const [itemSearchTerm, setItemSearchTerm] = useState('');
   const [showItemSelector, setShowItemSelector] = useState(false);
   const [selectedCategoryTab, setSelectedCategoryTab] = useState('all');
+  const [availabilityFilter, setAvailabilityFilter] = useState<'all' | 'available' | 'booked'>('all');
   const [customItemsTotal, setCustomItemsTotal] = useState<number | null>(null);
   
   // Image popup state
@@ -240,68 +241,52 @@ export default function EditReservationPage() {
     }
   };
 
-  // Check item availability based on wedding date vs availability date of other reservations
+  // Check item availability with special rule for Accessories category
   const isItemAvailable = useCallback((product: any) => {
-    if (!formData.weddingDate) return true;
+    const ACCESSORIES_CATEGORY_ID = '677ff05d51a59d2f60f20b2d';
+    const categoryId = (product?.category && typeof product.category === 'object') ? product.category._id : product?.category;
+    const isAccessories = categoryId === ACCESSORIES_CATEGORY_ID;
 
-    const weddingDate = new Date(formData.weddingDate);
-    weddingDate.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
-
-    // Check if item is reserved and conflicts with our wedding date
-    const conflicts = reservations?.filter(reservation => {
-      // Skip cancelled reservations
-      if (reservation.status === 'Cancelled') return false;
-      
-      // Skip the current reservation being edited
-      if (reservation._id === reservationId) return false;
-      
-      // Check if this product is in this reservation
-      const hasItem = reservation.items?.some((item: any) => {
-        const itemId = typeof item === 'string' ? item : item._id;
-        return itemId === product._id;
+    // Accessories: unavailable only if another reservation with same product has the same wedding date
+    if (isAccessories) {
+      const weddingBase = formData.weddingDate || selectedClient?.weddingDate;
+      if (!weddingBase) return true;
+      const newWedding = new Date(weddingBase);
+      newWedding.setHours(0, 0, 0, 0);
+      const conflict = reservations?.some((reservation: any) => {
+        if (reservation.status === 'Cancelled') return false;
+        if (reservation._id === reservationId) return false;
+        const hasItem = reservation.items?.some((item: any) => (typeof item === 'string' ? item : item._id) === product._id);
+        if (!hasItem) return false;
+        const resWedding = reservation?.client?.weddingDate ? new Date(reservation.client.weddingDate) : null;
+        if (!resWedding) return false;
+        resWedding.setHours(0, 0, 0, 0);
+        return resWedding.getTime() === newWedding.getTime();
       });
-      
+      return !conflict;
+    }
+
+    // Default: overlap of pickup→availability
+    const newStart = formData.pickupDate ? new Date(formData.pickupDate) : null;
+    const newEnd = formData.availabilityDate ? new Date(formData.availabilityDate) : null;
+    if (!newStart || !newEnd) return true; // dates not set yet
+    newStart.setHours(0, 0, 0, 0);
+    newEnd.setHours(0, 0, 0, 0);
+    const overlaps = (aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) => (aStart < bEnd && bStart < aEnd);
+    const conflict = reservations?.some((reservation: any) => {
+      if (reservation.status === 'Cancelled') return false;
+      if (reservation._id === reservationId) return false;
+      if (!reservation.pickupDate || !reservation.availabilityDate) return false;
+      const hasItem = reservation.items?.some((item: any) => (typeof item === 'string' ? item : item._id) === product._id);
       if (!hasItem) return false;
-      
-      // Check for wedding date conflicts first (same wedding date = conflict regardless of pickup times)
-      if (reservation.client && (reservation.client as any).weddingDate) {
-        const reservationWeddingDate = new Date((reservation.client as any).weddingDate);
-        reservationWeddingDate.setHours(0, 0, 0, 0);
-        
-        if (weddingDate.getTime() === reservationWeddingDate.getTime()) {
-          return true; // Conflict: same wedding date
-        }
-      }
-
-      // Check if our wedding date falls within the reservation period (pickup to availability)
-      if (reservation.pickupDate && reservation.availabilityDate) {
-        const reservationPickupDate = new Date(reservation.pickupDate);
-        const reservationAvailabilityDate = new Date(reservation.availabilityDate);
-        reservationPickupDate.setHours(0, 0, 0, 0);
-        reservationAvailabilityDate.setHours(0, 0, 0, 0);
-        
-        // Item is NOT available if our wedding date falls within the pickup period (before availability date)
-        const isConflict = weddingDate >= reservationPickupDate && weddingDate < reservationAvailabilityDate;
-        
-        return isConflict;
-      }
-      
-      // Fallback: if only availability date exists, use old logic
-      if (reservation.availabilityDate) {
-        const reservationAvailabilityDate = new Date(reservation.availabilityDate);
-        reservationAvailabilityDate.setHours(0, 0, 0, 0);
-        
-        const isConflict = weddingDate <= reservationAvailabilityDate;
-        
-        return isConflict;
-      }
-      
-      // If no availability date, assume it conflicts to be safe
-      return true;
+      const resStart = new Date(reservation.pickupDate);
+      const resEnd = new Date(reservation.availabilityDate);
+      resStart.setHours(0, 0, 0, 0);
+      resEnd.setHours(0, 0, 0, 0);
+      return overlaps(newStart, newEnd, resStart, resEnd);
     });
-
-    return conflicts?.length === 0;
-  }, [formData.weddingDate, reservations, reservationId]);
+    return !conflict;
+  }, [formData.weddingDate, formData.pickupDate, formData.availabilityDate, selectedClient?.weddingDate, reservations, reservationId]);
 
   const filteredClients = customers.filter((client: any) => {
     if (clientSearchTerm.length < 2) return false;
@@ -328,11 +313,15 @@ export default function EditReservationPage() {
   // Filter products based on search, category, and availability
   const getFilteredProducts = useCallback(() => {
     return products.filter((product: any) => {
+      const available = isItemAvailable(product);
       // Text search
       if (itemSearchTerm) {
         const searchLower = itemSearchTerm.toLowerCase();
+        const categoryName = typeof product.category === 'object' && (product.category as any)?.name
+          ? (product.category as any).name
+          : product.category;
         const matchesText = product.name?.toLowerCase().includes(searchLower) ||
-          product.category?.toLowerCase().includes(searchLower);
+          categoryName?.toLowerCase().includes(searchLower);
         if (!matchesText) return false;
       }
 
@@ -345,15 +334,26 @@ export default function EditReservationPage() {
       }
 
       // Availability filter
-      if (!isItemAvailable(product)) {
-        return false;
-      }
+      const matchesAvailability =
+        availabilityFilter === 'all' ||
+        (availabilityFilter === 'available' && available) ||
+        (availabilityFilter === 'booked' && !available);
 
-      return true;
+      return matchesAvailability;
     });
-  }, [products, itemSearchTerm, selectedCategoryTab, isItemAvailable]);
+  }, [products, itemSearchTerm, selectedCategoryTab, availabilityFilter, isItemAvailable]);
 
-  const filteredProducts = useMemo(() => getFilteredProducts(), [getFilteredProducts]);
+  const filteredProducts = useMemo(() => getFilteredProducts(), [
+    getFilteredProducts,
+    products,
+    itemSearchTerm,
+    selectedCategoryTab,
+    availabilityFilter,
+    formData.weddingDate,
+    formData.pickupDate,
+    formData.availabilityDate,
+    reservations
+  ]);
 
   const handleClientSelect = (client: any) => {
     setSelectedClient(client);
@@ -948,6 +948,22 @@ export default function EditReservationPage() {
                     />
                   </div>
 
+                  {/* Availability Filter */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">
+                      {t('add.filters.availability.label')}
+                    </label>
+                    <select
+                      value={availabilityFilter}
+                      onChange={(e) => setAvailabilityFilter(e.target.value as any)}
+                      className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="all" className="bg-gray-800">{t('add.filters.availability.all')}</option>
+                      <option value="available" className="bg-gray-800">{t('add.filters.availability.available')}</option>
+                      <option value="booked" className="bg-gray-800">{t('add.filters.availability.booked')}</option>
+                    </select>
+                  </div>
+
                   {/* Available Items Grid - Mobile Optimized */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
                     {filteredProducts.map((product: any) => {
@@ -956,19 +972,21 @@ export default function EditReservationPage() {
                       return (
                         <div
                           key={product._id}
-                          className={`relative rounded-lg border ${
-                            isSelected
-                              ? 'border-blue-500 bg-blue-500/20'
-                              : 'border-white/10 hover:border-white/30'
-                          } overflow-hidden group cursor-pointer transition-all`}
-                          onClick={() => handleItemToggle(product)}
+                          className={`relative rounded-lg border-2 ${
+                            isAvailable ? 'border-green-500' : 'border-red-500'
+                          } ${isSelected ? 'ring-2 ring-blue-500' : ''} overflow-hidden group ${isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'} transition-all`}
+                          aria-disabled={!isAvailable}
+                          onClick={() => {
+                            if (!isAvailable) return;
+                            handleItemToggle(product);
+                          }}
                         >
                           <div className="aspect-[4/3] relative">
                             {product.primaryPhoto ? (
                               <img
                                 src={`/api/uploads/${product.primaryPhoto}`}
                                 alt={product.name}
-                                className="absolute inset-0 w-full h-full object-cover hover:opacity-80 transition-opacity"
+                                className={`absolute inset-0 w-full h-full object-cover hover:opacity-80 transition-opacity ${isAvailable ? '' : 'opacity-50'}`}
                                 onMouseEnter={(e) => handleImageHover(e, `/api/uploads/${product.primaryPhoto}`, product.name)}
                                 onMouseLeave={handleImageLeave}
                                 onError={(e) => {
@@ -1005,9 +1023,15 @@ export default function EditReservationPage() {
                             </p>
                             {/* Availability status */}
                             <div className="mt-2 text-xs">
-                              <span className="px-2 py-1 rounded-full bg-green-500/10 text-green-400">
-                                Available for selected dates
-                              </span>
+                              {isAvailable ? (
+                                <span className="px-2 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/30">
+                                  {t('add.badges.available')}
+                                </span>
+                              ) : (
+                                <span className="px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/30">
+                                  {t('add.badges.booked')}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>

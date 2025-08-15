@@ -74,7 +74,20 @@
       "searching": "Recherche...",
       "noReservations": "Aucune réservation trouvée pour cette catégorie.",
       "noMatches": "Aucun produit correspondant.",
-      "reservationsCount": "{{count}} réservations"
+      "reservationsCount": "{{count}} réservations",
+      "detailsTitle": "Réservations pour {{product}}",
+      "columns": {
+        "customer": "Client",
+        "weddingDate": "Date de mariage",
+        "amount": "Montant de la réservation"
+      },
+      "close": "Fermer",
+      "noDetails": "Aucune réservation trouvée pour ce produit.",
+      "stats": {
+        "currentMonthRevenue": "Revenu du mois en cours",
+        "totalRevenue": "Revenu total",
+        "reservations": "Réservations"
+      }
     },
     "systemHealth": {
       "title": "État du Système",

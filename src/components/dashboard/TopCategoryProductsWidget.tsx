@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 type Reservation = {
   _id: string;
   items?: string[] | Array<{ _id: string }>; // reservation stores product ObjectIds
+  client?: { firstName?: string; lastName?: string; weddingDate?: string };
+  total?: number;
 };
 
 type Product = {
@@ -36,6 +38,11 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
   const [preview, setPreview] = useState<{ open: boolean; src: string; alt: string }>(
     { open: false, src: '', alt: '' }
   );
+  const [details, setDetails] = useState<{
+    open: boolean;
+    product?: Product | null;
+    rows: Array<{ id: string; customer: string; weddingDate: string; amount: number }>
+  }>({ open: false, product: null, rows: [] });
 
   // Map of productId -> Product limited to given category
   const categoryProductsMap = useMemo(() => {
@@ -123,7 +130,21 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
           <div className="text-sm text-gray-400">{t('widgets.topReservedProducts.noReservations')}</div>
         ) : (
           topTen.map(({ product, count }) => (
-            <div key={product._id} className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+            <div key={product._id} className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 cursor-pointer" onClick={() => {
+              // Build details rows from provided reservations prop
+              const rows: Array<{ id: string; customer: string; weddingDate: string; amount: number }> = [];
+              for (const r of reservations || []) {
+                const items = (r.items || []) as any[];
+                const has = items.some((it) => (typeof it === 'string' ? it : it?._id) === String(product._id));
+                if (!has) continue;
+                const fullName = `${r.client?.firstName || ''} ${r.client?.lastName || ''}`.trim() || '-';
+                const wdIso = r.client?.weddingDate ? String(r.client.weddingDate) : '';
+                const wd = wdIso ? `${wdIso.substring(8,10)}/${wdIso.substring(5,7)}/${wdIso.substring(0,4)}` : '-';
+                const amt = typeof r.total === 'number' ? r.total : 0;
+                rows.push({ id: r._id, customer: fullName, weddingDate: wd, amount: amt });
+              }
+              setDetails({ open: true, product, rows });
+            }}>
               {product.primaryPhoto ? (
                 <img
                   src={imageUrlFor(product.primaryPhoto)}
@@ -201,6 +222,86 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
           <div className="max-w-3xl max-h-[85vh] p-2" onClick={(e) => e.stopPropagation()}>
             <img src={preview.src} alt={preview.alt} className="max-w-full max-h-[80vh] rounded shadow-2xl" />
             <div className="text-center text-gray-300 mt-2 text-sm">{preview.alt}</div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Reservations details modal */}
+      {details.open && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center p-3" onClick={() => setDetails({ open: false, product: null, rows: [] })}>
+          <div className="bg-gray-900/95 border border-white/10 rounded-xl shadow-2xl w-[95vw] sm:w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <h4 className="text-white text-lg font-semibold">{t('widgets.topReservedProducts.detailsTitle', { product: details.product?.name })}</h4>
+                <p className="text-xs text-gray-400 mt-1">{t('widgets.topReservedProducts.reservationsCount', { count: details.rows.length })}</p>
+              </div>
+              <button className="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white text-sm" onClick={() => setDetails({ open: false, product: null, rows: [] })}>
+                {t('widgets.topReservedProducts.close')}
+              </button>
+            </div>
+
+            {/* Stats row */}
+            <div className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-3 border-b border-white/10 bg-white/5">
+              {(() => {
+                const now = new Date();
+                const year = now.getUTCFullYear();
+                const month = now.getUTCMonth();
+                const monthStart = new Date(Date.UTC(year, month, 1));
+                const nextMonthStart = new Date(Date.UTC(year, month + 1, 1));
+                const inCurrentMonth = (iso: string) => {
+                  const d = new Date(iso);
+                  return d >= monthStart && d < nextMonthStart;
+                };
+                const currentMonthRevenue = details.rows.reduce((sum, r) => sum + (inCurrentMonth(r.weddingDate.split('/').reverse().join('-') + 'T00:00:00.000Z') ? r.amount : 0), 0);
+                const totalRevenue = details.rows.reduce((sum, r) => sum + r.amount, 0);
+                return (
+                  <>
+                    <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="text-xs text-gray-400">{t('widgets.topReservedProducts.stats.currentMonthRevenue')}</div>
+                      <div className="text-white text-lg font-semibold mt-1">{currentMonthRevenue}</div>
+                    </div>
+                    <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="text-xs text-gray-400">{t('widgets.topReservedProducts.stats.totalRevenue')}</div>
+                      <div className="text-white text-lg font-semibold mt-1">{totalRevenue}</div>
+                    </div>
+                    <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="text-xs text-gray-400">{t('widgets.topReservedProducts.stats.reservations')}</div>
+                      <div className="text-white text-lg font-semibold mt-1">{details.rows.length}</div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Table */}
+            <div className="flex-1 p-5 overflow-auto">
+              {details.rows.length === 0 ? (
+                <div className="text-sm text-gray-400">{t('widgets.topReservedProducts.noDetails')}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead className="sticky top-0 bg-gray-900/95">
+                      <tr className="text-left text-gray-300">
+                        <th className="py-2 pr-3">{t('widgets.topReservedProducts.columns.customer')}</th>
+                        <th className="py-2 pr-3">{t('widgets.topReservedProducts.columns.weddingDate')}</th>
+                        <th className="py-2 pr-3">{t('widgets.topReservedProducts.columns.amount')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {details.rows.map((row) => (
+                        <tr key={row.id} className="border-t border-white/10 text-white hover:bg-white/5">
+                          <td className="py-2 pr-3">{row.customer}</td>
+                          <td className="py-2 pr-3">{row.weddingDate}</td>
+                          <td className="py-2 pr-3">{row.amount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         </div>,
         document.body

@@ -74,7 +74,21 @@
       "searching": "Searching...",
       "noReservations": "No reservations found for this category.",
       "noMatches": "No matching products.",
-      "reservationsCount": "{{count}} reservations"
+      "reservationsCount": "{{count}} reservations",
+      "detailsTitle": "Reservations for {{product}}",
+      "columns": {
+        "customer": "Customer",
+        "weddingDate": "Wedding Date",
+        "amount": "Reservation Amount"
+      },
+      "close": "Close",
+      "noDetails": "No reservations found for this product."
+      ,
+      "stats": {
+        "currentMonthRevenue": "Current Month Revenue",
+        "totalRevenue": "Total Revenue",
+        "reservations": "Reservations"
+      }
     },
     "systemHealth": {
       "title": "System Health",

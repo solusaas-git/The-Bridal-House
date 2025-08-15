@@ -217,6 +217,18 @@
       "returnDate": "Date de Retour",
       "availabilityDate": "Date de Disponibilité"
     },
+    "badges": {
+      "available": "Disponible",
+      "booked": "Réservé"
+    },
+    "filters": {
+      "availability": {
+        "label": "Disponibilité",
+        "all": "Tous",
+        "available": "Disponible",
+        "booked": "Réservé"
+      }
+    },
     "messages": {
       "noAvailableItems": "Aucun article disponible trouvé pour les critères sélectionnés",
       "tryAdjusting": "Essayez d'ajuster vos termes de recherche, filtre de catégorie, ou date de mariage",

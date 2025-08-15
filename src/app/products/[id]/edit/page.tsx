@@ -297,17 +297,17 @@ export default function EditProductPage() {
       submitData.append('existingSecondaryImages', JSON.stringify(existingSecondaryImages));
       submitData.append('existingVideoUrls', JSON.stringify(existingVideoUrls));
 
-      // Add new files
+      // Add new files (use product-specific field names so uploader routes to products folder)
       if (primaryPhoto) {
-        submitData.append('primaryPhoto', primaryPhoto);
+        submitData.append('product_primaryPhoto', primaryPhoto);
       }
 
       secondaryPhotos.forEach((photo) => {
-        submitData.append(`secondaryPhotos`, photo);
+        submitData.append('product_secondaryImages', photo);
       });
 
       videos.forEach((video) => {
-        submitData.append(`videos`, video);
+        submitData.append('product_videos', video);
       });
 
       const response = await axios.put(`/api/products/${productId}`, submitData, {

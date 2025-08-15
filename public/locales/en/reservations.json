@@ -217,6 +217,18 @@
       "returnDate": "Return Date",
       "availabilityDate": "Availability Date"
     },
+    "filters": {
+      "availability": {
+        "label": "Availability",
+        "all": "All",
+        "available": "Available",
+        "booked": "Booked"
+      }
+    },
+    "badges": {
+      "available": "Available",
+      "booked": "Booked"
+    },
     "messages": {
       "noAvailableItems": "No available items found for the selected criteria",
       "tryAdjusting": "Try adjusting your search terms, category filter, or wedding date"

@@ -431,7 +431,9 @@ export default function ProductsPage() {
                           alt={item.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/placeholder-product.png';
+                            const img = e.target as HTMLImageElement;
+                            img.onerror = null;
+                            img.src = '/file.svg';
                           }}
                         />
                       ) : (
@@ -631,7 +633,9 @@ export default function ProductsPage() {
                                   alt={item.name}
                                   className="h-10 w-10 rounded-lg object-cover mr-3"
                                   onError={(e) => {
-                                    (e.target as HTMLImageElement).src = '/placeholder-product.png';
+                                    const img = e.target as HTMLImageElement;
+                                    img.onerror = null;
+                                    img.src = '/file.svg';
                                   }}
                                 />
                               )}

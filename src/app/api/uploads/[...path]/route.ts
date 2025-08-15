@@ -5,10 +5,10 @@ import { list } from '@vercel/blob';
 let cachedBlobs: { blobs: any[], timestamp: number } | null = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-async function getCachedBlobs() {
+async function getCachedBlobs(forceRefresh: boolean = false) {
   const now = Date.now();
   
-  if (!cachedBlobs || (now - cachedBlobs.timestamp) > CACHE_DURATION) {
+  if (forceRefresh || !cachedBlobs || (now - cachedBlobs.timestamp) > CACHE_DURATION) {
     console.log('🔄 Refreshing blob cache...');
     const { blobs } = await list();
     cachedBlobs = { blobs, timestamp: now };
@@ -40,7 +40,7 @@ export async function GET(
     console.log(`🔍 Looking for file: "${requestedPath}" in Vercel Blob`);
 
     // Get cached blob list
-    const blobs = await getCachedBlobs();
+    let blobs = await getCachedBlobs();
     
     // Find the file that matches the requested path
     const matchingBlob = blobs.find(blob => {
@@ -57,13 +57,30 @@ export async function GET(
     });
 
     if (!matchingBlob) {
-      console.log(`❌ File not found in Vercel Blob: "${requestedPath}"`);
-      console.log(`🔍 Searched variations:`);
-      console.log(`  - "${requestedPath}"`);
-      console.log(`  - "uploads/${requestedPath}"`);
-      console.log(`  - Original: "${filePath.join('/')}"`);
-      console.log(`📁 Available files (first 20):`, blobs.map(b => b.pathname).slice(0, 20));
-      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+      // One more attempt: force refresh cache (useful right after an upload)
+      blobs = await getCachedBlobs(true);
+      const retryMatch = blobs.find(blob => {
+        const blobPath = blob.pathname;
+        return blobPath === requestedPath || 
+               blobPath === `uploads/${requestedPath}` ||
+               blobPath.endsWith(`/${requestedPath}`) ||
+               blobPath.includes(requestedPath) ||
+               blobPath === filePath.join('/') ||
+               blobPath === `uploads/${filePath.join('/')}`;
+      });
+
+      if (!retryMatch) {
+        console.log(`❌ File not found in Vercel Blob (after refresh): "${requestedPath}"`);
+        console.log(`🔍 Searched variations:`);
+        console.log(`  - "${requestedPath}"`);
+        console.log(`  - "uploads/${requestedPath}"`);
+        console.log(`  - Original: "${filePath.join('/')}"`);
+        console.log(`📁 Available files (first 20):`, blobs.map(b => b.pathname).slice(0, 20));
+        return NextResponse.json({ error: 'File not found' }, { status: 404 });
+      }
+
+      console.log(`✅ Found file in Vercel Blob after refresh: "${retryMatch.pathname}" -> redirecting to ${retryMatch.url}`);
+      return NextResponse.redirect(retryMatch.url);
     }
 
     console.log(`✅ Found file in Vercel Blob: "${matchingBlob.pathname}" -> redirecting to ${matchingBlob.url}`);

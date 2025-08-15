@@ -68,7 +68,8 @@ export async function handleMultipleFileUpload(
  * Maintains exact same API as before but uses Vercel Blob storage
  */
 export async function handleMultipleFileFields(
-  formData: FormData
+  formData: FormData,
+  resourceTypeHint?: 'customer' | 'product' | 'payment' | 'reservation' | 'cost'
 ): Promise<{ [fieldName: string]: UploadedFile[] }> {
   try {
     const results: { [fieldName: string]: UploadedFile[] } = {};
@@ -77,25 +78,45 @@ export async function handleMultipleFileFields(
     for (const [fieldName, value] of formData.entries()) {
       if (value instanceof File && value.size > 0) {
         
-        // Determine upload directory based on field name (maintain same logic)
+        // Determine upload directory
         let uploadDir: string = UPLOAD_FOLDERS.CUSTOMERS_IMAGES; // default
-        
-        if (fieldName.includes('customer')) {
-          uploadDir = fieldName.includes('document') 
-            ? UPLOAD_FOLDERS.CUSTOMERS_DOCUMENTS 
-            : UPLOAD_FOLDERS.CUSTOMERS_IMAGES;
-        } else if (fieldName.includes('product')) {
-          if (fieldName.includes('video')) {
-            uploadDir = UPLOAD_FOLDERS.PRODUCTS_VIDEOS;
-          } else if (fieldName.includes('document')) {
-            uploadDir = UPLOAD_FOLDERS.PRODUCTS_DOCUMENTS;
-          } else {
-            uploadDir = UPLOAD_FOLDERS.PRODUCTS_IMAGES;
-          }
-        } else if (fieldName.includes('payment')) {
+
+        // Priority 1: explicit resource type hint
+        if (resourceTypeHint === 'product') {
+          uploadDir = getProductUploadFolder(value);
+        } else if (resourceTypeHint === 'customer') {
+          uploadDir = getCustomerUploadFolder(value);
+        } else if (resourceTypeHint === 'payment') {
           uploadDir = UPLOAD_FOLDERS.PAYMENTS;
-        } else if (fieldName.includes('cost')) {
+        } else if (resourceTypeHint === 'cost') {
           uploadDir = UPLOAD_FOLDERS.COSTS;
+        } else {
+          // Priority 2: infer from field name (backward compatible)
+          if (fieldName.includes('customer')) {
+            uploadDir = fieldName.includes('document') 
+              ? UPLOAD_FOLDERS.CUSTOMERS_DOCUMENTS 
+              : UPLOAD_FOLDERS.CUSTOMERS_IMAGES;
+          } else if (fieldName.includes('product')) {
+            if (fieldName.includes('video')) {
+              uploadDir = UPLOAD_FOLDERS.PRODUCTS_VIDEOS;
+            } else if (fieldName.includes('document')) {
+              uploadDir = UPLOAD_FOLDERS.PRODUCTS_DOCUMENTS;
+            } else {
+              uploadDir = UPLOAD_FOLDERS.PRODUCTS_IMAGES;
+            }
+          } else if (fieldName.includes('payment')) {
+            uploadDir = UPLOAD_FOLDERS.PAYMENTS;
+          } else if (fieldName.includes('cost')) {
+            uploadDir = UPLOAD_FOLDERS.COSTS;
+          } else {
+            // Fallback: try to infer from file type for images/videos
+            const mime = value.type.toLowerCase();
+            if (mime.startsWith('image/')) {
+              uploadDir = UPLOAD_FOLDERS.PRODUCTS_IMAGES;
+            } else if (mime.startsWith('video/')) {
+              uploadDir = UPLOAD_FOLDERS.PRODUCTS_VIDEOS;
+            }
+          }
         }
         
         // Upload the file

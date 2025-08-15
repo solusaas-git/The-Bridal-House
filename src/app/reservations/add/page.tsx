@@ -106,27 +106,31 @@ const ProductCard = memo(({ product, isSelected, isAvailable, onToggle, currency
 ProductCard.displayName = 'ProductCard';
 
 // Optimized ProductGridCard component with React.memo
-const ProductGridCard = memo(({ product, isSelected, onToggle, currencySettings }: {
+const ProductGridCard = memo(({ product, isSelected, isAvailable, onToggle, currencySettings, t }: {
   product: any;
   isSelected: boolean;
+  isAvailable: boolean;
   onToggle: (product: any) => void;
   currencySettings: any;
+  t: (key: string) => string;
 }) => {
   return (
     <div
-      className={`relative rounded-lg border ${
-        isSelected
-          ? 'border-blue-500'
-          : 'border-white/10'
-      } overflow-hidden group cursor-pointer`}
-      onClick={() => onToggle(product)}
+      className={`relative rounded-lg border-2 ${
+        isAvailable ? 'border-green-500' : 'border-red-500'
+      } ${isSelected ? 'ring-2 ring-blue-500' : ''} overflow-hidden group ${isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+      aria-disabled={!isAvailable}
+      onClick={() => {
+        if (!isAvailable) return;
+        onToggle(product);
+      }}
     >
       <div className="aspect-[4/3] relative">
         {product.primaryPhoto ? (
           <img
             src={`/api/uploads/${product.primaryPhoto}`}
             alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover"
+            className={`absolute inset-0 w-full h-full object-cover ${isAvailable ? '' : 'opacity-50'}`}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbGw9IiMzNzQxNTEiLz4KPHR7d3QgeD0iMTI4IiB5PSIxMjgiIGZpbGw9IiM2QjcyODkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pgo8L3N2Zz4=';
@@ -157,12 +161,17 @@ const ProductGridCard = memo(({ product, isSelected, onToggle, currencySettings 
             <p className="text-gray-300 text-sm sm:text-xs font-medium">
               {formatCurrency(product.rentalCost || 0, currencySettings)}
             </p>
-            {isSelected && (
-              <div className="flex items-center text-blue-400 text-xs">
-                <CheckIcon className="w-3 h-3 mr-1" />
-                Selected
-              </div>
-            )}
+            <div className="flex items-center text-xs">
+              {isAvailable ? (
+                <span className="px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 border border-green-500/30">
+                  {t('add.badges.available')}
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
+                  {t('add.badges.booked')}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -219,6 +228,7 @@ export default function AddReservationPage() {
 
   // Category filter state
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
+  const [availabilityFilter, setAvailabilityFilter] = useState<'all' | 'available' | 'booked'>('all');
 
   const steps = [
             { number: 1, title: t('add.steps.clientSelection') },
@@ -344,120 +354,53 @@ export default function AddReservationPage() {
     }
   };
 
-  // Check item availability based on wedding date vs availability date of other reservations
+  // Check item availability with special rule for Accessories category
   const isItemAvailable = useCallback((product: any) => {
-    if (!formData.weddingDate) return true;
+    const ACCESSORIES_CATEGORY_ID = '677ff05d51a59d2f60f20b2d';
+    const categoryId = (product?.category && typeof product.category === 'object') ? product.category._id : product?.category;
+    const isAccessories = categoryId === ACCESSORIES_CATEGORY_ID;
 
-    const weddingDate = new Date(formData.weddingDate);
-    weddingDate.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
-
-    // Debug: Log the check for problematic items
-    if (product.name && product.name.toLowerCase().includes('dress')) {
-      console.log(`🔍 Checking availability for: ${product.name}`);
-      console.log(`📅 Wedding date: ${weddingDate.toDateString()}`);
-      console.log(`📦 Total reservations: ${reservations?.length || 0}`);
-    }
-
-    // Check if item is reserved and conflicts with our wedding date
-    const conflicts = reservations?.filter(reservation => {
-      // Skip cancelled reservations
-      if (reservation.status === 'Cancelled') return false;
-      
-      // Check if this product is in this reservation
-      const hasItem = reservation.items?.some((item: any) => {
-        const itemId = typeof item === 'string' ? item : item._id;
-        const matches = itemId === product._id;
-        
-        if (matches && product.name && product.name.toLowerCase().includes('dress')) {
-          console.log(`🎯 Found reservation with this item:`, {
-            reservationId: reservation._id,
-            status: reservation.status,
-            availabilityDate: reservation.availabilityDate,
-            itemInReservation: item
-          });
-        }
-        
-        return matches;
+    // Accessories: unavailable only on the customer's wedding date if already booked for that date
+    if (isAccessories) {
+      if (!formData.weddingDate) return true; // no wedding date selected yet
+      const newWedding = new Date(formData.weddingDate);
+      newWedding.setHours(0, 0, 0, 0);
+      const conflicts = reservations?.some((reservation: any) => {
+        if (reservation.status === 'Cancelled') return false;
+        // match item
+        const hasItem = reservation.items?.some((item: any) => (typeof item === 'string' ? item : item._id) === product._id);
+        if (!hasItem) return false;
+        // compare wedding dates
+        const resWedding = reservation?.client?.weddingDate ? new Date(reservation.client.weddingDate) : null;
+        if (!resWedding) return false;
+        resWedding.setHours(0, 0, 0, 0);
+        return resWedding.getTime() === newWedding.getTime();
       });
-      
-      if (!hasItem) return false;
-      
-      // Check for wedding date conflicts first (same wedding date = conflict regardless of pickup times)
-      if (reservation.client && (reservation.client as any).weddingDate) {
-        const reservationWeddingDate = new Date((reservation.client as any).weddingDate);
-        reservationWeddingDate.setHours(0, 0, 0, 0);
-        
-        if (weddingDate.getTime() === reservationWeddingDate.getTime()) {
-          if (product.name && product.name.toLowerCase().includes('dress')) {
-            console.log(`🚨 Wedding date conflict:`, {
-              ourWeddingDate: weddingDate.toDateString(),
-              existingWeddingDate: reservationWeddingDate.toDateString(),
-              conflict: 'Same wedding date - item unavailable'
-            });
-          }
-          return true; // Conflict: same wedding date
-        }
-      }
-
-      // Check if our wedding date falls within the reservation period (pickup to availability)
-      if (reservation.pickupDate && reservation.availabilityDate) {
-        const reservationPickupDate = new Date(reservation.pickupDate);
-        const reservationAvailabilityDate = new Date(reservation.availabilityDate);
-        reservationPickupDate.setHours(0, 0, 0, 0);
-        reservationAvailabilityDate.setHours(0, 0, 0, 0);
-        
-        // Item is NOT available if our wedding date falls within the pickup period (before availability date)
-        const isConflict = weddingDate >= reservationPickupDate && weddingDate < reservationAvailabilityDate;
-        
-        if (product.name && product.name.toLowerCase().includes('dress')) {
-          console.log(`📊 Date range comparison:`, {
-            ourWeddingDate: weddingDate.toDateString(),
-            reservationPickupDate: reservationPickupDate.toDateString(),
-            reservationAvailabilityDate: reservationAvailabilityDate.toDateString(),
-            isConflict,
-            formula: `${reservationPickupDate.toDateString()} <= ${weddingDate.toDateString()} < ${reservationAvailabilityDate.toDateString()} = ${isConflict}`
-          });
-        }
-        
-        return isConflict;
-      }
-      
-      // Fallback: if only availability date exists, use old logic
-      if (reservation.availabilityDate) {
-        const reservationAvailabilityDate = new Date(reservation.availabilityDate);
-        reservationAvailabilityDate.setHours(0, 0, 0, 0);
-        
-        const isConflict = weddingDate <= reservationAvailabilityDate;
-        
-        if (product.name && product.name.toLowerCase().includes('dress')) {
-          console.log(`📊 Availability-only comparison:`, {
-            ourWeddingDate: weddingDate.toDateString(),
-            reservationAvailabilityDate: reservationAvailabilityDate.toDateString(),
-            isConflict,
-            formula: `${weddingDate.toDateString()} <= ${reservationAvailabilityDate.toDateString()} = ${isConflict}`
-          });
-        }
-        
-        return isConflict;
-      }
-      
-      // If no availability date, assume it conflicts to be safe
-      if (product.name && product.name.toLowerCase().includes('dress')) {
-        console.log(`⚠️ No availability date found, assuming conflict`);
-      }
-      return true;
-    });
-
-    const isAvailable = conflicts?.length === 0;
-    
-    if (product.name && product.name.toLowerCase().includes('dress')) {
-      console.log(`✅ Final result for ${product.name}: ${isAvailable ? 'AVAILABLE' : 'NOT AVAILABLE'}`);
-      console.log(`🔄 Conflicts found: ${conflicts?.length || 0}`);
-      console.log('---');
+      return !conflicts;
     }
 
-    return isAvailable;
-  }, [formData.weddingDate, reservations]);
+    // Default: unavailable if overlap with pickup→availability range
+    const newPickup = formData.pickupDate ? new Date(formData.pickupDate) : null;
+    const newAvailability = formData.availabilityDate ? new Date(formData.availabilityDate) : null;
+    if (!newPickup || !newAvailability) return true;
+    newPickup.setHours(0, 0, 0, 0);
+    newAvailability.setHours(0, 0, 0, 0);
+
+    const overlaps = (aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) => (aStart < bEnd && bStart < aEnd);
+
+    const conflicts = reservations?.some((reservation: any) => {
+      if (reservation.status === 'Cancelled') return false;
+      if (!reservation.pickupDate || !reservation.availabilityDate) return false;
+      const hasItem = reservation.items?.some((item: any) => (typeof item === 'string' ? item : item._id) === product._id);
+      if (!hasItem) return false;
+      const resStart = new Date(reservation.pickupDate);
+      const resEnd = new Date(reservation.availabilityDate);
+      resStart.setHours(0, 0, 0, 0);
+      resEnd.setHours(0, 0, 0, 0);
+      return overlaps(newPickup, newAvailability, resStart, resEnd);
+    });
+    return !conflicts;
+  }, [formData.weddingDate, formData.pickupDate, formData.availabilityDate, reservations]);
 
   // Get unique categories from products
   const getCategories = useCallback(() => {
@@ -482,10 +425,9 @@ export default function AddReservationPage() {
     if (!products) return [];
     
     return products.filter(product => {
-      // First check availability
-      const isAvailable = isItemAvailable(product);
-      
-      // Then apply category filter
+      const available = isItemAvailable(product);
+
+      // Apply category filter
       const matchesCategory = selectedCategoryTab === 'all' || (() => {
         const categoryName = typeof product.category === 'object' && (product.category as any)?.name
           ? (product.category as any).name
@@ -493,16 +435,22 @@ export default function AddReservationPage() {
         return categoryName === selectedCategoryTab;
       })();
       
-      // Then apply search filter if there's a search term
+      // Apply search filter if there's a search term
       const matchesSearch = !itemSearchTerm || 
         product.name?.toLowerCase().includes(itemSearchTerm.toLowerCase()) ||
         (typeof product.category === 'object' && (product.category as any)?.name
           ? (product.category as any).name.toLowerCase().includes(itemSearchTerm.toLowerCase())
           : product.category?.toString().toLowerCase().includes(itemSearchTerm.toLowerCase()));
       
-      return isAvailable && matchesCategory && matchesSearch;
+      // Availability filter
+      const matchesAvailability =
+        availabilityFilter === 'all' ||
+        (availabilityFilter === 'available' && available) ||
+        (availabilityFilter === 'booked' && !available);
+
+      return matchesCategory && matchesSearch && matchesAvailability;
     });
-  }, [products, reservations, selectedCategoryTab, itemSearchTerm, isItemAvailable]);
+  }, [products, selectedCategoryTab, itemSearchTerm, availabilityFilter, isItemAvailable]);
 
   // Memoized filtered products to prevent unnecessary re-calculations
   const filteredProducts = useMemo(() => getFilteredProducts(), [
@@ -510,7 +458,8 @@ export default function AddReservationPage() {
     reservations, 
     selectedCategoryTab, 
     itemSearchTerm, 
-    isItemAvailable
+    isItemAvailable,
+    availabilityFilter
   ]);
 
   // Compute per-category counts independent of the currently selected tab
@@ -1091,6 +1040,22 @@ export default function AddReservationPage() {
           />
         </div>
 
+        {/* Availability Filter */}
+        <div className="flex items-center gap-2">
+          <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">
+            {t('add.filters.availability.label')}
+          </label>
+          <select
+            value={availabilityFilter}
+            onChange={(e) => setAvailabilityFilter(e.target.value as any)}
+            className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all" className="bg-gray-800">{t('add.filters.availability.all')}</option>
+            <option value="available" className="bg-gray-800">{t('add.filters.availability.available')}</option>
+            <option value="booked" className="bg-gray-800">{t('add.filters.availability.booked')}</option>
+          </select>
+        </div>
+
         {/* Available Items Grid - Mobile Optimized */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-96 overflow-y-auto">
           {filteredProducts.map((product: any) => (
@@ -1098,8 +1063,10 @@ export default function AddReservationPage() {
               key={product._id}
               product={product}
               isSelected={selectedItems.some(item => item._id === product._id)}
+              isAvailable={isItemAvailable(product)}
               onToggle={handleItemToggle}
               currencySettings={currencySettings}
+              t={t}
             />
           ))}
         </div>

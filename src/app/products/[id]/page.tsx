@@ -154,7 +154,9 @@ export default function ProductViewPage() {
 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
-    return `/api/uploads/${imagePath}`;
+    // Add cache-buster tied to last update so newly uploaded images resolve without manual refresh
+    const v = product?.updatedAt ? encodeURIComponent(product.updatedAt) : '';
+    return `/api/uploads/${imagePath}${v ? `?v=${v}` : ''}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -354,7 +356,9 @@ export default function ProductViewPage() {
                           alt={product.name}
                           className="max-w-full max-h-full object-contain"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/placeholder-product.png';
+                            const img = e.target as HTMLImageElement;
+                            img.onerror = null; // prevent loops
+                            img.src = '/file.svg';
                           }}
                         />
                         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -392,7 +396,9 @@ export default function ProductViewPage() {
                             alt={`${product.name} ${index + 1}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder-product.png';
+                              const img = e.target as HTMLImageElement;
+                              img.onerror = null;
+                              img.src = '/file.svg';
                             }}
                           />
                         </button>
