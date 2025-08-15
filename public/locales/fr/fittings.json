@@ -5,6 +5,7 @@
     "columns": {
       "customer": "Client",
       "type": "Type",
+      "weddingDate": "Date de mariage",
       "fittingDate": "Date d'essayage",
       "items": "Articles",
       "actions": "Actions"
@@ -31,7 +32,8 @@
     "fittingDate": "Date d'essayage",
     "fittingTime": "Heure d'essayage",
     "pickDate": "Choisir la date",
-    "submit": "Créer l'essayage"
+    "submit": "Créer l'essayage",
+    "chooseLater": "Choisir les articles plus tard"
   },
   "edit": {
     "title": "Modifier l'essayage",

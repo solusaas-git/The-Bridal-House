@@ -8,6 +8,7 @@ import { RootState } from '@/store/store';
 import { useTranslation } from 'react-i18next';
 import { EyeOpenIcon, Pencil1Icon, TrashIcon, Cross2Icon, ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 
 export default function FittingsPage() {
   const { t } = useTranslation('fittings');
@@ -50,7 +51,7 @@ export default function FittingsPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <h1 className="text-2xl font-bold text-white">{t('list.title')}</h1>
-          <a href="/fittings/new" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">{t('list.newButton')}</a>
+          <Link href="/fittings/new" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">{t('list.newButton')}</Link>
         </div>
 
         {/* Filters */}
@@ -124,7 +125,7 @@ export default function FittingsPage() {
             <thead className="bg-white/5 text-gray-300">
               <tr>
                 <th className="text-left p-3">{t('list.columns.customer')}</th>
-                <th className="text-left p-3">{t('list.columns.type')}</th>
+                <th className="text-left p-3">{t('list.columns.weddingDate')}</th>
                 <th className="text-left p-3">{t('list.columns.fittingDate')}</th>
                 <th className="text-left p-3">{t('list.columns.items')}</th>
                 <th className="text-right p-3">{t('list.columns.actions')}</th>
@@ -138,6 +139,8 @@ export default function FittingsPage() {
               ) : fittings.map((f) => {
                 const d = f?.pickupDate ? String(f.pickupDate) : '';
                 const date = d ? `${d.substring(8,10)}/${d.substring(5,7)}/${d.substring(0,4)} ${d.substring(11,16)}` : '-';
+                const wdStr = f?.client?.weddingDate ? String(f.client.weddingDate) : '';
+                const weddingDate = wdStr ? `${wdStr.substring(8,10)}/${wdStr.substring(5,7)}/${wdStr.substring(0,4)}` : '-';
                 const items: any[] = Array.isArray(f.items) ? f.items : [];
                 const shown = items.slice(0, 3);
                 const extra = Math.max(0, items.length - shown.length);
@@ -150,7 +153,7 @@ export default function FittingsPage() {
                         </a>
                       ) : '-'}
                     </td>
-                    <td className="p-3">{f.client?.type || '-'}</td>
+                    <td className="p-3">{weddingDate}</td>
                     <td className="p-3">{date}</td>
                     <td className="p-3">
                       {shown.length === 0 ? (

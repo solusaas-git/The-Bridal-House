@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { formatCurrency } from '@/utils/currency';
 import { EyeOpenIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
 
 export default function NewFittingPage() {
 	const router = useRouter();
@@ -36,6 +37,7 @@ export default function NewFittingPage() {
 	const [fittingTime, setFittingTime] = useState('15:00');
 	const [notes, setNotes] = useState('');
 	const [status, setStatus] = useState<'Confirmed' | 'Pending' | 'Cancelled'>('Confirmed');
+	const [chooseLater, setChooseLater] = useState(true);
 
 	// Items selection
 	const [selectedItems, setSelectedItems] = useState<any[]>([]);
@@ -158,6 +160,7 @@ export default function NewFittingPage() {
 			setSelectedItems((prev) => prev.filter((it) => it._id !== product._id));
 		} else {
 			setSelectedItems((prev) => [...prev, product]);
+			if (chooseLater) setChooseLater(false);
 		}
 	};
 
@@ -184,7 +187,7 @@ export default function NewFittingPage() {
 			case 1:
 				return !!selectedClient;
 			case 2:
-				return !!fittingDate && selectedItems.length > 0;
+				return !!fittingDate && (selectedItems.length > 0 || chooseLater);
 			default:
 				return false;
 		}
@@ -196,7 +199,7 @@ export default function NewFittingPage() {
 				{/* Header */}
 				<div className="flex items-center justify-between">
 					<h1 className="text-2xl font-bold text-white">{t('create.title')}</h1>
-					<a href="/fittings" className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-300">{t('common.close')}</a>
+					<Link href="/fittings" className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-300">{t('common.close')}</Link>
 				</div>
 
 				{/* Step indicator */}
@@ -284,6 +287,10 @@ export default function NewFittingPage() {
 										<div className="relative">
 											<CalendarIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
 											<input type="date" value={fittingDate} onChange={(e) => setFittingDate(e.target.value)} className="w-full pl-8 pr-2.5 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-sm" />
+										</div>
+										<div className="flex items-center justify-center gap-2 pt-2">
+											<input id="chooseLater" type="checkbox" checked={chooseLater} onChange={(e) => { const v = e.target.checked; setChooseLater(v); if (v) setSelectedItems([]); }} className="h-4 w-4 rounded border-white/30 bg-white/10 text-blue-600 focus:ring-blue-500 focus:ring-offset-0" />
+											<label htmlFor="chooseLater" className="text-xs text-gray-300 cursor-pointer">{t('create.chooseLater')}</label>
 										</div>
 										<label className="block text-xs font-medium text-gray-300 text-center">{t('common.status')}</label>
 										<select value={status} onChange={(e) => setStatus(e.target.value as any)} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
