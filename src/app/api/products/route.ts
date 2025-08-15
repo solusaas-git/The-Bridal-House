@@ -90,6 +90,17 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
+    // Get session user ID
+    const sessionCookie = request.cookies.get('session');
+    if (!sessionCookie?.value) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+    const session = JSON.parse(sessionCookie.value);
+    const userId = session?.userId;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     // Handle file uploads
     const formData = await request.formData();
     const uploadResults = await handleMultipleFileFields(formData);
@@ -105,7 +116,7 @@ export async function POST(request: NextRequest) {
       subCategory: formData.get('subCategory') as string,
       quantity: Number(formData.get('quantity') || 0),
       status: formData.get('status') as 'Draft' | 'Published' || 'Draft',
-      createdBy: formData.get('createdBy') as string, // TODO: Get from auth session
+      createdBy: userId,
     };
 
     // Add file URLs to product data
