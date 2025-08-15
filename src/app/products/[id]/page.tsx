@@ -179,10 +179,16 @@ export default function ProductViewPage() {
         }
       });
       
-      // Filter reservations that include this product
-      const productReservations = response.data.reservations.filter((reservation: any) =>
-        reservation.items?.some((item: any) => item._id === productId)
-      );
+      // Filter reservations that include this product and are valid
+      const productReservations = response.data.reservations.filter((reservation: any) => {
+        if (reservation.status === 'Cancelled') return false;
+        if (!reservation.pickupDate || !reservation.availabilityDate) return false;
+        const hasItem = reservation.items?.some((item: any) => {
+          const itemId = typeof item === 'string' ? item : item?._id;
+          return itemId === productId;
+        });
+        return Boolean(hasItem);
+      });
       
       setReservations(productReservations);
     } catch (error) {
@@ -209,31 +215,39 @@ export default function ProductViewPage() {
     const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
     
     return days.map(date => {
+      // Normalize checked date to midday to avoid edge issues
+      const day = new Date(date);
+      day.setHours(12, 0, 0, 0);
+
       const dayReservations = reservations.filter(reservation => {
-        const pickupDate = parseISO(reservation.pickupDate);
-        const availabilityDate = parseISO(reservation.availabilityDate);
-        
-        // Check if the date falls within the unavailable period (pickup to availability)
-        return isWithinInterval(date, { start: pickupDate, end: availabilityDate });
+        const start = new Date(String(reservation.pickupDate));
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(String(reservation.availabilityDate));
+        end.setHours(0, 0, 0, 0);
+        // Treat availabilityDate as available again the day after, so mark range as [start .. end] inclusive on date-only basis
+        const within = (day >= start && day <= end);
+        return within;
       });
-      
+
       let status: 'available' | 'booked' | 'unavailable' = 'available';
       if (dayReservations.length > 0) {
-        // Check if it's exactly on pickup/return dates or in between
-        const hasPickup = dayReservations.some(r => isSameDay(date, parseISO(r.pickupDate)));
-        const hasReturn = dayReservations.some(r => isSameDay(date, parseISO(r.returnDate)));
-        
-        if (hasPickup || hasReturn) {
-          status = 'booked';
-        } else {
-          status = 'unavailable';
-        }
+        const isStart = dayReservations.some(r => {
+          const s = new Date(String(r.pickupDate));
+          s.setHours(0, 0, 0, 0);
+          return isSameDay(day, s);
+        });
+        const isEnd = dayReservations.some(r => {
+          const e = new Date(String(r.availabilityDate));
+          e.setHours(0, 0, 0, 0);
+          return isSameDay(day, e);
+        });
+        status = (isStart || isEnd) ? 'booked' : 'unavailable';
       }
-      
+
       return {
-        date,
-        isCurrentMonth: isSameMonth(date, currentDate),
-        isToday: isSameDay(date, today),
+        date: day,
+        isCurrentMonth: isSameMonth(day, currentDate),
+        isToday: isSameDay(day, today),
         reservations: dayReservations,
         status,
       };

@@ -14,6 +14,7 @@ import { setCosts } from '@/store/reducers/costSlice';
 import StatsWidget from '@/components/dashboard/StatsWidget';
 import PickupsWidget from '@/components/dashboard/PickupsWidget';
 import ReturnsWidget from '@/components/dashboard/ReturnsWidget';
+import FittingsWidget from '@/components/dashboard/FittingsWidget';
 import QuickActionsWidget from '@/components/dashboard/QuickActionsWidget';
 import SystemHealthWidget from '@/components/dashboard/SystemHealthWidget';
 import TopCategoryProductsWidget from '@/components/dashboard/TopCategoryProductsWidget';
@@ -181,6 +182,7 @@ const DashboardContent = () => {
   const reservations = useSelector((state: RootState) => (state.reservation as { reservations: Reservation[] })?.reservations || []);
   const payments = useSelector((state: RootState) => (state.payment as { payments: Payment[] })?.payments || []);
   const costs = useSelector((state: RootState) => (state.cost as { costs: Cost[] })?.costs || []);
+  const [fittingsData, setFittingsData] = useState<any[]>([]);
   const currencySettings = useSelector((state: RootState) => state.settings);
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const router = useRouter();
@@ -230,12 +232,13 @@ const DashboardContent = () => {
         setLoading(true);
         
         // Fetch all data in parallel
-        const [customersRes, productsRes, reservationsRes, paymentsRes, costsRes] = await Promise.all([
+        const [customersRes, productsRes, reservationsRes, paymentsRes, costsRes, fittingsRes] = await Promise.all([
           axios.get('/api/customers?limit=1000'),
           axios.get('/api/products?limit=1000'),
           axios.get('/api/reservations?limit=1000'),
           axios.get('/api/payments?limit=1000'),
           axios.get('/api/costs?limit=1000'),
+          axios.get('/api/fittings?limit=1000'),
         ]);
 
         // Data fetched successfully - debug logging removed
@@ -267,6 +270,10 @@ const DashboardContent = () => {
           dispatch(setCosts(costsRes.data.costs));
         }
 
+        if (fittingsRes.data.fittings) {
+          setFittingsData(fittingsRes.data.fittings);
+        }
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -280,11 +287,13 @@ const DashboardContent = () => {
   const [dateRanges, setDateRanges] = useState({
     pickup: {} as DateRange,
     return: {} as DateRange,
+    fitting: {} as DateRange,
   });
 
   const [activeRange, setActiveRange] = useState({
     pickup: '',
     return: '',
+    fitting: '',
   });
 
   // Stats date range filter
@@ -298,6 +307,7 @@ const DashboardContent = () => {
   const availableWidgets = useMemo(() => {
     const widgets = [
       { id: 'stats', label: t('widgets.stats.title'), width: 'full' },
+      { id: 'fittings', label: t('widgets.fittings.title'), width: 'full' },
       { id: 'pickups', label: t('widgets.pickups.title'), width: 'half' },
       { id: 'returns', label: t('widgets.returns.title'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions.title'), width: 'half' },
@@ -367,14 +377,18 @@ const DashboardContent = () => {
       const thisMonthKey = t('dateRanges.thisMonth');
       
       if (PREDEFINED_RANGES[thisWeekKey] && !activeRange.pickup) {
-        setDateRanges({
+        setDateRanges(prev => ({
+          ...prev,
           pickup: PREDEFINED_RANGES[thisWeekKey],
           return: PREDEFINED_RANGES[thisWeekKey],
-        });
-        setActiveRange({
+          fitting: PREDEFINED_RANGES[thisWeekKey],
+        }));
+        setActiveRange(prev => ({
+          ...prev,
           pickup: thisWeekKey,
           return: thisWeekKey,
-        });
+          fitting: thisWeekKey,
+        }));
       }
       
       if (PREDEFINED_RANGES[thisMonthKey] && !activeStatsRange) {
@@ -386,7 +400,7 @@ const DashboardContent = () => {
 
   const widgetOrder = availableWidgets.map(w => w.id);
 
-  const handleDateRangeChange = (widget: 'pickup' | 'return', range: DateRange, label: string) => {
+  const handleDateRangeChange = (widget: 'pickup' | 'return' | 'fitting', range: DateRange, label: string) => {
     setDateRanges(prev => ({
       ...prev,
       [widget]: range,
@@ -511,6 +525,16 @@ const DashboardContent = () => {
             dateRange={dateRanges.return}
             onDateRangeChange={(range, label) => handleDateRangeChange('return', range, label)}
             activeRange={activeRange.return}
+            predefinedRanges={PREDEFINED_RANGES}
+          />
+        );
+      case 'fittings':
+        return (
+          <FittingsWidget
+            fittings={fittingsData as any}
+            dateRange={dateRanges.fitting}
+            onDateRangeChange={(range, label) => handleDateRangeChange('fitting', range, label)}
+            activeRange={activeRange.fitting}
             predefinedRanges={PREDEFINED_RANGES}
           />
         );

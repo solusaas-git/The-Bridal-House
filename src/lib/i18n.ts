@@ -17,6 +17,7 @@ const namespaces = [
   'impersonation',
   'costs',
   'settings',
+  'fittings',
   'shared'
 ];
 

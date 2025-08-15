@@ -3,6 +3,7 @@ export { default as User } from './user';
 export { default as Customer } from './customer';
 export { default as Product } from './product';
 export { default as Reservation } from './reservation';
+export { default as Fitting } from './fitting';
 export { default as Payment } from './payment';
 export { default as Category } from './category';
 export { Settings } from './settings';

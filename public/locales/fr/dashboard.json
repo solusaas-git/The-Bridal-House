@@ -47,6 +47,18 @@
       "endDate": "Date de Fin", 
       "to": "à"
     },
+    "fittings": {
+      "title": "Essayages à Venir",
+      "to": "à",
+      "noFittings": "Aucun essayage pour cette période",
+      "items": "article(s)",
+      "viewAll": "Voir tous les essayages ({{count}})",
+      "unknownCustomer": "Client Inconnu",
+      "phone": "Téléphone",
+      "weddingDate": "Date de mariage",
+      "articles": "Articles",
+      "images": "Images"
+    },
     "quickActions": {
       "title": "Actions Rapides",
       "addCustomer": {

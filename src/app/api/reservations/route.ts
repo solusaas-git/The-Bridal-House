@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Build query
-    const query: Record<string, unknown> = {};
+    const query: Record<string, unknown> = { type: { $ne: 'Fitting' } };
     
     // Text search with client and product information
     if (search) {

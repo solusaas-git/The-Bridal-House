@@ -1,0 +1,89 @@
+{
+  "list": {
+    "title": "Essayages",
+    "newButton": "Nouvel essayage",
+    "columns": {
+      "customer": "Client",
+      "type": "Type",
+      "fittingDate": "Date d'essayage",
+      "items": "Articles",
+      "actions": "Actions"
+    },
+    "loading": "Chargement...",
+    "empty": "Aucun essayage trouvé",
+    "actions": {
+      "view": "Voir",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "deleteConfirm": "Supprimer cet essayage ?"
+  },
+  "create": {
+    "title": "Nouvel essayage",
+    "steps": {
+      "clientSelection": "Sélection du client",
+      "itemsAndDate": "Articles & Date d'essayage"
+    },
+    "selectClient": "Sélectionner un client",
+    "searchCustomersPlaceholder": "Rechercher des clients par nom ou téléphone...",
+    "searchItemsPlaceholder": "Rechercher des articles...",
+    "itemsAndDate": "Articles & Date d'essayage",
+    "fittingDate": "Date d'essayage",
+    "fittingTime": "Heure d'essayage",
+    "pickDate": "Choisir la date",
+    "submit": "Créer l'essayage"
+  },
+  "edit": {
+    "title": "Modifier l'essayage",
+    "searchCustomersPlaceholder": "Rechercher des clients par nom ou téléphone...",
+    "save": "Enregistrer les modifications"
+  },
+  "details": {
+    "title": "Détails de l'essayage",
+    "editButton": "Modifier",
+    "fittingSection": "Essayage",
+    "noItems": "Aucun article sélectionné"
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "searching": "Recherche...",
+    "noCustomers": "Aucun client trouvé",
+    "client": "Client",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "weddingDate": "Date de mariage",
+    "fittingDate": "Date d'essayage",
+    "fittingTime": "Heure d'essayage",
+    "fittingDateTime": "Date/Heure d'essayage",
+    "status": "Statut",
+    "notes": "Notes",
+    "optionalNotes": "Notes facultatives...",
+    "items": "Articles",
+    "preview": "Aperçu"
+  },
+  "filters": {
+    "availability": {
+      "label": "Disponibilité",
+      "all": "Tous",
+      "available": "Disponible",
+      "booked": "Réservé"
+    },
+    "allStatuses": "Tous les statuts",
+    "selected": "sélectionné(s)",
+    "apply": "Appliquer",
+    "cancel": "Annuler"
+  },
+  "badges": {
+    "available": "Disponible",
+    "booked": "Réservé"
+  },
+  "statuses": {
+    "confirmed": "Confirmé",
+    "pending": "En attente",
+    "cancelled": "Annulé"
+  }
+}
+

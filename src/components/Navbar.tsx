@@ -16,6 +16,7 @@ import {
   Settings as SettingsIcon,
   CheckCircle,
   Receipt,
+  ClipboardList,
 } from 'lucide-react';
 import { canViewMenu } from '@/utils/permissions';
 import { useApprovalsCount } from '@/hooks/useApprovalsCount';
@@ -41,6 +42,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
     if (pathname.includes('/payments')) return 'Payments';
     if (pathname.includes('/products')) return 'Products';
     if (pathname.includes('/reservations')) return 'Reservations';
+    if (pathname.includes('/fittings')) return 'Fittings';
     if (pathname.includes('/costs')) return 'Costs';
     if (pathname.includes('/approvals')) return 'Approvals';
     if (pathname.includes('/settings')) return 'Settings';
@@ -59,6 +61,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
     const allTabs = [
       { name: 'Dashboard', label: t('dashboard'), icon: Home, path: '/dashboard', permission: 'dashboard' },
       { name: 'Customers', label: t('customers'), icon: Users, path: '/customers', permission: 'customers' },
+      { name: 'Fittings', label: t('fittings'), icon: ClipboardList, path: '/fittings', permission: 'reservations' },
       { name: 'Reservations', label: t('reservations'), icon: Calendar, path: '/reservations', permission: 'reservations' },
       { name: 'Payments', label: t('payments'), icon: DollarSign, path: '/payments', permission: 'payments' },
       { name: 'Products', label: t('products'), icon: Shirt, path: '/products', permission: 'products' },

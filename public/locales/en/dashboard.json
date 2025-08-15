@@ -6,7 +6,7 @@
   "dateRanges": {
     "today": "Today",
     "lastWeek": "Last Week",
-    "thisWeek": "This Week", 
+    "thisWeek": "This Week",
     "nextWeek": "Next Week",
     "lastMonth": "Last Month",
     "thisMonth": "This Month",
@@ -27,9 +27,9 @@
     },
     "pickups": {
       "title": "Upcoming Pickups",
-      "noPickups": "No pickups scheduled for this period",
+      "noPickups": "No pickups scheduled in this period",
       "unknownCustomer": "Unknown Customer",
-      "items": "item(s)",
+      "items": "items",
       "viewAll": "View all {{count}} pickups",
       "customRangeActive": "Custom Range Active",
       "startDate": "Start Date",
@@ -38,14 +38,26 @@
     },
     "returns": {
       "title": "Upcoming Returns",
-      "noReturns": "No returns scheduled for this period",
+      "noReturns": "No returns scheduled in this period",
       "unknownCustomer": "Unknown Customer",
-      "items": "item(s)",
+      "items": "items",
       "viewAll": "View all {{count}} returns",
       "customRangeActive": "Custom Range Active",
-      "startDate": "Start Date", 
+      "startDate": "Start Date",
       "endDate": "End Date",
       "to": "to"
+    },
+    "fittings": {
+      "title": "Upcoming Fittings",
+      "to": "to",
+      "noFittings": "No fittings in this period",
+      "items": "items",
+      "viewAll": "View all fittings ({{count}})",
+      "unknownCustomer": "Unknown customer",
+      "phone": "Phone",
+      "weddingDate": "Wedding Date",
+      "articles": "Articles",
+      "images": "Images"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -54,23 +66,22 @@
         "description": "Create a new customer profile"
       },
       "addProduct": {
-        "name": "Add Product", 
-        "description": "Add new product to inventory"
+        "name": "Add Product",
+        "description": "Add a new product to inventory"
       },
       "newReservation": {
         "name": "New Reservation",
-        "description": "Create a new booking"
+        "description": "Create a new reservation"
       },
       "recordPayment": {
         "name": "Record Payment",
-        "description": "Add payment record"
+        "description": "Add a payment record"
       }
     },
-    
     "topReservedProducts": {
       "robesTitle": "Top Reserved Products (Robes)",
       "accessoriesTitle": "Top Reserved Products (Accessories)",
-      "searchPlaceholder": "Search other products in category...",
+      "searchPlaceholder": "Search for other products in the category...",
       "searching": "Searching...",
       "noReservations": "No reservations found for this category.",
       "noMatches": "No matching products.",
@@ -82,8 +93,7 @@
         "amount": "Reservation Amount"
       },
       "close": "Close",
-      "noDetails": "No reservations found for this product."
-      ,
+      "noDetails": "No reservations found for this product.",
       "stats": {
         "currentMonthRevenue": "Current Month Revenue",
         "totalRevenue": "Total Revenue",

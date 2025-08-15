@@ -1,0 +1,89 @@
+{
+  "list": {
+    "title": "Fittings",
+    "newButton": "New Fitting",
+    "columns": {
+      "customer": "Customer",
+      "type": "Type",
+      "fittingDate": "Fitting Date",
+      "items": "Items",
+      "actions": "Actions"
+    },
+    "loading": "Loading...",
+    "empty": "No fittings found",
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": "Delete this fitting?"
+  },
+  "create": {
+    "title": "New Fitting",
+    "steps": {
+      "clientSelection": "Client Selection",
+      "itemsAndDate": "Items & Fitting Date"
+    },
+    "selectClient": "Select Client",
+    "searchCustomersPlaceholder": "Search customers by name or phone...",
+    "searchItemsPlaceholder": "Search items...",
+    "itemsAndDate": "Items & Fitting Date",
+    "fittingDate": "Fitting Date",
+    "fittingTime": "Fitting Time",
+    "pickDate": "Pick Date",
+    "submit": "Create Fitting"
+  },
+  "edit": {
+    "title": "Edit Fitting",
+    "searchCustomersPlaceholder": "Search customers by name or phone...",
+    "save": "Save Changes"
+  },
+  "details": {
+    "title": "Fitting Details",
+    "editButton": "Edit",
+    "fittingSection": "Fitting",
+    "noItems": "No items selected"
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "next": "Next",
+    "previous": "Previous",
+    "searching": "Searching...",
+    "noCustomers": "No customers found",
+    "client": "Client",
+    "name": "Name",
+    "phone": "Phone",
+    "weddingDate": "Wedding Date",
+    "fittingDate": "Fitting Date",
+    "fittingTime": "Fitting Time",
+    "fittingDateTime": "Fitting Date/Time",
+    "status": "Status",
+    "notes": "Notes",
+    "optionalNotes": "Optional notes...",
+    "items": "Items",
+    "preview": "Preview"
+  },
+  "filters": {
+    "availability": {
+      "label": "Availability",
+      "all": "All",
+      "available": "Available",
+      "booked": "Booked"
+    },
+    "allStatuses": "All statuses",
+    "selected": "selected",
+    "apply": "Apply",
+    "cancel": "Cancel"
+  },
+  "badges": {
+    "available": "Available",
+    "booked": "Booked"
+  },
+  "statuses": {
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  }
+}
+
