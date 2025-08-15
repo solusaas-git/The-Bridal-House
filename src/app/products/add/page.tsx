@@ -139,15 +139,19 @@ export default function AddProductPage() {
 
       // Add files
       if (primaryPhoto) {
-        submitData.append('primaryPhoto', primaryPhoto);
+        // Ensure consistent field name to route to products folder
+        const renamed = new File([primaryPhoto], `product_${primaryPhoto.name}`, { type: primaryPhoto.type });
+        submitData.append('primaryPhoto', renamed);
       }
 
-      secondaryPhotos.forEach((photo, index) => {
-        submitData.append(`secondaryPhotos`, photo);
+      secondaryPhotos.forEach((photo) => {
+        const renamed = new File([photo], `product_${photo.name}`, { type: photo.type });
+        submitData.append('secondaryPhotos', renamed);
       });
 
-      videos.forEach((video, index) => {
-        submitData.append(`videos`, video);
+      videos.forEach((video) => {
+        const renamed = new File([video], `product_${video.name}`, { type: video.type });
+        submitData.append('videos', renamed);
       });
 
       const response = await axios.post('/api/products', submitData, {

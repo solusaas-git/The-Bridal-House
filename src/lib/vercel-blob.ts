@@ -5,7 +5,7 @@ export const UPLOAD_FOLDERS = {
   // Production folders
   CUSTOMERS_IMAGES: 'uploads/customers/images',
   CUSTOMERS_DOCUMENTS: 'uploads/customers/documents', 
-  PRODUCTS_IMAGES: 'uploads/products/images',
+  PRODUCTS_IMAGES: 'uploads/products',
   PRODUCTS_VIDEOS: 'uploads/products/videos',
   PRODUCTS_DOCUMENTS: 'uploads/products/documents',
   PAYMENTS: 'uploads/payment',
@@ -14,7 +14,7 @@ export const UPLOAD_FOLDERS = {
   // Approval folders (mirror the production structure)
   APPROVALS_CUSTOMERS_IMAGES: 'approvals/customers/images',
   APPROVALS_CUSTOMERS_DOCUMENTS: 'approvals/customers/documents',
-  APPROVALS_PRODUCTS_IMAGES: 'approvals/products/images', 
+  APPROVALS_PRODUCTS_IMAGES: 'approvals/products', 
   APPROVALS_PRODUCTS_VIDEOS: 'approvals/products/videos',
   APPROVALS_PRODUCTS_DOCUMENTS: 'approvals/products/documents',
   APPROVALS_PAYMENTS: 'approvals/payments',
