@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function AddProductPage() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.category.categories);
   const currencySettings = useSelector((state: RootState) => state.settings);
   const { t } = useTranslation('products');
@@ -42,6 +43,25 @@ export default function AddProductPage() {
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(false);
+  
+  // Ensure categories are loaded when opening add page
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        if (!categories || categories.length === 0) {
+          const res = await axios.get('/api/categories');
+          if (Array.isArray(res.data)) {
+            const { setCategories } = await import('@/store/reducers/categorySlice');
+            dispatch(setCategories(res.data));
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load categories for add product:', e);
+      }
+    };
+    loadCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (formData.category && categories) {
