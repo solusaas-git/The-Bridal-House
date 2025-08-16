@@ -238,7 +238,7 @@ export const handleDownloadWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates with time (considering timezone)
+  // Format dates with time (using UTC to avoid timezone conversion)
   const pickupDate = reservation.pickupDate ? 
     new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
@@ -246,7 +246,7 @@ export const handleDownloadWeddingDressRentalContract = async (
       year: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'Africa/Casablanca' // Morocco timezone
+      timeZone: 'UTC' // Display exact UTC time from database
     }) : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
@@ -255,7 +255,7 @@ export const handleDownloadWeddingDressRentalContract = async (
       year: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'Africa/Casablanca' // Morocco timezone
+      timeZone: 'UTC' // Display exact UTC time from database
     }) : '';
 
   // Load signature image
@@ -482,7 +482,7 @@ export const handlePreviewWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates with time (considering timezone)
+  // Format dates with time (using UTC to avoid timezone conversion)
   const pickupDate = reservation.pickupDate ? 
     new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
@@ -490,7 +490,7 @@ export const handlePreviewWeddingDressRentalContract = async (
       year: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'Africa/Casablanca' // Morocco timezone
+      timeZone: 'UTC' // Display exact UTC time from database
     }) : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
@@ -499,7 +499,7 @@ export const handlePreviewWeddingDressRentalContract = async (
       year: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'Africa/Casablanca' // Morocco timezone
+      timeZone: 'UTC' // Display exact UTC time from database
     }) : '';
 
   // Load signature image
