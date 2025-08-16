@@ -247,7 +247,7 @@ export const handleDownloadWeddingDressRentalContract = async (
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'UTC' // Display exact UTC time from database
-    }) : '';
+    }).replace(' ', ' à ') : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
@@ -256,7 +256,7 @@ export const handleDownloadWeddingDressRentalContract = async (
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'UTC' // Display exact UTC time from database
-    }) : '';
+    }).replace(' ', ' à ') : '';
 
   // Load signature image
   let signatureImage: string | null = null;
@@ -491,7 +491,7 @@ export const handlePreviewWeddingDressRentalContract = async (
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'UTC' // Display exact UTC time from database
-    }) : '';
+    }).replace(' ', ' à ') : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
@@ -500,7 +500,7 @@ export const handlePreviewWeddingDressRentalContract = async (
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'UTC' // Display exact UTC time from database
-    }) : '';
+    }).replace(' ', ' à ') : '';
 
   // Load signature image
   let signatureImage: string | null = null;
