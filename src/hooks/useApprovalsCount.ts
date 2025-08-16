@@ -32,7 +32,9 @@ export const useApprovalsCount = () => {
       dispatch(setPendingCount(response.data.count));
     } catch (error) {
       // Only log non-401 errors to reduce noise
-      if (error.response?.status !== 401) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status !== 401) {
+        console.error('Error fetching pending approvals count:', error);
+      } else if (!(error instanceof Error) || !('response' in error)) {
         console.error('Error fetching pending approvals count:', error);
       }
       dispatch(setPendingCount(0));
