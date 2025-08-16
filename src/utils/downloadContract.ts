@@ -238,14 +238,15 @@ export const handleDownloadWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates with time
+  // Format dates with time (considering timezone)
   const pickupDate = reservation.pickupDate ? 
     new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
       month: '2-digit', 
       year: 'numeric', 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      timeZone: 'Africa/Casablanca' // Morocco timezone
     }) : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
@@ -253,7 +254,8 @@ export const handleDownloadWeddingDressRentalContract = async (
       month: '2-digit', 
       year: 'numeric', 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      timeZone: 'Africa/Casablanca' // Morocco timezone
     }) : '';
 
   // Load signature image
@@ -480,14 +482,15 @@ export const handlePreviewWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates with time
+  // Format dates with time (considering timezone)
   const pickupDate = reservation.pickupDate ? 
     new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
       day: '2-digit', 
       month: '2-digit', 
       year: 'numeric', 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      timeZone: 'Africa/Casablanca' // Morocco timezone
     }) : '';
   const returnDate = reservation.returnDate ? 
     new Date(reservation.returnDate).toLocaleString('fr-FR', { 
@@ -495,7 +498,8 @@ export const handlePreviewWeddingDressRentalContract = async (
       month: '2-digit', 
       year: 'numeric', 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      timeZone: 'Africa/Casablanca' // Morocco timezone
     }) : '';
 
   // Load signature image
