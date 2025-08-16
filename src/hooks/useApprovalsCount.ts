@@ -14,18 +14,27 @@ export const useApprovalsCount = () => {
 
     try {
       dispatch(setCountLoading(true));
-      const response = await axios.get('/api/approvals/count', { validateStatus: () => true });
+      const response = await axios.get('/api/approvals/count', { 
+        validateStatus: () => true,
+        timeout: 5000 // 5 second timeout
+      });
+      
       if (response.status === 401) {
-        // Unauthorized: clear count silently
+        // Unauthorized: clear count silently (don't log as error)
         dispatch(setPendingCount(0));
         return;
       }
+      
       if (response.status !== 200) {
         throw new Error(response.data?.error || `HTTP ${response.status}`);
       }
+      
       dispatch(setPendingCount(response.data.count));
     } catch (error) {
-      console.error('Error fetching pending approvals count:', error);
+      // Only log non-401 errors to reduce noise
+      if (error.response?.status !== 401) {
+        console.error('Error fetching pending approvals count:', error);
+      }
       dispatch(setPendingCount(0));
     } finally {
       dispatch(setCountLoading(false));
@@ -37,13 +46,13 @@ export const useApprovalsCount = () => {
     fetchPendingCount();
   }, [fetchPendingCount]);
 
-  // Set up polling for real-time updates (every 30 seconds)
+  // Set up polling for real-time updates (every 60 seconds to reduce server load)
   useEffect(() => {
     if (!currentUser) return;
 
     const interval = setInterval(() => {
       fetchPendingCount();
-    }, 30000); // 30 seconds
+    }, 60000); // 60 seconds (reduced from 30 to minimize 401s)
 
     return () => clearInterval(interval);
   }, [fetchPendingCount, currentUser]);

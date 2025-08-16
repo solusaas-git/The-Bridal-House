@@ -13,26 +13,37 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const session = JSON.parse(sessionCookie.value);
-    if (!session.userId) {
+    let session;
+    try {
+      session = JSON.parse(sessionCookie.value);
+    } catch (parseError) {
+      // Invalid JSON in session cookie
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    }
+
+    if (!session?.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user to check role
     const user = await User.findById(session.userId);
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    // Check if user is active
+    if (user.status && user.status !== 'Active') {
+      return NextResponse.json({ error: 'Account inactive' }, { status: 401 });
     }
 
     let count = 0;
 
-    // If user is admin, count all pending approvals
-    if (user.role === 'Admin') {
+    // If user is admin or manager, count all pending approvals
+    const userRole = user.role?.toLowerCase();
+    if (userRole === 'admin' || userRole === 'manager') {
       count = await Approval.countDocuments({ status: 'pending' });
     } else {
-      // For non-admin users, count pending approvals they can review
-      // This would depend on your permission system
-      // For now, we'll return 0 for non-admin users
+      // For non-admin/manager users, return 0
       count = 0;
     }
 
