@@ -74,7 +74,7 @@ if (!i18n.isInitialized) {
     .init({
       resources,
       fallbackLng: 'fr',
-      debug: process.env.NODE_ENV === 'development',
+      debug: false,
       
       // Language detection options
       detection: {

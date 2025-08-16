@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Reduce development logs
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
+  },
   images: {
     unoptimized: true, // Disable optimization for Vercel Blob compatibility
     remotePatterns: [
