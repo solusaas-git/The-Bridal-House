@@ -21,6 +21,7 @@ import { formatCurrency } from '@/utils/currency';
 import Layout from '@/components/Layout';
 import { useTranslation } from 'react-i18next';
 import AttachmentsSection from '@/components/shared/AttachmentsSection';
+import { handleDownloadWeddingDressRentalContract, handlePreviewWeddingDressRentalContract } from '@/utils/downloadContract';
 
 interface Reservation {
   _id: string;
@@ -318,7 +319,25 @@ export default function ViewReservationPage() {
             {/* 1. Client Info */}
             {reservation.client && (
               <div className="bg-white/5 p-4 rounded-lg">
-                <h4 className="text-base sm:text-lg font-medium text-white mb-4">{t('details.clientInfo.title')}</h4>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h4 className="text-base sm:text-lg font-medium text-white">{t('details.clientInfo.title')}</h4>
+                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                    <button
+                      onClick={() => handlePreviewWeddingDressRentalContract(reservation, currencySettings)}
+                      className="inline-flex items-center justify-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      <CalendarIcon className="w-3 h-3 mr-1" />
+                      {t('details.previewContract')}
+                    </button>
+                    <button
+                      onClick={() => handleDownloadWeddingDressRentalContract(reservation, currencySettings)}
+                      className="inline-flex items-center justify-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700"
+                    >
+                      <DownloadIcon className="w-3 h-3 mr-1" />
+                      {t('details.downloadContract')}
+                    </button>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {/* Column 1: Basic Info */}
                   <div className="space-y-4">

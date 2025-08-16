@@ -13,7 +13,7 @@ export async function GET(
 
     const params = await context.params;
     const reservation = await Reservation.findById(params.id)
-      .populate('client', 'firstName lastName email phone weddingDate idNumber')
+      .populate('client', 'firstName lastName email phone weddingDate weddingTime weddingCity weddingLocation address idNumber')
       .populate({
         path: 'items',
         select: 'name rentalCost category primaryPhoto size',

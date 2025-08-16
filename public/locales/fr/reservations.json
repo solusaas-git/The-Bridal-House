@@ -73,6 +73,8 @@
   "details": {
     "title": "Détails de la Réservation",
     "editReservation": "Modifier la Réservation",
+    "previewContract": "Aperçu du Contrat",
+    "downloadContract": "Télécharger le Contrat",
     "backToReservations": "Retour aux Réservations",
     "loadingReservation": "Chargement de la réservation...",
     "reservationNotFound": "Réservation non trouvée",
