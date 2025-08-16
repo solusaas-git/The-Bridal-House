@@ -238,11 +238,23 @@ export const handleDownloadWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates
+  // Format dates with time
   const pickupDate = reservation.pickupDate ? 
-    new Date(reservation.pickupDate).toLocaleDateString('fr-FR') : '';
+    new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : '';
   const returnDate = reservation.returnDate ? 
-    new Date(reservation.returnDate).toLocaleDateString('fr-FR') : '';
+    new Date(reservation.returnDate).toLocaleString('fr-FR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : '';
 
   // Load signature image
   let signatureImage: string | null = null;
@@ -468,11 +480,23 @@ export const handlePreviewWeddingDressRentalContract = async (
   
   const totalAmount = reservation.total || subtotal;
   
-  // Format dates
+  // Format dates with time
   const pickupDate = reservation.pickupDate ? 
-    new Date(reservation.pickupDate).toLocaleDateString('fr-FR') : '';
+    new Date(reservation.pickupDate).toLocaleString('fr-FR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : '';
   const returnDate = reservation.returnDate ? 
-    new Date(reservation.returnDate).toLocaleDateString('fr-FR') : '';
+    new Date(reservation.returnDate).toLocaleString('fr-FR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : '';
 
   // Load signature image
   let signatureImage: string | null = null;
