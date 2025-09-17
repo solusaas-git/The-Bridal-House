@@ -19,8 +19,8 @@ export default function FittingsPage() {
   const [imagePreview, setImagePreview] = useState<{ open: boolean; items: any[]; index: number }>(() => ({ open: false, items: [], index: 0 }));
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilters, setDateFilters] = useState({ startDate: '', endDate: '' });
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [localStatusFilter, setLocalStatusFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>(['Confirmed', 'Pending']);
+  const [localStatusFilter, setLocalStatusFilter] = useState<string[]>(['Confirmed', 'Pending']);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
 
