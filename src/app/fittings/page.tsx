@@ -95,7 +95,7 @@ export default function FittingsPage() {
                     left: statusDropdownRef.current ? statusDropdownRef.current.getBoundingClientRect().left + window.scrollX : 0,
                   }}
                 >
-                  {[{v:'Confirmed',k:'confirmed'},{v:'Pending',k:'pending'},{v:'Cancelled',k:'cancelled'}].map(opt => (
+                  {[{v:'Confirmed',k:'confirmed'},{v:'Pending',k:'pending'},{v:'Cancelled',k:'cancelled'},{v:'Reservé',k:'reserved'}].map(opt => (
                     <label key={opt.v} className="flex items-center px-3 py-2 hover:bg-white/10 cursor-pointer text-xs text-white">
                       <input
                         type="checkbox"
@@ -127,15 +127,16 @@ export default function FittingsPage() {
                 <th className="text-left p-3">{t('list.columns.customer')}</th>
                 <th className="text-left p-3">{t('list.columns.weddingDate')}</th>
                 <th className="text-left p-3">{t('list.columns.fittingDate')}</th>
+                <th className="text-left p-3">{t('common.status')}</th>
                 <th className="text-left p-3">{t('list.columns.items')}</th>
                 <th className="text-right p-3">{t('list.columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td className="p-4 text-gray-400" colSpan={5}>{t('list.loading')}</td></tr>
+                <tr><td className="p-4 text-gray-400" colSpan={6}>{t('list.loading')}</td></tr>
               ) : fittings.length === 0 ? (
-                <tr><td className="p-4 text-gray-400" colSpan={5}>{t('list.empty')}</td></tr>
+                <tr><td className="p-4 text-gray-400" colSpan={6}>{t('list.empty')}</td></tr>
               ) : fittings.map((f) => {
                 const d = f?.pickupDate ? String(f.pickupDate) : '';
                 const date = d ? `${d.substring(8,10)}/${d.substring(5,7)}/${d.substring(0,4)} ${d.substring(11,16)}` : '-';
@@ -155,6 +156,17 @@ export default function FittingsPage() {
                     </td>
                     <td className="p-3">{weddingDate}</td>
                     <td className="p-3">{date}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        f.status === 'Confirmed' ? 'bg-green-500/15 text-green-400 border border-green-500/30' :
+                        f.status === 'Pending' ? 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30' :
+                        f.status === 'Cancelled' ? 'bg-red-500/15 text-red-400 border border-red-500/30' :
+                        f.status === 'Reservé' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' :
+                        'bg-gray-500/15 text-gray-400 border border-gray-500/30'
+                      }`}>
+                        {t(`statuses.${f.status?.toLowerCase() || 'confirmed'}`)}
+                      </span>
+                    </td>
                     <td className="p-3">
                       {shown.length === 0 ? (
                         <span className="text-gray-400 text-sm">0</span>

@@ -5,7 +5,7 @@ export interface IFitting extends Document {
   items: mongoose.Types.ObjectId[];
   pickupDate: Date; // fitting date/time
   returnDate: Date; // same as pickupDate, kept for UI compatibility
-  status: 'Confirmed' | 'Cancelled';
+  status: 'Confirmed' | 'Cancelled' | 'Reservé';
   notes?: string;
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -34,7 +34,7 @@ const fittingSchema = new Schema<IFitting>(
     },
     status: {
       type: String,
-      enum: ['Confirmed', 'Cancelled', 'Pending'],
+      enum: ['Confirmed', 'Cancelled', 'Pending', 'Reservé'],
       default: 'Confirmed',
     },
     notes: {

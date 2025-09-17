@@ -33,7 +33,7 @@ export default function EditFittingPage() {
 
   const [fittingDate, setFittingDate] = useState('');
   const [fittingTime, setFittingTime] = useState('15:00');
-  const [status, setStatus] = useState<'Confirmed' | 'Pending' | 'Cancelled'>('Confirmed');
+  const [status, setStatus] = useState<'Confirmed' | 'Pending' | 'Cancelled' | 'Reservé'>('Confirmed');
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [itemSearchTerm, setItemSearchTerm] = useState('');
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
@@ -279,6 +279,7 @@ export default function EditFittingPage() {
                   <option value="Confirmed" className="bg-gray-800">{t('statuses.confirmed')}</option>
                   <option value="Pending" className="bg-gray-800">{t('statuses.pending')}</option>
                   <option value="Cancelled" className="bg-gray-800">{t('statuses.cancelled')}</option>
+                  <option value="Reservé" className="bg-gray-800">{t('statuses.reserved')}</option>
                 </select>
               </div>
             </div>

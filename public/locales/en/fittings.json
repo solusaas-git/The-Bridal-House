@@ -85,7 +85,8 @@
   "statuses": {
     "confirmed": "Confirmed",
     "pending": "Pending",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "reserved": "Reserved"
   }
 }
 

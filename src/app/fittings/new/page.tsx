@@ -36,7 +36,7 @@ export default function NewFittingPage() {
 	const [fittingDate, setFittingDate] = useState('');
 	const [fittingTime, setFittingTime] = useState('15:00');
 	const [notes, setNotes] = useState('');
-	const [status, setStatus] = useState<'Confirmed' | 'Pending' | 'Cancelled'>('Confirmed');
+	const [status, setStatus] = useState<'Confirmed' | 'Pending' | 'Cancelled' | 'Reservé'>('Confirmed');
 	const [chooseLater, setChooseLater] = useState(true);
 
 	// Items selection
@@ -297,6 +297,7 @@ export default function NewFittingPage() {
 											<option value="Confirmed" className="bg-gray-800">{t('statuses.confirmed')}</option>
 											<option value="Pending" className="bg-gray-800">{t('statuses.pending')}</option>
 											<option value="Cancelled" className="bg-gray-800">{t('statuses.cancelled')}</option>
+											<option value="Reservé" className="bg-gray-800">{t('statuses.reserved')}</option>
 										</select>
 										<label className="block text-xs font-medium text-gray-300 text-center">{t('common.notes')}</label>
 										<textarea
