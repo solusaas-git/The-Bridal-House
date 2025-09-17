@@ -164,7 +164,7 @@ export default function FittingsPage() {
                         f.status === 'Reservé' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30' :
                         'bg-gray-500/15 text-gray-400 border border-gray-500/30'
                       }`}>
-                        {t(`statuses.${f.status?.toLowerCase() || 'confirmed'}`)}
+                        {t(`statuses.${f.status === 'Reservé' ? 'reserved' : f.status?.toLowerCase() || 'confirmed'}`)}
                       </span>
                     </td>
                     <td className="p-3">
