@@ -54,7 +54,7 @@ export const useWidgetVisibility = () => {
               setVisibleWidgets(DEFAULT_WIDGETS);
             }
           } catch (parseError) {
-            console.error('Error parsing saved widgets from localStorage:', parseError);
+            console.error('Error parsing saved widgets from localStorage (fallback):', parseError);
             setVisibleWidgets(DEFAULT_WIDGETS);
           }
         } else {
