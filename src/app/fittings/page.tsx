@@ -80,7 +80,7 @@ export default function FittingsPage() {
                   {statusFilter.length === 0
                     ? t('filters.allStatuses')
                     : statusFilter.length === 1
-                      ? t(`statuses.${statusFilter[0].toLowerCase()}`)
+                      ? t(`statuses.${statusFilter[0] === 'Reservé' ? 'reserved' : statusFilter[0].toLowerCase()}`)
                       : `${statusFilter.length} ${t('filters.selected')}`}
                 </span>
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
