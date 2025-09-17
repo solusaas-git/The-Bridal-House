@@ -137,7 +137,7 @@ export default function ViewFittingPage() {
             </div>
             <div>
               <div className="text-gray-400">{t('common.status')}</div>
-              <div className="text-white">{t(`statuses.${String(fitting.status).toLowerCase()}`)}</div>
+              <div className="text-white">{t(`statuses.${fitting.status === 'Reservé' ? 'reserved' : String(fitting.status).toLowerCase()}`)}</div>
             </div>
           </div>
         </div>
