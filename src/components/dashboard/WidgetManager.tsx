@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Settings, Check } from 'lucide-react';
+import { Settings, Check, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface Widget {
@@ -14,12 +14,14 @@ interface WidgetManagerProps {
   availableWidgets: Widget[];
   visibleWidgets: string[];
   onToggleWidget: (widgetId: string) => void;
+  saving?: boolean;
 }
 
 const WidgetManager: React.FC<WidgetManagerProps> = ({
   availableWidgets,
   visibleWidgets,
   onToggleWidget,
+  saving = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation('dashboard');
@@ -30,8 +32,12 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center gap-2 h-8 px-3 py-1 text-xs font-medium text-white bg-white/10 border border-white/20 rounded-md hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 backdrop-blur-lg w-full"
       >
-        <Settings className="h-4 w-4" />
-        {t('widgets.widgetManager.customize')}
+        {saving ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Settings className="h-4 w-4" />
+        )}
+        {saving ? 'Saving...' : t('widgets.widgetManager.customize')}
       </button>
 
       {isOpen && (
@@ -86,7 +92,7 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({
               
               <div className="mt-4 pt-3 border-t border-white/20">
                 <p className="text-xs text-gray-400">
-                  Toggle widgets to customize your dashboard view
+                  {saving ? 'Saving preferences...' : 'Toggle widgets to customize your dashboard view. Preferences are saved to your account.'}
                 </p>
               </div>
             </div>

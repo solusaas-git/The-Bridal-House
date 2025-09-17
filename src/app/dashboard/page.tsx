@@ -331,7 +331,7 @@ const DashboardContent = () => {
   }, [currentUser, t]);
 
   // Widget state management
-  const { visibleWidgets, toggleWidget, loading: widgetLoading } = useWidgetVisibility();
+  const { visibleWidgets, toggleWidget, loading: widgetLoading, saving: widgetSaving } = useWidgetVisibility();
 
   // Filter data based on stats date range
   const filteredCustomers = useMemo(() => {
@@ -704,6 +704,7 @@ const DashboardContent = () => {
                     availableWidgets={availableWidgets}
                     visibleWidgets={visibleWidgets}
                     onToggleWidget={toggleWidget}
+                    saving={widgetSaving}
                   />
                 </div>
               </div>
@@ -749,6 +750,7 @@ const DashboardContent = () => {
               availableWidgets={availableWidgets}
               visibleWidgets={visibleWidgets}
               onToggleWidget={toggleWidget}
+              saving={widgetSaving}
             />
           </div>
         )}

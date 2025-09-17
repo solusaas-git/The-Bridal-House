@@ -9,6 +9,7 @@ interface ColumnPreferences {
 export interface IUserPreferences extends Document {
   userId: mongoose.Types.ObjectId;
   columnPreferences: ColumnPreferences;
+  widgetPreferences: string[];
   language: string;
   createdAt: Date;
   updatedAt: Date;
@@ -43,6 +44,10 @@ const UserPreferencesSchema = new Schema<IUserPreferences>(
           actions: true,
         },
       },
+    },
+    widgetPreferences: {
+      type: [String],
+      default: ['stats', 'pickups', 'returns', 'quickActions', 'systemHealth'],
     },
     language: {
       type: String,
