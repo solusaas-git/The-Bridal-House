@@ -110,7 +110,12 @@
       "createdAt": "Créé le",
       "createdBy": "Créé par",
       "notes": "Notes",
-      "noNotes": "Aucune note fournie"
+      "noNotes": "Aucune note fournie",
+      "statuses": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmé",
+        "cancelled": "Annulé"
+      }
     },
     "financialSummary": {
       "title": "Résumé Financier",
@@ -147,7 +152,17 @@
       "reference": "Référence",
       "note": "Note",
       "attachments": "Pièces Jointes",
-      "viewDetails": "Voir les Détails"
+      "viewDetails": "Voir les Détails",
+      "statuses": {
+        "pending": "En attente",
+        "completed": "Terminé",
+        "cancelled": "Annulé",
+        "refunded": "Remboursé"
+      },
+      "warnings": {
+        "paymentCancelled": "Le paiement est annulé",
+        "paymentRefunded": "Le paiement est remboursé"
+      }
     },
     "paymentStatuses": {
       "paid": "Payé",
@@ -164,6 +179,7 @@
       "paymentMethod": "Méthode de Paiement",
       "paymentType": "Type de Paiement",
       "paymentDate": "Date de Paiement",
+      "status": "Statut",
       "reference": "Référence",
       "note": "Note",
       "attachments": "Pièces Jointes",
@@ -184,6 +200,10 @@
       "createPayment": "Créer le Paiement",
       "creating": "Création...",
       "close": "Fermer"
+    },
+    "warnings": {
+      "reservationCancelled": "Réservation Annulée",
+      "reservationCancelledDescription": "Cette réservation a été annulée. Tous les montants financiers ne sont plus valides."
     },
     "statuses": {
       "confirmed": "Confirmé",

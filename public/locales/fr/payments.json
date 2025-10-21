@@ -103,7 +103,13 @@
       "remaining": "Restant",
       "pickupDate": "Date de Retrait",
       "returnDate": "Date de Retour",
-      "viewReservation": "Voir la Réservation"
+      "viewReservation": "Voir la Réservation",
+      "warnings": {
+        "reservationCancelled": "La réservation est annulée",
+        "bothCancelled": "La réservation et le paiement sont annulés",
+        "paymentCancelled": "Le paiement est annulé",
+        "paymentRefunded": "Le paiement est remboursé"
+      }
     },
     "attachments": {
       "title": "Pièces Jointes",
@@ -198,6 +204,17 @@
         "partial": "Partiel",
         "unpaid": "Non Payé",
         "refunded": "Remboursé"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmé",
+        "cancelled": "Annulé"
+      },
+      "warnings": {
+        "reservationCancelled": "Cette réservation est annulée",
+        "bothCancelled": "La réservation et le paiement sont annulés",
+        "paymentCancelled": "Le paiement est annulé",
+        "paymentRefunded": "Le paiement est remboursé"
       }
     },
     "messages": {

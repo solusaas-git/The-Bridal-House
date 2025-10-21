@@ -36,6 +36,7 @@ interface Reservation {
   eventTime?: string;
   eventLocation?: string;
   type?: string;
+  status?: 'Draft' | 'Confirmed' | 'Cancelled';
   client: Customer;
   items?: Array<{
     _id: string;
@@ -171,21 +172,37 @@ const ReservationFinancials: React.FC<{ reservation: Reservation; customerId?: s
       <div className="text-sm text-gray-400">
         {t('edit.reservation.itemsCount', { count: reservation.items?.length || 0 })}
       </div>
-      <div className="font-medium text-green-400">
+      
+      {/* Reservation Status */}
+      {reservation.status && (
+        <div className="mb-2">
+          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+            reservation.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+            reservation.status === 'Draft' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+            reservation.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+            'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+          }`}>
+            {t(`edit.reservation.status.${reservation.status.toLowerCase()}`)}
+          </span>
+        </div>
+      )}
+      
+      <div className={`font-medium ${reservation.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-green-400'}`}>
         {t('edit.reservation.total')}: {formatCurrency(financials.total, currencySettings)}
       </div>
-      <div className="text-xs text-green-500 mt-1">
+      <div className={`text-xs mt-1 ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-green-500'}`}>
         {t('edit.reservation.paid')}: {formatCurrency(totalPaid, currencySettings)}
       </div>
-      <div className="text-xs text-yellow-400">
+      <div className={`text-xs ${reservation.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-yellow-400'}`}>
         {t('edit.reservation.remaining')}: {formatCurrency(remaining, currencySettings)}
       </div>
       <div className={`text-xs mt-1 px-2 py-1 rounded ${
+        reservation.status === 'Cancelled' ? 'bg-gray-500/20 text-gray-400' :
         paymentStatus === 'Paid' ? 'bg-green-500/20 text-green-400' :
         paymentStatus === 'Partial' ? 'bg-yellow-500/20 text-yellow-400' :
         'bg-red-500/20 text-red-400'
       }`}>
-        {t(`edit.reservation.paymentStatus.${paymentStatus.toLowerCase()}`)}
+        {reservation.status === 'Cancelled' ? t('edit.reservation.status.cancelled') : t(`edit.reservation.paymentStatus.${paymentStatus.toLowerCase()}`)}
       </div>
     </div>
   );
@@ -830,13 +847,27 @@ const EditPaymentPage = () => {
                                 className={`p-4 rounded-lg border text-left transition-colors ${
                                   selectedReservation?._id === reservation._id
                                     ? 'bg-blue-600/20 border-blue-500/50'
-                                    : 'bg-white/5 border-white/20 hover:bg-white/10'
+                                    : reservation.status === 'Cancelled'
+                                      ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20'
+                                      : 'bg-white/5 border-white/20 hover:bg-white/10'
                                 }`}
                               >
                                 <div className="flex justify-between items-start">
-                                  <div>
-                                    <div className="font-medium text-white">#{reservation.reservationNumber}</div>
-                                    <div className="text-sm text-gray-400 mt-1">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <div className="font-medium text-white">#{reservation.reservationNumber}</div>
+                                      {reservation.status && (
+                                        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                                          reservation.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                          reservation.status === 'Draft' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                          reservation.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                          'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                                        }`}>
+                                          {t(`edit.reservation.status.${reservation.status.toLowerCase()}`)}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className={`text-sm mt-1 ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-400'}`}>
                                       {/* Try different date fields - eventDate, pickupDate, or weddingDate */}
                                       {reservation.eventDate ? 
                 (()=>{const s=String(reservation.eventDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})() :
@@ -849,11 +880,20 @@ const EditPaymentPage = () => {
                                       {reservation.eventTime && ` at ${reservation.eventTime}`}
                                     </div>
                                     {reservation.eventLocation && (
-                                      <div className="text-sm text-gray-400">{reservation.eventLocation}</div>
+                                      <div className={`text-sm ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        {reservation.eventLocation}
+                                      </div>
                                     )}
-                                    <div className="text-xs text-blue-300 mt-1">
+                                    <div className={`text-xs mt-1 ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-blue-300'}`}>
                                       {t('edit.form.type')}: {reservation.type || t('edit.form.wedding')}
                                     </div>
+                                    
+                                    {/* Warning for cancelled reservation */}
+                                    {reservation.status === 'Cancelled' && (
+                                      <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-400">
+                                        ⚠️ {t('edit.reservation.warnings.reservationCancelled')}
+                                      </div>
+                                    )}
                                   </div>
                                   <ReservationFinancials 
                                     reservation={reservation} 

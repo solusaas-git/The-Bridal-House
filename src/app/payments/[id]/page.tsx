@@ -44,6 +44,7 @@ interface Reservation {
   remaining?: number;
   pickupDate?: Date;
   returnDate?: Date;
+  status?: 'Draft' | 'Confirmed' | 'Cancelled';
 }
 
 interface Attachment {
@@ -319,6 +320,16 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
               <p className="text-white">
                 {payment.reservation ? `#${payment.reservation.reservationNumber || payment.reservation._id.slice(-6)}` : tCommon('notAvailable')}
               </p>
+              {payment.reservation?.status && (
+                <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                  payment.reservation.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                  payment.reservation.status === 'Draft' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                  payment.reservation.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                  'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                }`}>
+                  {payment.reservation.status}
+                </span>
+              )}
             </div>
             {payment.reservation && (
               <>
@@ -329,22 +340,48 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
                 {payment.reservation.eventLocation && (
                   <div className="text-sm text-gray-400">{payment.reservation.eventLocation}</div>
                 )}
+                
+                {/* Show warning for cancelled reservation or cancelled/refunded payment */}
+                {(payment.reservation.status === 'Cancelled' || payment.status === 'Cancelled' || payment.status === 'Refunded') && (
+                  <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <p className="text-xs text-red-400">
+                        {payment.reservation.status === 'Cancelled' && payment.status === 'Cancelled' 
+                          ? t('details.reservation.warnings.bothCancelled')
+                          : payment.reservation.status === 'Cancelled' 
+                            ? t('details.reservation.warnings.reservationCancelled')
+                            : payment.status === 'Cancelled'
+                              ? t('details.reservation.warnings.paymentCancelled')
+                              : t('details.reservation.warnings.paymentRefunded')
+                        }
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
                   <div>
                     <div className="text-gray-400">{t('details.reservation.total')}</div>
-                    <div className="text-white">{payment.reservation.total ? formatCurrency(payment.reservation.total, currencySettings) : tCommon('notAvailable')}</div>
+                    <div className={`${payment.reservation.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-white'}`}>
+                      {payment.reservation.total ? formatCurrency(payment.reservation.total, currencySettings) : tCommon('notAvailable')}
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-400">{t('details.reservation.paid')}</div>
-                    <div className="text-green-500">{formatCurrency(payment.reservation.paid || 0, currencySettings)}</div>
+                    <div className={`${payment.reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-green-500'}`}>
+                      {formatCurrency(payment.reservation.paid || 0, currencySettings)}
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-400">{t('details.reservation.remaining')}</div>
-                    <div className="text-yellow-500">{payment.reservation.remaining ? formatCurrency(payment.reservation.remaining, currencySettings) : tCommon('notAvailable')}</div>
+                    <div className={`${payment.reservation.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-yellow-500'}`}>
+                      {payment.reservation.remaining ? formatCurrency(payment.reservation.remaining, currencySettings) : tCommon('notAvailable')}
+                    </div>
                   </div>
                 </div>
                 {payment.reservation.pickupDate && payment.reservation.returnDate && (
-                  <div className="mt-2 text-xs text-gray-400">
+                  <div className={`mt-2 text-xs ${payment.reservation.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-gray-400'}`}>
             {(()=>{const s=String(payment.reservation.pickupDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})()} - {(()=>{const s=String(payment.reservation.returnDate);const dd=s.substring(8,10);const mm=s.substring(5,7);const yy=s.substring(0,4);return `${dd}/${mm}/${yy}`;})()}
                   </div>
                 )}

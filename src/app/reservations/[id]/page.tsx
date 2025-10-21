@@ -188,7 +188,12 @@ export default function ViewReservationPage() {
     const financials = calculateFinancials();
     if (!financials) return null;
 
-    const totalPaid = associatedPayments?.reduce((sum, payment) => {
+    // Filter out cancelled and refunded payments from calculations
+    const validPayments = associatedPayments?.filter(payment => 
+      payment.status !== 'Cancelled' && payment.status !== 'Refunded'
+    ) || [];
+
+    const totalPaid = validPayments.reduce((sum, payment) => {
       if (payment.type !== 'Refund') {
         return sum + payment.amount;
       }
@@ -392,30 +397,30 @@ export default function ViewReservationPage() {
             {financials && (
               <div className="bg-white/5 p-4 rounded-lg">
                 <h4 className="text-lg font-medium text-white mb-4">{t('details.financialSummary.title')}</h4>
-                <div className="space-y-2 text-white">
+                <div className={`space-y-2 ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-white'}`}>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.financialSummary.itemsTotal')}:</span>
-                    <span>{formatCurrency(financials.itemsTotal, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(financials.itemsTotal, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.financialSummary.additionalCosts')}:</span>
-                    <span>{formatCurrency(reservation.additionalCost || 0, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(reservation.additionalCost || 0, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between font-medium border-t border-white/20 pt-2">
                     <span className="text-gray-400">{t('details.financialSummary.subtotal')}:</span>
-                    <span>{formatCurrency(financials.subtotal, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(financials.subtotal, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.financialSummary.securityDeposit')}:</span>
-                    <span>{formatCurrency(financials.securityDeposit, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(financials.securityDeposit, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.financialSummary.advance')}:</span>
-                    <span>{formatCurrency(financials.advance, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(financials.advance, currencySettings)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg border-t border-white/20 pt-2">
                     <span className="text-gray-400">{t('details.financialSummary.totalAmount')}:</span>
-                    <span>{formatCurrency(financials.total, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>{formatCurrency(financials.total, currencySettings)}</span>
                   </div>
                 </div>
               </div>
@@ -426,6 +431,19 @@ export default function ViewReservationPage() {
               <div className="bg-white/5 p-4 rounded-lg">
                 <h4 className="text-lg font-medium text-white mb-4">{t('details.reservationDetails.notes')}</h4>
                 <p className="text-sm text-white bg-white/10 p-3 rounded-md">{reservation.notes}</p>
+              </div>
+            )}
+
+            {/* Warning for cancelled reservation */}
+            {reservation.status === 'Cancelled' && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <h4 className="text-lg font-medium text-red-400">{t('details.warnings.reservationCancelled')}</h4>
+                </div>
+                <p className="text-sm text-red-300 mt-2">
+                  {t('details.warnings.reservationCancelledDescription')}
+                </p>
               </div>
             )}
 
@@ -446,8 +464,13 @@ export default function ViewReservationPage() {
                 <div className="space-y-4">
                   <div>
                     <h5 className="text-sm font-medium text-gray-400">{t('details.reservationDetails.status')}</h5>
-                    <span className={`mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(reservation.status)}`}>
-                      {reservation.status}
+                    <span className={`mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      reservation.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                      reservation.status === 'Draft' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                      reservation.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                      'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                    }`}>
+                      {t(`details.reservationDetails.statuses.${reservation.status.toLowerCase()}`)}
                     </span>
                   </div>
                   <div>
@@ -554,25 +577,43 @@ export default function ViewReservationPage() {
 
             {/* Payment Status */}
             {paymentDetails && (
-              <div className="bg-white/5 p-4 rounded-lg">
+              <div className={`p-4 rounded-lg ${
+                reservation.status === 'Cancelled' ? 'bg-red-500/5 border border-red-500/20' : 'bg-white/5'
+              }`}>
+                {/* Warning for cancelled reservation */}
+                {reservation.status === 'Cancelled' && (
+                  <div className="mb-4 p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-400">
+                    ⚠️ {t('details.warnings.reservationCancelled')} - {t('details.warnings.reservationCancelledDescription')}
+                  </div>
+                )}
+                
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-gray-400">{t('details.paymentsSection.paymentStatus')}</span>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPaymentStatusBadgeColor(paymentDetails.paymentStatus)}`}>
-                    {getTranslatedPaymentStatus(paymentDetails.paymentStatus)}
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    reservation.status === 'Cancelled' ? 'bg-gray-500/20 text-gray-400' : getPaymentStatusBadgeColor(paymentDetails.paymentStatus)
+                  }`}>
+                    {reservation.status === 'Cancelled' ? t('details.reservationDetails.statuses.cancelled') : getTranslatedPaymentStatus(paymentDetails.paymentStatus)}
                   </span>
                 </div>
-                <div className="space-y-2 text-sm text-white">
+                <div className={`space-y-2 text-sm ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-white'}`}>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.paymentsSection.totalAmount')}:</span>
-                    <span>{formatCurrency(financials?.total || 0, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'line-through' : ''}>
+                      {formatCurrency(financials?.total || 0, currencySettings)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.paymentsSection.paid')}:</span>
-                    <span className="text-green-400">{formatCurrency(paymentDetails.totalPaid, currencySettings)}</span>
+                    <span className={reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-green-400'}>
+                      {formatCurrency(paymentDetails.totalPaid, currencySettings)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('details.paymentsSection.remaining')}:</span>
-                    <span className={paymentDetails.remaining > 0 ? 'text-red-400' : 'text-green-400'}>
+                    <span className={
+                      reservation.status === 'Cancelled' ? 'text-gray-500 line-through' :
+                      paymentDetails.remaining > 0 ? 'text-red-400' : 'text-green-400'
+                    }>
                       {formatCurrency(paymentDetails.remaining, currencySettings)}
                     </span>
                   </div>
@@ -580,12 +621,15 @@ export default function ViewReservationPage() {
                 <div className="mt-3">
                   <div className="bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-green-500 h-2 rounded-full"
+                      className={`h-2 rounded-full ${reservation.status === 'Cancelled' ? 'bg-gray-500' : 'bg-green-500'}`}
                       style={{ width: `${Math.min(paymentDetails.percentage, 100)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className={`text-xs mt-1 ${reservation.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-400'}`}>
                     {paymentDetails.percentage.toFixed(1)}% {t('details.paymentsSection.paid')}
+                    {reservation.status === 'Cancelled' && (
+                      <span className="ml-2 text-red-400">({t('details.reservationDetails.statuses.cancelled')})</span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -595,27 +639,62 @@ export default function ViewReservationPage() {
             {associatedPayments.length > 0 ? (
               <div className="space-y-3">
                 {associatedPayments.map((payment: any) => (
-                  <div key={payment._id} className="bg-white/5 border border-white/20 rounded-lg p-4">
+                  <div key={payment._id} className={`border rounded-lg p-4 ${
+                    payment.status === 'Cancelled' || payment.status === 'Refunded' 
+                      ? 'bg-red-500/5 border-red-500/20' 
+                      : 'bg-white/5 border-white/20'
+                  }`}>
                     <div className="flex justify-between items-start">
                       <div className="flex-1 min-w-0 pr-4">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium text-white">{payment.type}</span>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className={`font-medium ${
+                            payment.status === 'Cancelled' || payment.status === 'Refunded' ? 'text-gray-400' : 'text-white'
+                          }`}>{payment.paymentType || payment.type}</span>
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            payment.type === 'Refund' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                            payment.paymentMethod === 'Cash' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                            payment.paymentMethod === 'Bank Transfer' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                            payment.paymentMethod === 'Credit Card' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                            payment.paymentMethod === 'Check' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                            'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                           }`}>
-                            {payment.method}
+                            {payment.paymentMethod || payment.method}
                           </span>
+                          {payment.status && (
+                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                              payment.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                              payment.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                              payment.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                              payment.status === 'Refunded' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                              'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                            }`}>
+                              {t(`details.paymentsSection.statuses.${payment.status?.toLowerCase()}`)}
+                            </span>
+                          )}
                         </div>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {format(new Date(payment.createdAt), 'PPP')}
+                        <p className={`text-sm mt-1 ${
+                          payment.status === 'Cancelled' || payment.status === 'Refunded' ? 'text-gray-500' : 'text-gray-400'
+                        }`}>
+                          {format(new Date(payment.paymentDate || payment.createdAt), 'PPP')}
                         </p>
                         {payment.note && (
-                          <p className="text-sm text-gray-300 mt-1">{payment.note}</p>
+                          <p className={`text-sm mt-1 ${
+                            payment.status === 'Cancelled' || payment.status === 'Refunded' ? 'text-gray-500' : 'text-gray-300'
+                          }`}>{payment.note}</p>
+                        )}
+                        {/* Warning for cancelled/refunded payments */}
+                        {(payment.status === 'Cancelled' || payment.status === 'Refunded') && (
+                          <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-400">
+                            ⚠️ {payment.status === 'Cancelled' 
+                              ? t('details.paymentsSection.warnings.paymentCancelled')
+                              : t('details.paymentsSection.warnings.paymentRefunded')
+                            }
+                          </div>
                         )}
                       </div>
                       <div className="flex-shrink-0 text-right">
                         <div className="mb-2">
                           <span className={`text-lg font-medium ${
+                            payment.status === 'Cancelled' || payment.status === 'Refunded' ? 'text-gray-500 line-through' :
                             payment.type === 'Refund' ? 'text-red-400' : 'text-green-400'
                           }`}>
                             {payment.type === 'Refund' ? '-' : '+'}
@@ -1022,9 +1101,24 @@ const ViewPaymentModal = ({
               <p className="text-white">{payment.paymentType}</p>
             </div>
 
+            {payment.status && (
+              <div>
+                <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.status')}</label>
+                <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                  payment.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                  payment.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                  payment.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                  payment.status === 'Refunded' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                  'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                }`}>
+                  {t(`details.paymentsSection.statuses.${payment.status?.toLowerCase()}`)}
+                </span>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-400">{t('details.paymentModal.paymentDate')}</label>
-              <p className="text-white">{format(new Date(payment.paymentDate), 'PPP')}</p>
+              <p className="text-white">{format(new Date(payment.paymentDate || payment.createdAt), 'PPP')}</p>
             </div>
 
             {payment.reference && (

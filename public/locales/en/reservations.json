@@ -110,7 +110,12 @@
       "createdAt": "Created At",
       "createdBy": "Created By",
       "notes": "Notes",
-      "noNotes": "No notes provided"
+      "noNotes": "No notes provided",
+      "statuses": {
+        "draft": "Draft",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+      }
     },
     "financialSummary": {
       "title": "Financial Summary",
@@ -147,7 +152,17 @@
       "reference": "Reference",
       "note": "Note",
       "attachments": "Attachments",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "statuses": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
+      },
+      "warnings": {
+        "paymentCancelled": "Payment is cancelled",
+        "paymentRefunded": "Payment is refunded"
+      }
     },
     "paymentStatuses": {
       "paid": "Paid",
@@ -164,6 +179,7 @@
       "paymentMethod": "Payment Method",
       "paymentType": "Payment Type",
       "paymentDate": "Payment Date",
+      "status": "Status",
       "reference": "Reference",
       "note": "Note",
       "attachments": "Attachments",
@@ -184,6 +200,10 @@
       "createPayment": "Create Payment",
       "creating": "Creating...",
       "close": "Close"
+    },
+    "warnings": {
+      "reservationCancelled": "Reservation Cancelled",
+      "reservationCancelledDescription": "This reservation has been cancelled. All financial amounts are no longer valid."
     },
     "statuses": {
       "confirmed": "Confirmed",

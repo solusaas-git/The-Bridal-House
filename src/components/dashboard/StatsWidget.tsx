@@ -169,6 +169,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   // Calculate current month upcoming payments (reservations with wedding dates in current month)
   const currentMonthUpcomingPayments = allReservations?.filter(reservation => {
     if (!reservation.client?.weddingDate) return false;
+    // Exclude cancelled and draft reservations
+    if (reservation.status === 'Cancelled' || reservation.status === 'Draft') return false;
     const weddingDate = new Date(reservation.client.weddingDate);
     return weddingDate >= currentMonthStart && weddingDate <= currentMonthEnd;
   }).reduce((total, reservation) => {
@@ -194,6 +196,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   // Calculate last month upcoming payments (reservations with wedding dates in last month)
   const lastMonthUpcomingPayments = allReservations?.filter(reservation => {
     if (!reservation.client?.weddingDate) return false;
+    // Exclude cancelled and draft reservations
+    if (reservation.status === 'Cancelled' || reservation.status === 'Draft') return false;
     const weddingDate = new Date(reservation.client.weddingDate);
     return weddingDate >= lastMonthStart && weddingDate <= lastMonthEnd;
   }).reduce((total, reservation) => {
@@ -222,6 +226,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   const upcomingPayments = reservations?.filter((reservation) => {
     // Filter by client's wedding date within the selected date range
     if (!reservation.client?.weddingDate || !dateRange) return false;
+    // Exclude cancelled and draft reservations
+    if (reservation.status === 'Cancelled' || reservation.status === 'Draft') return false;
     const weddingDate = new Date(reservation.client.weddingDate);
     return weddingDate >= dateRange.startDate && weddingDate <= dateRange.endDate;
   }).map((reservation) => {

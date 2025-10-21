@@ -103,7 +103,13 @@
       "remaining": "Remaining",
       "pickupDate": "Pickup Date",
       "returnDate": "Return Date",
-      "viewReservation": "View Reservation"
+      "viewReservation": "View Reservation",
+      "warnings": {
+        "reservationCancelled": "Reservation is cancelled",
+        "bothCancelled": "Both reservation and payment are cancelled",
+        "paymentCancelled": "Payment is cancelled",
+        "paymentRefunded": "Payment is refunded"
+      }
     },
     "attachments": {
       "title": "Attachments",
@@ -198,6 +204,17 @@
         "partial": "Partial",
         "unpaid": "Unpaid",
         "refunded": "Refunded"
+      },
+      "status": {
+        "draft": "Draft",
+        "confirmed": "Confirmed", 
+        "cancelled": "Cancelled"
+      },
+      "warnings": {
+        "reservationCancelled": "This reservation is cancelled",
+        "bothCancelled": "Both reservation and payment are cancelled",
+        "paymentCancelled": "Payment is cancelled",
+        "paymentRefunded": "Payment is refunded"
       }
     },
     "messages": {
