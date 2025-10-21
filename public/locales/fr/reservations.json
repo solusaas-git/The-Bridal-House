@@ -23,9 +23,16 @@
       "paid": "Payé",
       "pending": "En Attente"
     },
+    "reservationStatuses": {
+      "draft": "Brouillon",
+      "confirmed": "Confirmé",
+      "cancelled": "Annulé"
+    },
     "apply": "Appliquer",
     "cancel": "Annuler",
-    "clear": "Effacer"
+    "clear": "Effacer",
+    "paymentStatusLabel": "Statut de paiement :",
+    "reservationStatusLabel": "Statut des réservations :"
   },
   "columns": {
     "columns": "Colonnes",

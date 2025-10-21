@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate');
     const dateColumn = searchParams.get('dateColumn') || 'pickupDate';
     const paymentStatus = searchParams.get('paymentStatus');
+    const reservationStatus = searchParams.get('reservationStatus');
     
     const skip = (page - 1) * limit;
 
@@ -80,6 +81,12 @@ export async function GET(request: NextRequest) {
     if (paymentStatus) {
       const statusArray = paymentStatus.split(',').map(s => s.trim());
       query.paymentStatus = { $in: statusArray };
+    }
+
+    // Reservation status filtering
+    if (reservationStatus) {
+      const statusArray = reservationStatus.split(',').map(s => s.trim());
+      query.status = { $in: statusArray };
     }
 
     // Get reservations with pagination

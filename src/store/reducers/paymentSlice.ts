@@ -45,6 +45,7 @@ export interface Payment {
   amount?: number;
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments: PaymentAttachment[];
@@ -83,6 +84,11 @@ export interface PaymentState {
   showEditModal: boolean;
   showDeleteModal: boolean;
   selectedPaymentId: string | null;
+  
+  // Count tracking
+  recentCount: number;
+  todayCount: number;
+  countLoading: boolean;
 }
 
 const initialState: PaymentState = {
@@ -106,6 +112,11 @@ const initialState: PaymentState = {
   showEditModal: false,
   showDeleteModal: false,
   selectedPaymentId: null,
+  
+  // Count tracking
+  recentCount: 0,
+  todayCount: 0,
+  countLoading: false,
 };
 
 const paymentSlice = createSlice({
@@ -250,6 +261,27 @@ const paymentSlice = createSlice({
       state.totalPages = 0;
     },
     
+    // Count management
+    setRecentCount: (state, action: PayloadAction<number>) => {
+      state.recentCount = action.payload;
+    },
+    
+    setTodayCount: (state, action: PayloadAction<number>) => {
+      state.todayCount = action.payload;
+    },
+    
+    setCountLoading: (state, action: PayloadAction<boolean>) => {
+      state.countLoading = action.payload;
+    },
+    
+    incrementRecentCount: (state) => {
+      state.recentCount += 1;
+    },
+    
+    incrementTodayCount: (state) => {
+      state.todayCount += 1;
+    },
+    
     // Reset state
     resetPaymentState: () => initialState,
   },
@@ -285,6 +317,13 @@ export const {
   setShowEditModal,
   setShowDeleteModal,
   setSelectedPaymentId,
+  
+  // Count management
+  setRecentCount,
+  setTodayCount,
+  setCountLoading,
+  incrementRecentCount,
+  incrementTodayCount,
   
   // Bulk operations
   clearAllPayments,

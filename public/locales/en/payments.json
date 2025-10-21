@@ -15,6 +15,7 @@
     "amount": "Amount",
     "paymentMethod": "Payment Method",
     "paymentType": "Payment Type",
+    "status": "Status",
     "reference": "Reference",
     "note": "Note",
     "attachments": "Attachments",
@@ -69,6 +70,7 @@
       "amount": "Amount",
       "method": "Method",
       "type": "Type",
+      "status": "Status",
       "editPayment": "Edit Payment",
       "deletePayment": "Delete Payment"
     },
@@ -77,6 +79,7 @@
       "paymentDate": "Payment Date",
       "paymentMethod": "Payment Method",
       "paymentType": "Payment Type",
+      "status": "Status",
       "amount": "Amount",
       "reference": "Reference",
       "note": "Note",
@@ -168,6 +171,13 @@
         "security": "Security",
         "final": "Final",
         "other": "Other"
+      },
+      "status": "Status",
+      "statuses": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
       }
     },
     "reservation": {
@@ -223,6 +233,12 @@
         "security": "Security",
         "final": "Final",
         "other": "Other"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
       },
       "customerInfo": "Customer Information",
       "selectCustomer": "Select Customer",

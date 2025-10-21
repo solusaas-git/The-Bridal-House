@@ -61,6 +61,7 @@ interface Payment {
   amount?: number;
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments: Attachment[];
@@ -91,7 +92,7 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-400 mb-1">{t('details.header.amount')}</h3>
               <p className="text-xl font-semibold text-white">
@@ -112,6 +113,22 @@ const PaymentHeader = ({ payment, onEdit, onDelete, currencySettings }: {
               }`}>
                 {payment.paymentType}
               </span>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-400 mb-1">{t('details.header.status')}</h3>
+              {payment.status ? (
+                <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                  payment.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                  payment.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                  payment.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                  payment.status === 'Refunded' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                  'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                }`}>
+                  {payment.status}
+                </span>
+              ) : (
+                <p className="text-lg text-white">{tCommon('notAvailable')}</p>
+              )}
             </div>
           </div>
         </div>
@@ -226,6 +243,25 @@ const PaymentDetails = ({ payment }: { payment: Payment }) => {
           <div>
             <label className="text-sm font-medium text-gray-400">{t('details.info.paymentType')}</label>
             <p className="text-white mt-1 capitalize">{payment.paymentType || tCommon('notAvailable')}</p>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-400">{t('details.info.status')}</label>
+            <div className="mt-1">
+              {payment.status ? (
+                <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                  payment.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                  payment.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                  payment.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                  payment.status === 'Refunded' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                  'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                }`}>
+                  {payment.status}
+                </span>
+              ) : (
+                <p className="text-white">{tCommon('notAvailable')}</p>
+              )}
+            </div>
           </div>
 
           <div>

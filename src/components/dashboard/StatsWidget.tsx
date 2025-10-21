@@ -44,6 +44,7 @@ interface Payment {
   createdAt?: string;
   client?: any;
   reservation?: any;
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
 }
 
 interface Cost {
@@ -128,6 +129,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   const currentMonthPayments = allPayments?.filter(payment => {
     // Only use paymentDate, exclude records without proper payment dates
     if (!payment.paymentDate) return false;
+    // Exclude cancelled and refunded payments
+    if (payment.status === 'Cancelled' || payment.status === 'Refunded') return false;
     const paymentDate = new Date(payment.paymentDate);
     return paymentDate >= currentMonthStart && paymentDate <= currentMonthEnd;
   }) || [];
@@ -148,6 +151,8 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   const lastMonthPayments = allPayments?.filter(payment => {
     // Only use paymentDate, exclude records without proper payment dates
     if (!payment.paymentDate) return false;
+    // Exclude cancelled and refunded payments
+    if (payment.status === 'Cancelled' || payment.status === 'Refunded') return false;
     const paymentDate = new Date(payment.paymentDate);
     return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;
   }) || [];
@@ -169,7 +174,9 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   }).reduce((total, reservation) => {
     const reservationTotal = Number(reservation.total) || 0;
     const reservationPayments = allPayments?.filter(
-      (payment) => payment.reservation?._id === reservation._id
+      (payment) => payment.reservation?._id === reservation._id && 
+                  payment.status !== 'Cancelled' && 
+                  payment.status !== 'Refunded'
     ) || [];
     const totalPaid = reservationPayments.reduce(
       (sum, payment) => sum + (Number(payment.amount) || 0), 0
@@ -192,7 +199,9 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
   }).reduce((total, reservation) => {
     const reservationTotal = Number(reservation.total) || 0;
     const reservationPayments = allPayments?.filter(
-      (payment) => payment.reservation?._id === reservation._id
+      (payment) => payment.reservation?._id === reservation._id && 
+                  payment.status !== 'Cancelled' && 
+                  payment.status !== 'Refunded'
     ) || [];
     const totalPaid = reservationPayments.reduce(
       (sum, payment) => sum + (Number(payment.amount) || 0), 0
@@ -219,7 +228,9 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
     // Calculate remaining balance (total - payments made for this reservation)
     const reservationTotal = Number(reservation.total) || 0;
     const reservationPayments = allPayments?.filter(
-      (payment) => payment.reservation?._id === reservation._id
+      (payment) => payment.reservation?._id === reservation._id && 
+                  payment.status !== 'Cancelled' && 
+                  payment.status !== 'Refunded'
     ) || [];
     const totalPaid = reservationPayments.reduce(
       (sum, payment) => sum + (Number(payment.amount) || 0), 0
@@ -240,7 +251,9 @@ const StatsWidget: React.FC<StatsWidgetProps> = ({
     (total, item) => total + item.remaining, 0
   );
   
-  const totalPayments = payments?.reduce(
+  const totalPayments = payments?.filter(
+    (payment) => payment.status !== 'Cancelled' && payment.status !== 'Refunded'
+  ).reduce(
     (total, payment) => total + (Number(payment.amount) || 0),
     0
   );

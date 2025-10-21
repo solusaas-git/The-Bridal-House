@@ -27,6 +27,7 @@ const getDefaultPreferences = (page: string) => {
       customer: true,
       reservation: true,
       amount: true,
+      status: true,
       paymentDate: true,
       paymentMethod: true,
       paymentType: true,

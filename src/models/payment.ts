@@ -8,6 +8,7 @@ export interface IPayment extends Document {
   amount?: number;
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments: IAttachment[];
@@ -29,6 +30,11 @@ const PaymentSchema = new Schema<IPayment>(
     paymentType: {
       type: String,
       enum: ['Advance', 'Security', 'Final', 'Other'],
+    },
+    status: {
+      type: String,
+      enum: ['Pending', 'Completed', 'Cancelled', 'Refunded'],
+      default: 'Completed',
     },
     reference: {
       type: String,

@@ -23,9 +23,16 @@
       "paid": "Paid",
       "pending": "Pending"
     },
+    "reservationStatuses": {
+      "draft": "Draft",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
     "apply": "Apply",
     "cancel": "Cancel",
-    "clear": "Clear"
+    "clear": "Clear",
+    "paymentStatusLabel": "Payment status:",
+    "reservationStatusLabel": "Reservations status:"
   },
   "columns": {
     "columns": "Columns",

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { canViewMenu } from '@/utils/permissions';
 import { useApprovalsCount } from '@/hooks/useApprovalsCount';
+import { usePaymentsCount } from '@/hooks/usePaymentsCount';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -34,6 +35,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
   const pathname = usePathname();
   const { currentUser } = useSelector((state: RootState) => state.auth);
   const { pendingCount } = useApprovalsCount();
+  const { recentCount: paymentsRecentCount, todayCount: paymentsTodayCount } = usePaymentsCount();
   const { t } = useTranslation('navigation');
 
   const [activeTab, setActiveTab] = React.useState(() => {
@@ -97,6 +99,7 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
           {tabs?.map((tab) => {
             const IconComponent = tab.icon;
             const isApprovals = tab.name === 'Approvals';
+            const isPayments = tab.name === 'Payments';
             
             return (
               <button
@@ -114,6 +117,20 @@ const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) => {
                   <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-4">
                     {pendingCount > 99 ? '99+' : pendingCount}
                   </span>
+                )}
+                {isPayments && (paymentsTodayCount > 0 || paymentsRecentCount > 0) && (
+                  <div className="ml-2 flex items-center gap-1">
+                    {paymentsTodayCount > 0 && (
+                      <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-500 rounded-full min-w-[18px] h-4" title="Today's payments">
+                        {paymentsTodayCount > 99 ? '99+' : paymentsTodayCount}
+                      </span>
+                    )}
+                    {paymentsRecentCount > 0 && paymentsTodayCount !== paymentsRecentCount && (
+                      <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-500 rounded-full min-w-[18px] h-4" title="Recent payments (7 days)">
+                        {paymentsRecentCount > 99 ? '99+' : paymentsRecentCount}
+                      </span>
+                    )}
+                  </div>
                 )}
               </button>
             );

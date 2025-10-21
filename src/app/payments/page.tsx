@@ -30,6 +30,7 @@ import Pagination from '@/components/ui/Pagination';
 import { formatCurrency } from '@/utils/currency';
 import ApprovalHandler from '@/components/approvals/ApprovalHandler';
 import DateFilter from '@/components/shared/DateFilter';
+import { usePaymentsCount } from '@/hooks/usePaymentsCount';
 import { useTranslation } from 'react-i18next';
 
 // Component that uses useSearchParams
@@ -39,6 +40,7 @@ const PaymentsContent = () => {
   const searchParams = useSearchParams();
   const { t } = useTranslation('payments');
   const { t: tCommon } = useTranslation('common');
+  const { recentCount, todayCount } = usePaymentsCount();
 
   // Redux state
   const paymentState = useSelector((state: RootState) => state.payment);
@@ -74,6 +76,7 @@ const PaymentsContent = () => {
     paymentDate: true,
     paymentMethod: true,
     paymentType: true,
+    status: true,
     reference: true,
     note: true,
     attachments: true,
@@ -91,8 +94,11 @@ const PaymentsContent = () => {
         });
         
         if (response.data.success && response.data.columnPreferences) {
-          // Use the loaded preferences completely, don't merge to avoid conflicts
-          setColumnVisibility(response.data.columnPreferences);
+          // Merge loaded preferences with default state to ensure new fields are included
+          setColumnVisibility(prev => ({
+            ...prev,
+            ...response.data.columnPreferences
+          }));
         }
       } catch (error) {
         console.error('Error loading column preferences:', error);
@@ -427,6 +433,20 @@ const PaymentsContent = () => {
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">{t('title')}</h1>
             <p className="text-sm sm:text-base text-gray-300">{t('subtitle')}</p>
+            {(todayCount > 0 || recentCount > 0) && (
+              <div className="flex items-center gap-3 mt-2">
+                {todayCount > 0 && (
+                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
+                    {todayCount} {todayCount === 1 ? 'payment' : 'payments'} today
+                  </span>
+                )}
+                {recentCount > 0 && todayCount !== recentCount && (
+                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-400 rounded-full border border-blue-500/30">
+                    {recentCount} this week
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <button
             onClick={() => router.push('/payments/add')}
@@ -578,6 +598,11 @@ const PaymentsContent = () => {
                         {t('columns.amount')}
                       </th>
                     )}
+                    {columnVisibility.status && (
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        {t('columns.status')}
+                      </th>
+                    )}
                     {columnVisibility.paymentMethod && (
                       <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         {t('columns.paymentMethod')}
@@ -645,6 +670,23 @@ const PaymentsContent = () => {
                       {columnVisibility.amount && (
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-white">
                           {payment.amount ? formatCurrency(payment.amount, currencySettings) : '-'}
+                        </td>
+                      )}
+                      {columnVisibility.status && (
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm">
+                          {payment.status ? (
+                            <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                              payment.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                              payment.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                              payment.status === 'Cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                              payment.status === 'Refunded' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                              'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                            }`}>
+                              {payment.status}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                       )}
                       {columnVisibility.paymentMethod && (

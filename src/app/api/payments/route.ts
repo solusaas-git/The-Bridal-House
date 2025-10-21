@@ -24,6 +24,7 @@ interface PaymentFormData {
   amount: string;
   paymentMethod: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments?: Array<{
@@ -254,6 +255,7 @@ export async function POST(request: NextRequest) {
         amount: formData.get('amount') as string || '0',
         paymentMethod: formData.get('paymentMethod') as PaymentFormData['paymentMethod'] || 'Cash',
         paymentType: formData.get('paymentType') as PaymentFormData['paymentType'] || 'Advance',
+        status: formData.get('status') as PaymentFormData['status'] || 'Completed',
         reference: formData.get('reference') as string || '',
         note: formData.get('note') as string || '',
       };

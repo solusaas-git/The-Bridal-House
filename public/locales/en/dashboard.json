@@ -59,6 +59,16 @@
       "articles": "Articles",
       "images": "Images"
     },
+    "paymentStatus": {
+      "title": "Payment Status",
+      "todayPayments": "Today's Payments",
+      "recentPayments": "Recent Payments",
+      "todayDescription": "Payments received today",
+      "recentDescription": "Payments in the last 7 days",
+      "activeStatus": "{{today}} today, {{recent}} this week",
+      "todayActive": "{{count}} payments received today",
+      "recentActive": "{{count}} payments this week"
+    },
     "quickActions": {
       "title": "Quick Actions",
       "addCustomer": {

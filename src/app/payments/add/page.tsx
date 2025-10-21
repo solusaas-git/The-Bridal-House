@@ -65,6 +65,7 @@ interface PaymentFormData {
   paymentTime: string;
   paymentMethod: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType: 'Advance' | 'Security' | 'Final' | 'Other';
+  status: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference: string;
   note: string;
 }
@@ -211,6 +212,7 @@ const AddPaymentPage = () => {
     paymentTime: new Date().toISOString().split('T')[1].substring(0, 5), // Default to current time
     paymentMethod: 'Cash',
     paymentType: 'Advance',
+    status: 'Completed',
     reference: '',
     note: '',
   });
@@ -728,6 +730,23 @@ const AddPaymentPage = () => {
                 <option value="Bank Transfer" className="bg-gray-800">{t('add.form.paymentMethods.bankTransfer')}</option>
                 <option value="Credit Card" className="bg-gray-800">{t('add.form.paymentMethods.creditCard')}</option>
                 <option value="Check" className="bg-gray-800">{t('add.form.paymentMethods.check')}</option>
+              </select>
+            </div>
+
+            {/* Payment Status */}
+            <div className="space-y-2">
+              <label className="text-xs sm:text-sm font-medium text-gray-200">{t('add.form.status')}*</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              >
+                <option value="Pending" className="bg-gray-800">{t('add.form.statuses.pending')}</option>
+                <option value="Completed" className="bg-gray-800">{t('add.form.statuses.completed')}</option>
+                <option value="Cancelled" className="bg-gray-800">{t('add.form.statuses.cancelled')}</option>
+                <option value="Refunded" className="bg-gray-800">{t('add.form.statuses.refunded')}</option>
               </select>
             </div>
 

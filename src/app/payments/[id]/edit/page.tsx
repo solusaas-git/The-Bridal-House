@@ -69,6 +69,7 @@ interface Payment {
   amount?: number;
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments: IAttachment[];
@@ -228,6 +229,7 @@ const EditPaymentPage = () => {
     paymentTime: new Date().toISOString().split('T')[1].substring(0, 5),
     paymentMethod: 'Cash' as const,
     paymentType: 'Advance' as const,
+    status: 'Completed' as const,
     reference: '',
     note: ''
   });
@@ -298,6 +300,7 @@ const EditPaymentPage = () => {
           amount: payment.amount?.toString() || '',
           paymentMethod: payment.paymentMethod || 'Cash',
           paymentType: payment.paymentType || 'Advance',
+          status: payment.status || 'Completed',
           paymentDate: payment.paymentDate ? payment.paymentDate.split('T')[0] : '',
           paymentTime: payment.paymentDate ? payment.paymentDate.split('T')[1]?.substring(0, 5) || '00:00' : '00:00',
           reference: payment.reference || '',
@@ -502,6 +505,7 @@ const EditPaymentPage = () => {
       submitData.append('amount', formData.amount);
       submitData.append('paymentMethod', formData.paymentMethod);
       submitData.append('paymentType', formData.paymentType);
+      submitData.append('status', formData.status);
       if (formData.paymentDate) {
         submitData.append('paymentDate', formData.paymentDate);
       }
@@ -588,6 +592,7 @@ const EditPaymentPage = () => {
       formDataToSend.append('amount', formData.amount.toString());
       if (formData.paymentMethod) formDataToSend.append('paymentMethod', formData.paymentMethod);
       if (formData.paymentType) formDataToSend.append('paymentType', formData.paymentType);
+      formDataToSend.append('status', formData.status);
       if (formData.reference) formDataToSend.append('reference', formData.reference);
       if (formData.note) formDataToSend.append('note', formData.note);
       
@@ -902,6 +907,22 @@ const EditPaymentPage = () => {
                   <option value="Bank Transfer" className="text-black">{t('edit.form.paymentMethods.bankTransfer')}</option>
                   <option value="Credit Card" className="text-black">{t('edit.form.paymentMethods.creditCard')}</option>
                   <option value="Check" className="text-black">{t('edit.form.paymentMethods.check')}</option>
+                </select>
+              </div>
+
+              {/* Payment Status */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-200">{t('edit.form.status')}</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Pending" className="text-black">{t('edit.form.statuses.pending')}</option>
+                  <option value="Completed" className="text-black">{t('edit.form.statuses.completed')}</option>
+                  <option value="Cancelled" className="text-black">{t('edit.form.statuses.cancelled')}</option>
+                  <option value="Refunded" className="text-black">{t('edit.form.statuses.refunded')}</option>
                 </select>
               </div>
 

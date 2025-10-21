@@ -28,11 +28,13 @@ async function connectDB() {
 
   if (!cached!.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true,
     };
 
-    // Disconnect any existing connection before connecting
-    await mongoose.disconnect();
+    // Only disconnect if there's an existing connection
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
     
     cached!.promise = mongoose.connect(MONGODB_URI!, opts);
   }

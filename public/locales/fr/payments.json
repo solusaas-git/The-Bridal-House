@@ -15,6 +15,7 @@
     "amount": "Montant",
     "paymentMethod": "Méthode de Paiement",
     "paymentType": "Type de Paiement",
+    "status": "Statut",
     "reference": "Référence",
     "note": "Note",
     "attachments": "Pièces Jointes",
@@ -69,6 +70,7 @@
       "amount": "Montant",
       "method": "Méthode",
       "type": "Type",
+      "status": "Statut",
       "editPayment": "Modifier le Paiement",
       "deletePayment": "Supprimer le Paiement"
     },
@@ -77,6 +79,7 @@
       "paymentDate": "Date de Paiement",
       "paymentMethod": "Méthode de Paiement",
       "paymentType": "Type de Paiement",
+      "status": "Statut",
       "amount": "Montant",
       "reference": "Référence",
       "note": "Note",
@@ -168,6 +171,13 @@
         "security": "Sécurité",
         "final": "Final",
         "other": "Autre"
+      },
+      "status": "Statut",
+      "statuses": {
+        "pending": "En attente",
+        "completed": "Terminé",
+        "cancelled": "Annulé",
+        "refunded": "Remboursé"
       }
     },
     "reservation": {
@@ -224,6 +234,12 @@
         "final": "Final",
         "other": "Autre"
       },
+      "statuses": {
+        "pending": "En attente",
+        "completed": "Terminé",
+        "cancelled": "Annulé",
+        "refunded": "Remboursé"
+      },
       "customerInfo": "Informations Client",
       "selectCustomer": "Sélectionner un Client",
       "noCustomerSelected": "Aucun client sélectionné",
@@ -235,6 +251,7 @@
       "paymentTime": "Heure de Paiement",
       "paymentMethod": "Méthode de Paiement",
       "paymentType": "Type de Paiement",
+      "status": "Statut",
       "reference": "Référence",
       "referencePlaceholder": "Référence de paiement ou ID de transaction",
       "notes": "Notes",

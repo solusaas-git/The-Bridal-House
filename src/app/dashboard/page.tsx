@@ -18,6 +18,7 @@ import FittingsWidget from '@/components/dashboard/FittingsWidget';
 import QuickActionsWidget from '@/components/dashboard/QuickActionsWidget';
 import SystemHealthWidget from '@/components/dashboard/SystemHealthWidget';
 import TopCategoryProductsWidget from '@/components/dashboard/TopCategoryProductsWidget';
+import PaymentStatusWidget from '@/components/dashboard/PaymentStatusWidget';
 import WidgetManager from '@/components/dashboard/WidgetManager';
 import { useWidgetVisibility } from '@/hooks/useWidgetVisibility';
 import Layout from '@/components/Layout';
@@ -310,6 +311,7 @@ const DashboardContent = () => {
       { id: 'fittings', label: t('widgets.fittings.title'), width: 'full' },
       { id: 'pickups', label: t('widgets.pickups.title'), width: 'half' },
       { id: 'returns', label: t('widgets.returns.title'), width: 'half' },
+      { id: 'paymentStatus', label: t('widgets.paymentStatus.title'), width: 'half' },
       { id: 'quickActions', label: t('widgets.quickActions.title'), width: 'half' },
       { id: 'systemHealth', label: t('widgets.systemHealth.title'), width: 'half' },
     ];
@@ -540,6 +542,8 @@ const DashboardContent = () => {
         );
       case 'quickActions':
         return <QuickActionsWidget />;
+      case 'paymentStatus':
+        return <PaymentStatusWidget />;
       case 'systemHealth':
         return (
           <SystemHealthWidget

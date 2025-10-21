@@ -58,14 +58,21 @@ function ReservationsContent() {
   const [isPaymentStatusDropdownOpen, setIsPaymentStatusDropdownOpen] = useState(false);
   const paymentStatusDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Reservation status filter state (multiselect, exclude cancelled by default)
+  const [reservationStatusFilter, setReservationStatusFilter] = useState(['Draft', 'Confirmed']);
+  const [localReservationStatusFilter, setLocalReservationStatusFilter] = useState(['Draft', 'Confirmed']);
+  const [isReservationStatusDropdownOpen, setIsReservationStatusDropdownOpen] = useState(false);
+  const reservationStatusDropdownRef = useRef<HTMLDivElement>(null);
+
   // Initialize filters from URL parameters
   useEffect(() => {
     const urlStartDate = searchParams.get('startDate');
     const urlEndDate = searchParams.get('endDate');
     const urlDateColumn = searchParams.get('dateColumn');
     const urlPaymentStatus = searchParams.get('paymentStatus');
+    const urlReservationStatus = searchParams.get('reservationStatus');
     
-    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus) {
+    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus || urlReservationStatus) {
       setIsProcessingUrlParams(true);
       setDateFilters({
         dateColumn: urlDateColumn || 'weddingDate', // Default to weddingDate for upcoming payments
@@ -74,6 +81,9 @@ function ReservationsContent() {
       });
       if (urlPaymentStatus) {
         setPaymentStatusFilter(urlPaymentStatus.split(','));
+      }
+      if (urlReservationStatus) {
+        setReservationStatusFilter(urlReservationStatus.split(','));
       }
       // Trigger fetch with the new date filters directly
       const fetchWithUrlParams = async () => {
@@ -99,6 +109,12 @@ function ReservationsContent() {
           } else {
             // Default behavior: exclude "Paid" status
             params.paymentStatus = 'Not Paid,Partially Paid,Pending';
+          }
+          if (urlReservationStatus) {
+            params.reservationStatus = urlReservationStatus;
+          } else {
+            // Default behavior: exclude cancelled reservations
+            params.reservationStatus = 'Draft,Confirmed';
           }
 
           const response = await axios.get('/api/reservations', { params });
@@ -215,6 +231,14 @@ function ReservationsContent() {
         params.paymentStatus = 'Not Paid,Partially Paid,Pending';
       }
 
+      // Add reservation status filter (default includes all)
+      if (reservationStatusFilter.length > 0) {
+        params.reservationStatus = reservationStatusFilter.join(',');
+      } else {
+        // If no specific status is selected, exclude cancelled by default
+        params.reservationStatus = 'Draft,Confirmed';
+      }
+
 
 
       const response = await axios.get('/api/reservations', { params });
@@ -237,7 +261,7 @@ function ReservationsContent() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, searchTerm, dateFilters, paymentStatusFilter, dispatch]);
+  }, [currentPage, itemsPerPage, searchTerm, dateFilters, paymentStatusFilter, reservationStatusFilter, dispatch]);
 
   // Payment status filter handlers
   const handlePaymentStatusApply = () => {
@@ -250,32 +274,55 @@ function ReservationsContent() {
     setIsPaymentStatusDropdownOpen(false);
   };
 
-  // Close payment status dropdown when clicking outside
+  // Reservation status filter handlers
+  const handleReservationStatusApply = () => {
+    setReservationStatusFilter(localReservationStatusFilter);
+    setIsReservationStatusDropdownOpen(false);
+  };
+
+  const handleReservationStatusCancel = () => {
+    setLocalReservationStatusFilter(reservationStatusFilter);
+    setIsReservationStatusDropdownOpen(false);
+  };
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!isPaymentStatusDropdownOpen) return;
-      
       const target = event.target as Node;
-      const isClickInsideDropdown = paymentStatusDropdownRef.current?.contains(target);
       
-      // Check if click is inside the portal dropdown (which is rendered in document.body)
-      const dropdownElement = document.querySelector('[data-payment-status-dropdown]');
-      const isClickInsidePortal = dropdownElement?.contains(target);
+      // Handle payment status dropdown
+      if (isPaymentStatusDropdownOpen) {
+        const isClickInsidePaymentDropdown = paymentStatusDropdownRef.current?.contains(target);
+        const paymentDropdownElement = document.querySelector('[data-payment-status-dropdown]');
+        const isClickInsidePaymentPortal = paymentDropdownElement?.contains(target);
+        
+        if (!isClickInsidePaymentDropdown && !isClickInsidePaymentPortal) {
+          setLocalPaymentStatusFilter(paymentStatusFilter);
+          setIsPaymentStatusDropdownOpen(false);
+        }
+      }
       
-      if (!isClickInsideDropdown && !isClickInsidePortal) {
-        setLocalPaymentStatusFilter(paymentStatusFilter); // Reset to current applied filters
-        setIsPaymentStatusDropdownOpen(false);
+      // Handle reservation status dropdown
+      if (isReservationStatusDropdownOpen) {
+        const isClickInsideReservationDropdown = reservationStatusDropdownRef.current?.contains(target);
+        const reservationDropdownElement = document.querySelector('[data-reservation-status-dropdown]');
+        const isClickInsideReservationPortal = reservationDropdownElement?.contains(target);
+        
+        if (!isClickInsideReservationDropdown && !isClickInsideReservationPortal) {
+          setLocalReservationStatusFilter(reservationStatusFilter);
+          setIsReservationStatusDropdownOpen(false);
+        }
       }
     };
 
-    if (isPaymentStatusDropdownOpen) {
+    if (isPaymentStatusDropdownOpen || isReservationStatusDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isPaymentStatusDropdownOpen, paymentStatusFilter]);
+  }, [isPaymentStatusDropdownOpen, isReservationStatusDropdownOpen, paymentStatusFilter, reservationStatusFilter]);
 
   useEffect(() => {
     // Skip initial fetch if we're processing URL parameters or if URL parameters exist
@@ -283,12 +330,13 @@ function ReservationsContent() {
     const urlEndDate = searchParams.get('endDate');
     const urlDateColumn = searchParams.get('dateColumn');
     const urlPaymentStatus = searchParams.get('paymentStatus');
+    const urlReservationStatus = searchParams.get('reservationStatus');
     
     if (isProcessingUrlParams) {
       return; // Skip fetch if currently processing URL params
     }
     
-    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus) {
+    if (urlStartDate || urlEndDate || urlDateColumn || urlPaymentStatus || urlReservationStatus) {
       return; // Skip fetch if URL params exist (they'll be handled by the URL params effect)
     }
     
@@ -575,7 +623,8 @@ function ReservationsContent() {
 
         {/* Filters and Search */}
         <div className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/10 p-4 sm:p-6">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+          {/* First Row: Search and Date Filters */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 mb-4">
             {/* Search */}
             <div className="relative flex-1 w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -590,60 +639,65 @@ function ReservationsContent() {
 
             {/* Date Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
-            {/* Date Column Selector */}
+              {/* Date Column Selector */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.filterBy')}</label>
-              <select
-                value={dateFilters.dateColumn}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
+                <select
+                  value={dateFilters.dateColumn}
+                  onChange={(e) => setDateFilters(prev => ({ ...prev, dateColumn: e.target.value }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-              >
-                          <option value="pickupDate">{t('filters.dateColumns.pickupDate')}</option>
-          <option value="returnDate">{t('filters.dateColumns.returnDate')}</option>
-          <option value="weddingDate">{t('filters.dateColumns.weddingDate')}</option>
-          <option value="availabilityDate">{t('filters.dateColumns.availabilityDate')}</option>
-          <option value="createdAt">{t('filters.dateColumns.createdAt')}</option>
-              </select>
-            </div>
+                >
+                  <option value="pickupDate">{t('filters.dateColumns.pickupDate')}</option>
+                  <option value="returnDate">{t('filters.dateColumns.returnDate')}</option>
+                  <option value="weddingDate">{t('filters.dateColumns.weddingDate')}</option>
+                  <option value="availabilityDate">{t('filters.dateColumns.availabilityDate')}</option>
+                  <option value="createdAt">{t('filters.dateColumns.createdAt')}</option>
+                </select>
+              </div>
 
               {/* Date Range */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-            {/* Start Date */}
+                {/* Start Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.from')}</label>
-              <input
-                type="date"
-                value={dateFilters.startDate}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                  <input
+                    type="date"
+                    value={dateFilters.startDate}
+                    onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
                     className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-              />
-            </div>
+                  />
+                </div>
 
-            {/* End Date */}
+                {/* End Date */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.to')}</label>
-              <input
-                type="date"
-                value={dateFilters.endDate}
-                onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                  <input
+                    type="date"
+                    value={dateFilters.endDate}
+                    onChange={(e) => setDateFilters(prev => ({ ...prev, endDate: e.target.value }))}
                     className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none"
-              />
+                  />
                 </div>
-            </div>
+              </div>
 
-            {/* Clear Filters */}
-            {(dateFilters.startDate || dateFilters.endDate) && (
-              <button
-                onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
+              {/* Clear Date Filters */}
+              {(dateFilters.startDate || dateFilters.endDate) && (
+                <button
+                  onClick={() => setDateFilters(prev => ({ ...prev, startDate: '', endDate: '' }))}
                   className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors whitespace-nowrap w-full sm:w-auto"
-              >
-        {t('filters.clearDates')}
-              </button>
-            )}
+                >
+                  {t('filters.clearDates')}
+                </button>
+              )}
             </div>
+          </div>
+
+          {/* Second Row: Status Filters and Column Toggle */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
 
             {/* Payment Status Filter */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
+              <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.paymentStatusLabel')}</label>
               <div className="relative" ref={paymentStatusDropdownRef}>
                 <button
                   onClick={() => {
@@ -724,6 +778,93 @@ function ReservationsContent() {
                   className="px-2 py-1 text-xs text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors"
                 >
           {t('filters.clear')}
+                </button>
+              )}
+            </div>
+
+            {/* Reservation Status Filter */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <label className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">{t('filters.reservationStatusLabel')}</label>
+              <div className="relative" ref={reservationStatusDropdownRef}>
+                <button
+                  onClick={() => {
+                    if (!isReservationStatusDropdownOpen) {
+                      setLocalReservationStatusFilter(reservationStatusFilter);
+                    }
+                    setIsReservationStatusDropdownOpen(!isReservationStatusDropdownOpen);
+                  }}
+                  className="px-2 sm:px-3 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-md text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 sm:flex-none min-w-[140px] flex items-center justify-between"
+                >
+                  <span>
+                    {reservationStatusFilter.length === 0 
+                      ? t('filters.allStatuses') 
+                      : reservationStatusFilter.length === 1 
+                        ? t(`filters.reservationStatuses.${reservationStatusFilter[0].toLowerCase()}`)
+                        : `${reservationStatusFilter.length} selected`
+                    }
+                  </span>
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isReservationStatusDropdownOpen && createPortal(
+                  <div 
+                    data-reservation-status-dropdown
+                    className="absolute z-[9999] mt-1 bg-gray-800 border border-white/20 rounded-md shadow-lg min-w-[140px] max-w-[200px]"
+                    style={{
+                      top: reservationStatusDropdownRef.current ? 
+                        reservationStatusDropdownRef.current.getBoundingClientRect().bottom + window.scrollY + 4 : 0,
+                      left: reservationStatusDropdownRef.current ? 
+                        reservationStatusDropdownRef.current.getBoundingClientRect().left + window.scrollX : 0,
+                    }}
+                  >
+                    {['Draft', 'Confirmed', 'Cancelled'].map((status) => (
+                      <label
+                        key={status}
+                        className="flex items-center px-3 py-2 hover:bg-white/10 cursor-pointer text-xs sm:text-sm text-white"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={localReservationStatusFilter.includes(status)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setLocalReservationStatusFilter([...localReservationStatusFilter, status]);
+                            } else {
+                              setLocalReservationStatusFilter(localReservationStatusFilter.filter(s => s !== status));
+                            }
+                          }}
+                          className="mr-2 rounded"
+                        />
+                        {t(`filters.reservationStatuses.${status.toLowerCase()}`)}
+                      </label>
+                    ))}
+                    
+                    {/* Apply/Cancel buttons */}
+                    <div className="border-t border-white/20 p-2 flex gap-2">
+                      <button
+                        onClick={handleReservationStatusApply}
+                        className="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
+                      >
+                        {t('filters.apply')}
+                      </button>
+                      <button
+                        onClick={handleReservationStatusCancel}
+                        className="flex-1 px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-colors"
+                      >
+                        {t('filters.cancel')}
+                      </button>
+                    </div>
+                  </div>,
+                  document.body
+                )}
+              </div>
+              {!(reservationStatusFilter.length === 2 && reservationStatusFilter.includes('Draft') && reservationStatusFilter.includes('Confirmed') && !reservationStatusFilter.includes('Cancelled')) && (
+                <button
+                  onClick={() => setReservationStatusFilter(['Draft', 'Confirmed'])}
+                  className="px-2 py-1 text-xs text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/20 rounded-md transition-colors"
+                >
+                  {t('filters.clear')}
                 </button>
               )}
             </div>
@@ -940,7 +1081,7 @@ function ReservationsContent() {
         )}
 
         {/* Active Filters Indicator */}
-        {(dateFilters.startDate || dateFilters.endDate || paymentStatusFilter.length > 0) && (
+        {(dateFilters.startDate || dateFilters.endDate || paymentStatusFilter.length > 0 || !(reservationStatusFilter.length === 2 && reservationStatusFilter.includes('Draft') && reservationStatusFilter.includes('Confirmed') && !reservationStatusFilter.includes('Cancelled'))) && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <span className="text-xs sm:text-sm font-medium text-blue-300">Active filters:</span>
@@ -959,6 +1100,11 @@ function ReservationsContent() {
               {paymentStatusFilter.length > 0 && (
                 <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
                   Payment Status: {paymentStatusFilter.join(', ')}
+                </span>
+              )}
+              {!(reservationStatusFilter.length === 2 && reservationStatusFilter.includes('Draft') && reservationStatusFilter.includes('Confirmed') && !reservationStatusFilter.includes('Cancelled')) && (
+                <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs sm:text-sm">
+                  Reservation Status: {reservationStatusFilter.join(', ')}
                 </span>
               )}
                 <span className="text-xs text-blue-400">

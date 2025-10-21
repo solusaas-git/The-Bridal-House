@@ -13,6 +13,7 @@ interface PaymentUpdateData {
   amount?: string | number; // Allow both string and number
   paymentMethod?: 'Cash' | 'Bank Transfer' | 'Credit Card' | 'Check';
   paymentType?: 'Advance' | 'Security' | 'Final' | 'Other';
+  status?: 'Pending' | 'Completed' | 'Cancelled' | 'Refunded';
   reference?: string;
   note?: string;
   attachments?: Array<{
@@ -91,6 +92,7 @@ export async function PUT(
         amount: formData.get('amount') as string || undefined,
         paymentMethod: formData.get('paymentMethod') as PaymentUpdateData['paymentMethod'] || undefined,
         paymentType: formData.get('paymentType') as PaymentUpdateData['paymentType'] || undefined,
+        status: formData.get('status') as PaymentUpdateData['status'] || undefined,
         reference: formData.get('reference') as string || undefined,
         note: formData.get('note') as string || undefined,
       };
