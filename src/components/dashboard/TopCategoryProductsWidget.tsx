@@ -81,6 +81,15 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
     return list.slice(0, 10);
   }, [counts, categoryProductsMap]);
 
+  // Filter topTen based on search term
+  const filteredTopTen = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return topTen;
+    return topTen.filter(({ product }) => 
+      product.name.toLowerCase().includes(term)
+    );
+  }, [topTen, searchTerm]);
+
   // Debounced search in products API, then filter by category and exclude top10
   useEffect(() => {
     const handler = setTimeout(async () => {
@@ -126,10 +135,12 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
 
       {/* Top 10 list */}
       <div className="space-y-3">
-        {topTen.length === 0 ? (
+        {filteredTopTen.length === 0 && searchTerm.trim() ? (
+          <div className="text-sm text-gray-400">{t('widgets.topReservedProducts.noMatches')}</div>
+        ) : filteredTopTen.length === 0 ? (
           <div className="text-sm text-gray-400">{t('widgets.topReservedProducts.noReservations')}</div>
         ) : (
-          topTen.map(({ product, count }) => (
+          filteredTopTen.map(({ product, count }) => (
             <div key={product._id} className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 cursor-pointer" onClick={() => {
               // Build details rows from provided reservations prop
               const rows: Array<{ id: string; customer: string; weddingDate: string; amount: number }> = [];
@@ -169,53 +180,58 @@ const TopCategoryProductsWidget: React.FC<Props> = ({ products, reservations, ca
         )}
       </div>
 
-      {/* Search other products in DB (same category, not in top 10) */}
-      <div className="mt-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('widgets.topReservedProducts.searchPlaceholder', { defaultValue: 'Search other products in category...' })}
-            className="pl-9 pr-3 py-2 w-full bg-white/10 border border-white/20 rounded-md text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* Search results from API (other products in same category, not in top 10) */}
+      {searchLoading && searchTerm.trim().length >= 2 && (
+        <div className="text-xs text-gray-400 mt-2">{t('widgets.topReservedProducts.searching')}</div>
+      )}
 
-        {searchLoading && (
-          <div className="text-xs text-gray-400 mt-2">{t('widgets.topReservedProducts.searching')}</div>
-        )}
-
-        {!searchLoading && searchTerm.trim().length >= 2 && (
-          <div className="space-y-2 mt-3">
-            {searchResults.length === 0 ? (
-              <div className="text-xs text-gray-400">{t('widgets.topReservedProducts.noMatches')}</div>
-            ) : (
-              searchResults.map((p) => (
-                <div key={p._id} className="flex items-center gap-3 p-2 bg-white/5 border border-white/10 rounded">
-                  {p.primaryPhoto ? (
-                    <img
-                      src={imageUrlFor(p.primaryPhoto)}
-                      alt={p.name}
-                      className="w-10 h-10 rounded object-cover cursor-pointer"
-                      onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
-                      onClick={() => setPreview({ open: true, src: imageUrlFor(p.primaryPhoto), alt: p.name })}
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded bg-gray-700 flex items-center justify-center">
-                      <Package className="w-5 h-5 text-gray-300" />
-                    </div>
-                  )}
-                  <div className="flex-1 text-sm text-white">{p.name}</div>
-                  <div className="px-2 py-0.5 text-xs rounded bg-gray-500/20 text-gray-300 border border-gray-500/30">
-                    {t('widgets.topReservedProducts.reservationsCount', { count: countFor(p._id) })}
+      {!searchLoading && searchTerm.trim().length >= 2 && searchResults.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-white/20">
+          <h4 className="text-sm font-medium text-gray-300 mb-3">
+            {t('widgets.topReservedProducts.otherProducts', { defaultValue: 'Other products in category' })}
+          </h4>
+          <div className="space-y-2">
+            {searchResults.map((p) => (
+              <div key={p._id} className="flex items-center gap-3 p-2 bg-white/5 border border-white/10 rounded hover:bg-white/10 cursor-pointer" onClick={() => {
+                // Build details rows for this product
+                const rows: Array<{ id: string; customer: string; weddingDate: string; amount: number }> = [];
+                for (const r of reservations || []) {
+                  const items = (r.items || []) as any[];
+                  const has = items.some((it) => (typeof it === 'string' ? it : it?._id) === String(p._id));
+                  if (!has) continue;
+                  const fullName = `${r.client?.firstName || ''} ${r.client?.lastName || ''}`.trim() || '-';
+                  const wdIso = r.client?.weddingDate ? String(r.client.weddingDate) : '';
+                  const wd = wdIso ? `${wdIso.substring(8,10)}/${wdIso.substring(5,7)}/${wdIso.substring(0,4)}` : '-';
+                  const amt = typeof r.total === 'number' ? r.total : 0;
+                  rows.push({ id: r._id, customer: fullName, weddingDate: wd, amount: amt });
+                }
+                setDetails({ open: true, product: p, rows });
+              }}>
+                {p.primaryPhoto ? (
+                  <img
+                    src={imageUrlFor(p.primaryPhoto)}
+                    alt={p.name}
+                    className="w-10 h-10 rounded object-cover"
+                    onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreview({ open: true, src: imageUrlFor(p.primaryPhoto), alt: p.name });
+                    }}
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded bg-gray-700 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-gray-300" />
                   </div>
+                )}
+                <div className="flex-1 text-sm text-white">{p.name}</div>
+                <div className="px-2 py-0.5 text-xs rounded bg-gray-500/20 text-gray-300 border border-gray-500/30">
+                  {t('widgets.topReservedProducts.reservationsCount', { count: countFor(p._id) })}
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {/* Image preview modal */}
       {preview.open && typeof window !== 'undefined' && createPortal(
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center" onClick={() => setPreview({ open: false, src: '', alt: '' })}>
